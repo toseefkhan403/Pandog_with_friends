@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "196991370612",
+    "firebase_url": "https://pandog-with-friends.firebaseio.com",
+    "project_id": "pandog-with-friends",
+    "storage_bucket": "pandog-with-friends.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:196991370612:android:bff2ef66cb5a2982",
+        "android_client_info": {
+          "package_name": "com.android.toseefkhan.pandog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "196991370612-10qu740vds46aihma2ktsolejlo8k9fq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSfESMUTFNsWqWqcvWR-JesrX4hIWH0X4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
