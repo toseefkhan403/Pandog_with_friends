@@ -13,4 +13,6 @@
         android:text="This is Home Activity"
         android:layout_centerInParent="true"/>
 
+    <!--bottom navigation view-->
+    <include layout="@layout/layout_bottom_nav_view"/>
 </RelativeLayout>
