@@ -14,8 +14,10 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 public class HomeActivity extends AppCompatActivity {
 
     private static final String TAG = "HomeActivity";
-    private Context mContext;
+    private Context mContext=HomeActivity.this;
     private static final int ACTIVITY_NUM = 0;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

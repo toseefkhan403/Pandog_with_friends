@@ -14,7 +14,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 public class ShareActivity extends AppCompatActivity {
 
     private static final String TAG = "ShareActivity";
-    private Context mContext;
+    private Context mContext=ShareActivity.this;
     private static final int ACTIVITY_NUM = 2;
 
     @Override

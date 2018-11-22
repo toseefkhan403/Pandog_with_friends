@@ -14,7 +14,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = "SearchActivity";
-    private Context mContext;
+    private Context mContext=SearchActivity.this;
     private static final int ACTIVITY_NUM = 3;
 
     @Override

@@ -14,7 +14,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 public class MapActivity extends AppCompatActivity {
 
     private static final String TAG = "MapActivity";
-    private Context mContext;
+    private Context mContext=MapActivity.this;
     private static final int ACTIVITY_NUM = 1;
 
     @Override
