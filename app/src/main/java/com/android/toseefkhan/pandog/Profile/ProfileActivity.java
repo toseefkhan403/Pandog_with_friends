@@ -82,7 +82,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setProfileImage(){
         Log.d(TAG, "setProfileImage: setting profile photo.");
-        String imgURL = "www.androidcentral.com/sites/androidcentral.com/files/styles/xlarge/public/article_images/2016/08/ac-lloyd.jpg?itok=bb72IeLf";
+        String imgURL = "i.redd.it/aw7pv8jq4zzy.jpg";
         UniversalImageLoader.setImage(imgURL, profilePhoto, mProgressBar, "https://");
     }
 

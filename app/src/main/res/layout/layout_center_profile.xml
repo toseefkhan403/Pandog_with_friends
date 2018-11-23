@@ -1,100 +1,122 @@
-<merge xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+
+    <!-- ***********************Top Toolbar***************** -->
+    <RelativeLayout
+        android:id="@+id/relLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <include layout="@layout/snippet_top_profilebar"/>
+
+    </RelativeLayout>
+
+
+    <!-- ********************Middle Section*************************** -->
 
     <RelativeLayout
+        android:id="@+id/relLayout2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">
+        android:layout_below="@+id/relLayout1"
+        android:background="@drawable/white_pink_border_bottom">
 
-
-        <!-- ***********************Top Toolbar***************** -->
-        <RelativeLayout
-            android:id="@+id/relLayout1"
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-            <include layout="@layout/snippet_top_prolfilebar"/>
-
-        </RelativeLayout>
-
-
-        <!-- ********************Middle Section*************************** -->
-
-        <RelativeLayout
-            android:id="@+id/relLayout2"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/relLayout1"
-            android:background="@drawable/white_pink_border_bottom">
+            android:orientation="vertical"
+            android:weightSum="100">
 
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:id="@+id/imgRelLayout"
-                    android:padding="10dp">
-
-                    <ImageView
-                        android:id="@+id/profile_photo"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_centerInParent="true"
-                       />
-
-
-                </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/linLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imgRelLayout"
-                android:orientation="vertical"
-                android:padding="20dp"
-                android:layout_centerInParent="true">
-
-                <TextView
-                    android:id="@+id/display_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Toseef"
-                    android:textAlignment="center"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:text="I am gonna build this app"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"/>
-
-            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="30dp"
-                android:id="@+id/relLayout4"
-                android:layout_below="@id/linLayout2"
-                android:layout_marginStart="30dp">
+                android:layout_height="0dp"
+                android:layout_weight="75">
 
-                <include layout="@layout/snippet_middle_profile"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="100"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="60"
+                        android:padding="5dp">
+
+                        <ImageView
+                            android:id="@+id/profile_photo"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_centerInParent="true" />
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="15">
+
+                        <TextView
+                            android:id="@+id/display_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Toseef"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp"
+                            android:layout_below="@id/display_name"
+                            android:text="I am gonna build this app"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"/>
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="25">
+
+                        <include layout="@layout/snippet_middle_profile"/>
+                    </RelativeLayout>
+                </LinearLayout>
+
+
+
+
+
+
+
+
+
+
+
+
 
             </RelativeLayout>
+
 
 
 
             <RelativeLayout
                 android:id="@+id/relLayout3"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/relLayout4"
+                android:layout_height="0dp"
                 android:layout_marginBottom="50dp"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="5dp"
+                android:layout_weight="25"
+                >
 
                 <GridView
                     android:id="@+id/gridView"
@@ -112,7 +134,13 @@
 
             </RelativeLayout>
 
-        </RelativeLayout>
-        </RelativeLayout>
+        </LinearLayout>
 
-</merge>
+
+
+
+
+
+    </RelativeLayout>
+
+</RelativeLayout>
