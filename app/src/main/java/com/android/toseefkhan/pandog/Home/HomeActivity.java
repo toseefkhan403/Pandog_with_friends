@@ -39,7 +39,6 @@ public class HomeActivity extends AppCompatActivity {
         initImageLoader();
         setupBottomNavigationView();
 
-
     }
 
     private void initImageLoader(){

@@ -36,4 +36,8 @@ public class ShareActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
     }
+
+    //ToDo: Write codes in this activity so that after pressing the share button the user can be taken to a new fragment where he can choose from his friends to compete.
+    //ToDo: Create the post. It will be available for 24 hours.
+    //ToDo: Create mainFeedListAdapter to display posts in the HomeActivity.
 }
