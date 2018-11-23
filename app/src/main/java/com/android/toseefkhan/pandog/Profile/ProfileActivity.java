@@ -76,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     /**
-     * responsible for displaying data retrieved from the firebase
+     * responsible for displaying data retrieved from firebase
      * @param userSettings
      */
     private void setProfileWidgets(UserSettings userSettings){
