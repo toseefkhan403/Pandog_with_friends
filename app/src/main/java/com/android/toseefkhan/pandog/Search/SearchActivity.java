@@ -3,9 +3,11 @@ package com.android.toseefkhan.pandog.Search;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
@@ -21,6 +23,31 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        SearchView profileSearchView = findViewById(R.id.searchProfiles);
+
+
+        ListView profilesListView = findViewById(R.id.ProfileList);
+        final SearchAdapter adapter = new SearchAdapter(mContext);
+        profilesListView.setAdapter(adapter);
+
+        profileSearchView.setActivated(true);
+        profileSearchView.onActionViewExpanded();
+        profileSearchView.setQueryHint("Enter Profile Name");
+
+        profileSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+
         setupBottomNavigationView();
     }
 
