@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp">
 
-        <include layout="@layout/snippet_top_profilebar"/>
+        <include layout="@layout/snippet_top_profilebar" />
 
     </RelativeLayout>
 
@@ -40,8 +40,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:weightSum="100"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:weightSum="100">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -70,18 +70,18 @@
                             android:textAlignment="center"
                             android:textColor="@color/black"
                             android:textSize="16sp"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/description"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
                             android:layout_below="@id/display_name"
                             android:layout_marginStart="15dp"
+                            android:layout_marginTop="5dp"
                             android:text="I am gonna build this app"
                             android:textColor="@color/black"
-                            android:textSize="16sp"/>
+                            android:textSize="16sp" />
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -89,35 +89,21 @@
                         android:layout_height="0dp"
                         android:layout_weight="25">
 
-                        <include layout="@layout/snippet_middle_profile"/>
+                        <include layout="@layout/snippet_middle_profile" />
                     </RelativeLayout>
                 </LinearLayout>
 
 
-
-
-
-
-
-
-
-
-
-
-
             </RelativeLayout>
-
-
 
 
             <RelativeLayout
                 android:id="@+id/relLayout3"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_marginBottom="50dp"
                 android:layout_marginTop="5dp"
-                android:layout_weight="25"
-                >
+                android:layout_marginBottom="50dp"
+                android:layout_weight="25">
 
                 <GridView
                     android:id="@+id/gridView"
@@ -136,10 +122,6 @@
             </RelativeLayout>
 
         </LinearLayout>
-
-
-
-
 
 
     </RelativeLayout>

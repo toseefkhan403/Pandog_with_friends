@@ -11,6 +11,8 @@ import android.widget.ListView;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 public class SearchActivity extends AppCompatActivity {
@@ -27,8 +29,9 @@ public class SearchActivity extends AppCompatActivity {
         SearchView profileSearchView = findViewById(R.id.searchProfiles);
 
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         ListView profilesListView = findViewById(R.id.ProfileList);
-        final SearchAdapter adapter = new SearchAdapter(mContext);
+        final SearchAdapter adapter = new SearchAdapter(mContext, user.getUid());
         profilesListView.setAdapter(adapter);
 
         profileSearchView.setActivated(true);
@@ -56,7 +59,7 @@ public class SearchActivity extends AppCompatActivity {
      */
     private void setupBottomNavigationView(){
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
         BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
         BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();

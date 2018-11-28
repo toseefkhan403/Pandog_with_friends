@@ -2,12 +2,14 @@ package com.android.toseefkhan.pandog.Search;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
@@ -25,17 +27,18 @@ import java.util.List;
 public class SearchAdapter extends BaseAdapter implements Filterable {
 
     private ProfileFilter filter;
-    private ArrayList<String> ProfileList;
+    String userUID;
     private Context mContext;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    private ArrayList<User> ProfileList;
 
-    public SearchAdapter(Context context) {
+    public SearchAdapter(Context context, String uid) {
         this.mContext = context;
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference().child("users");
+        databaseReference = firebaseDatabase.getReference();
         ProfileList = new ArrayList<>();
-        ;
+        this.userUID = uid;
     }
 
     @Override
@@ -63,10 +66,44 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.profile_item, parent, false);
         }
 
-        TextView profileTextView = convertView.findViewById(R.id.ProfileTextView);
-        profileTextView.setText(getItem(position).toString());
+        User user = (User) getItem(position);
 
+        TextView userNameView = convertView.findViewById(R.id.UserNameView);
+        userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
+
+        TextView userEmailView = convertView.findViewById(R.id.UserEmailView);
+        userEmailView.setText(user.getEmail());
+
+        // TODO this is photoUrl
+        String PhotoUrl = getPhotoUrlFromUser(user);
+        // TODO this is photoView
+        ImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
+
+        //TODO Simply load the photo into PhotoView here
+
+
+        //TODO also improve the ui of individual profilePhoto by editing profile_item
         return convertView;
+    }
+
+    private String getPhotoUrlFromUser(User user) {
+
+        final String photoUrl[] = new String[1];
+        databaseReference.child("user_account_setting").child(user.getUser_id()).child("profile_photo")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            photoUrl[0] = dataSnapshot.getValue(String.class);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.d("ErrorGettingPr.Photo", databaseError.toString());
+                    }
+                });
+        return photoUrl[0];
     }
 
     @Override
@@ -88,8 +125,8 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
             FilterResults filterResults = new FilterResults();
 
             if (constraint != null && constraint.length() > 0) {
-                final List<String> userNames = new ArrayList<>();
-                databaseReference.addValueEventListener(new ValueEventListener() {
+                final List<User> users = new ArrayList<>();
+                databaseReference.child("Users").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChildren()) {
@@ -97,8 +134,8 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
                                 User user = childData.getValue(User.class);
                                 String Username = user.getUsername().toUpperCase();
                                 String entered = constraint.toString().toUpperCase();
-                                if (Username.contains(entered)) {
-                                    userNames.add(StringManipulation.expandUsername(user.getUsername()));
+                                if (Username.contains(entered) && !user.getUser_id().equals(userUID)) {
+                                    users.add(user);
                                 }
                             }
                         }
@@ -109,8 +146,8 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
                     }
                 });
-                filterResults.count = userNames.size();
-                filterResults.values = userNames;
+                filterResults.count = users.size();
+                filterResults.values = users;
             } else {
                 filterResults.count = 0;
                 filterResults.values = null;
@@ -120,7 +157,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            ProfileList = (ArrayList<String>) results.values;
+            ProfileList = (ArrayList<User>) results.values;
             notifyDataSetChanged();
         }
     }
