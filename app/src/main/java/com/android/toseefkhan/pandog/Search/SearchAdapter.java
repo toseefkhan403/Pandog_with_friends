@@ -126,7 +126,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
             if (constraint != null && constraint.length() > 0) {
                 final List<User> users = new ArrayList<>();
-                databaseReference.child("Users").addValueEventListener(new ValueEventListener() {
+                databaseReference.child("users").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChildren()) {
