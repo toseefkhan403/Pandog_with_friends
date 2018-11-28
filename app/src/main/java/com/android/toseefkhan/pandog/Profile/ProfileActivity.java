@@ -55,6 +55,7 @@ public class ProfileActivity extends AppCompatActivity {
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
     private ImageView mProfilePhoto;
+    private TextView mEditProfile;
 
 
     @Override
@@ -65,13 +66,13 @@ public class ProfileActivity extends AppCompatActivity {
         setupBottomNavigationView();
 
        // setupToolbar();
+        setupFirebaseAuth();
         initImageLoader();
         setupActivityWidgets();
 
         setProfileImage();
-
         tempGridSetup();
-        setupFirebaseAuth();
+
 
     }
 
@@ -154,6 +155,14 @@ public class ProfileActivity extends AppCompatActivity {
 //        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
        bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         mFirebaseMethods = new FirebaseMethods(mContext);
+        mEditProfile=(TextView) findViewById(R.id.textEditProfile);
+        mEditProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(ProfileActivity.this, EditProfileActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
