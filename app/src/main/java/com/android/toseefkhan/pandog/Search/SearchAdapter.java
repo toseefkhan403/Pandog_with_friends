@@ -95,7 +95,8 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
     private String getPhotoUrlFromUser(User user) {
 
         final String photoUrl[] = new String[1];
-        databaseReference.child("user_account_setting").child(user.getUser_id()).child("profile_photo")
+        databaseReference.child(mContext.getString(R.string.dbname_user_account_settings)).
+                child(user.getUser_id()).child("profile_photo")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
