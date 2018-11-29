@@ -2,15 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <RelativeLayout
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/gallery_fragment">
-
-        <include layout="@layout/layout_gallery"/>
-
-    </RelativeLayout>
-
-
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:id="@+id/imageShare"/>
 
 </RelativeLayout>

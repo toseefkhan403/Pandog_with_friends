@@ -36,7 +36,7 @@ public class SearchActivity extends AppCompatActivity {
 
         profileSearchView.setActivated(true);
         profileSearchView.onActionViewExpanded();
-        profileSearchView.setQueryHint("Enter Profile Name");
+        profileSearchView.setQueryHint("Search here...");
 
         profileSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
