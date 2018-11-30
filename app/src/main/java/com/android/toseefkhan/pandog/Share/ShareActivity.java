@@ -8,25 +8,21 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
-import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
 import com.android.toseefkhan.pandog.Utils.Permissions;
-import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -39,13 +35,11 @@ import java.util.TreeSet;
 public class ShareActivity extends AppCompatActivity {
 
     private static final String TAG = "ShareActivity";
-    private Context mContext=ShareActivity.this;
-
     //constants
     private static final int ACTIVITY_NUM = 2;
     private static final int VERIFY_PERMISSIONS_REQUEST = 1;
-    private static final int  CAMERA_REQUEST_CODE = 5;
-
+    private static final int CAMERA_REQUEST_CODE = 5;
+    private Context mContext = ShareActivity.this;
     //widgets
     private GridView gridView;
     private ImageView galleryImage;
@@ -53,13 +47,11 @@ public class ShareActivity extends AppCompatActivity {
     private TextView tvNext;
     private ImageView camera;
     private String mSelectedImage;
-   // private Spinner directorySpinner;
+    // private Spinner directorySpinner;
 
     //vars
     private ArrayList<String> directories;
     private String mAppend = "file:/";
-
-
 
 
     @Override
@@ -68,11 +60,11 @@ public class ShareActivity extends AppCompatActivity {
         setContentView(R.layout.activity_share);
 
 
-        galleryImage = (ImageView) findViewById(R.id.galleryImageView);
-        gridView = (GridView) findViewById(R.id.gridView);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        galleryImage = findViewById(R.id.galleryImageView);
+        gridView = findViewById(R.id.gridView);
+        mProgressBar = findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.GONE);
-        tvNext=(TextView) findViewById(R.id.tvNext);
+        tvNext = findViewById(R.id.tvNext);
 
         tvNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,7 +80,7 @@ public class ShareActivity extends AppCompatActivity {
         });
 
 
-        camera=(ImageView) findViewById(R.id.camera);
+        camera = findViewById(R.id.camera);
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,28 +90,26 @@ public class ShareActivity extends AppCompatActivity {
             }
         });
 
-       try {
-           if (checkPermissionsArray(Permissions.PERMISSIONS)) {
-               Log.d(TAG, "onCreate: All the permissions are granted.");
+        try {
+            if (checkPermissionsArray(Permissions.PERMISSIONS)) {
+                Log.d(TAG, "onCreate: All the permissions are granted.");
+                getFilePaths();
 
-           } else {
-               verifyPermissions(Permissions.PERMISSIONS);
-           }
-           //TODO the screen doesn't load even after verifying permission for the first user.
-           // todo If he navigates to somewhere and then come back, then only the view is inflated. Fix that as this is bad user experience.
-           getFilePaths();
-       }catch (Exception e){
-           Log.d(TAG, "onCreate: caught a exception" + e.getMessage());
-       }
+            } else {
+                askPermissions(Permissions.PERMISSIONS);
+            }
+
+        } catch (Exception e) {
+            Log.d(TAG, "onCreate: caught a exception" + e.getMessage());
+        }
     }
 
 
-    private void setupImageGrid(ArrayList<String> filepaths){
-        GridView gridView = (GridView) findViewById(R.id.gridView);
-        final ArrayList<String> filep= (ArrayList<String>) filepaths;
+    private void setupImageGrid(ArrayList<String> filepaths) {
+        final ArrayList<String> filep = filepaths;
 
         int gridWidth = getResources().getDisplayMetrics().widthPixels;
-        int imageWidth = gridWidth/4;
+        int imageWidth = gridWidth / 4;
         gridView.setColumnWidth(imageWidth);
 
         GridImageAdapter adapter = new GridImageAdapter(mContext, R.layout.layout_grid_image_view, mAppend, filep);
@@ -129,8 +119,8 @@ public class ShareActivity extends AppCompatActivity {
         try {
             setImage(filep.get(0), galleryImage, mAppend);
             mSelectedImage = filep.get(0);
-        }catch (ArrayIndexOutOfBoundsException e){
-            Log.d(TAG, "setupImageGrid: exception"+ e.getMessage());
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Log.d(TAG, "setupImageGrid: exception" + e.getMessage());
         }
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -138,13 +128,13 @@ public class ShareActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemClick: selected an image: " + filep.get(position));
                 setImage(filep.get(position), galleryImage, mAppend);
-                mSelectedImage=filep.get(position);
+                mSelectedImage = filep.get(position);
             }
         });
     }
 
 
-    private void setImage(String filepaths, ImageView image, String append){
+    private void setImage(String filepaths, ImageView image, String append) {
         Log.d(TAG, "setImage: setting image");
 
         ImageLoader imageLoader = ImageLoader.getInstance();
@@ -173,8 +163,24 @@ public class ShareActivity extends AppCompatActivity {
     }
 
 
-    public ArrayList<String> getFilePaths()
-    {
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        boolean isPermissionsGranted = true;
+        if (requestCode == VERIFY_PERMISSIONS_REQUEST) {
+            for (int granted : grantResults) {
+                if (granted == PackageManager.PERMISSION_DENIED) {
+                    isPermissionsGranted = false;
+                }
+            }
+        }
+        if (isPermissionsGranted) {
+            getFilePaths();
+        } else {
+            Toast.makeText(this, "Need to grant Permission to work properly", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public ArrayList<String> getFilePaths() {
         Uri u = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Images.ImageColumns.DATA};
         Cursor c = null;
@@ -182,22 +188,17 @@ public class ShareActivity extends AppCompatActivity {
         ArrayList<String> resultIAV = new ArrayList<String>();
 
         String[] directories = null;
-        if (u != null)
-        {
+        if (u != null) {
             c = managedQuery(u, projection, null, null, null);
         }
 
-        if ((c != null) && (c.moveToFirst()))
-        {
-            do
-            {
+        if ((c != null) && (c.moveToFirst())) {
+            do {
                 String tempDir = c.getString(0);
                 tempDir = tempDir.substring(0, tempDir.lastIndexOf("/"));
-                try{
+                try {
                     dirList.add(tempDir);
-                }
-                catch(Exception e)
-                {
+                } catch (Exception e) {
 
                 }
             }
@@ -207,31 +208,26 @@ public class ShareActivity extends AppCompatActivity {
 
         }
 
-        for(int i=0;i<dirList.size();i++)
-        {
+        for (int i = 0; i < dirList.size(); i++) {
             File imageDir = new File(directories[i]);
             File[] imageList = imageDir.listFiles();
-            if(imageList == null)
+            if (imageList == null)
                 continue;
             for (File imagePath : imageList) {
                 try {
 
-                    if(imagePath.isDirectory())
-                    {
+                    if (imagePath.isDirectory()) {
                         imageList = imagePath.listFiles();
 
                     }
-                    if ( imagePath.getName().contains(".jpg")|| imagePath.getName().contains(".JPG")
-                            || imagePath.getName().contains(".jpeg")|| imagePath.getName().contains(".JPEG")
+                    if (imagePath.getName().contains(".jpg") || imagePath.getName().contains(".JPG")
+                            || imagePath.getName().contains(".jpeg") || imagePath.getName().contains(".JPEG")
                             || imagePath.getName().contains(".png") || imagePath.getName().contains(".PNG")
                             || imagePath.getName().contains(".gif") || imagePath.getName().contains(".GIF")
                             || imagePath.getName().contains(".bmp") || imagePath.getName().contains(".BMP")
-                            )
-                    {
+                            ) {
 
-
-
-                        String path= imagePath.getAbsolutePath();
+                        String path = imagePath.getAbsolutePath();
                         resultIAV.add(path);
 
                     }
@@ -249,17 +245,9 @@ public class ShareActivity extends AppCompatActivity {
     }
 
 
-
-
-
-
-
-
-
-
-
     /**
      * for retrieving images taken by the camera
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -268,7 +256,7 @@ public class ShareActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == CAMERA_REQUEST_CODE){
+        if (requestCode == CAMERA_REQUEST_CODE) {
             Log.d(TAG, "onActivityResult: done taking a photo.");
             Log.d(TAG, "onActivityResult: attempting to navigate to final share screen.");
             //navigate to the final share screen to publish photo
@@ -280,8 +268,8 @@ public class ShareActivity extends AppCompatActivity {
 
     /* ------------------------------------------PERMISSIONS------------------------------------*/
 
-    public void verifyPermissions(String[] permissions){
-        Log.d(TAG, "verifyPermissions: verifying permissions.");
+    public void askPermissions(String[] permissions) {
+        Log.d(TAG, "askingPermissions: verifying permissions.");
 
         ActivityCompat.requestPermissions(
                 ShareActivity.this,
@@ -292,15 +280,15 @@ public class ShareActivity extends AppCompatActivity {
 
     /**
      * Check an array of permissions
+     *
      * @param permissions
      * @return
      */
-    public boolean checkPermissionsArray(String[] permissions){
+    public boolean checkPermissionsArray(String[] permissions) {
         Log.d(TAG, "checkPermissionsArray: checking permissions array.");
 
-        for(int i = 0; i< permissions.length; i++){
-            String check = permissions[i];
-            if(!checkPermissions(check)){
+        for (String check : permissions) {
+            if (!checkPermissions(check)) {
                 return false;
             }
         }
@@ -309,19 +297,19 @@ public class ShareActivity extends AppCompatActivity {
 
     /**
      * Check a single permission is it has been verified
+     *
      * @param permission
      * @return
      */
-    public boolean checkPermissions(String permission){
+    public boolean checkPermissions(String permission) {
         Log.d(TAG, "checkPermissions: checking permission: " + permission);
 
         int permissionRequest = ActivityCompat.checkSelfPermission(ShareActivity.this, permission);
 
-        if(permissionRequest != PackageManager.PERMISSION_GRANTED){
+        if (permissionRequest != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "checkPermissions: \n Permission was not granted for: " + permission);
             return false;
-        }
-        else{
+        } else {
             Log.d(TAG, "checkPermissions: \n Permission was granted for: " + permission);
             return true;
         }

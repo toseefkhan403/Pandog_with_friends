@@ -16,7 +16,6 @@ import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.StringManipulation;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.User;
-import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,9 +27,8 @@ import java.util.List;
 
 public class SearchAdapter extends BaseAdapter implements Filterable {
     private static final String TAG = "SearchAdapter";
-
-    private ProfileFilter filter;
     String userUID;
+    private ProfileFilter filter;
     private Context mContext;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
@@ -70,7 +68,6 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         }
 
         User user = (User) getItem(position);
-        UserAccountSettings userAccountSettings=(UserAccountSettings) getItem(position);
 
         TextView userNameView = convertView.findViewById(R.id.UserNameView);
         userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
@@ -80,13 +77,11 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
 
         String PhotoUrl = getPhotoUrlFromUser(user);
-        Log.d(TAG, "getView: photo url "+ getPhotoUrlFromUser(user));
+        Log.d(TAG, "getView: photo url " + getPhotoUrlFromUser(user));
 
         ImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
 
-        //TODO Simply load the photo into PhotoView here
-        // done
-        UniversalImageLoader.setImage(PhotoUrl,photoView,null,"");
+        UniversalImageLoader.setImage(PhotoUrl, photoView, null, "");
 
 
         return convertView;
@@ -102,7 +97,8 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             photoUrl[0] = dataSnapshot.getValue(String.class);
-                            Log.d(TAG, "onDataChange: "+ photoUrl[0]);
+
+                            Log.d(TAG, "onDataChange: " + photoUrl[0]);
                         }
                     }
 
