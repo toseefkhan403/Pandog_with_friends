@@ -2,7 +2,6 @@ package com.android.toseefkhan.pandog.Search;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,38 +75,13 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
         userEmailView.setText(user.getEmail());
 
 
-        String PhotoUrl = getPhotoUrlFromUser(user);
-        Log.d(TAG, "getView: photo url " + getPhotoUrlFromUser(user));
-
+        String PhotoUrl = user.getProfile_photo();
+//        }else{
+//            startLoadingPhotoUrlForUser(user);
+//        }
         ImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
-
         UniversalImageLoader.setImage(PhotoUrl, photoView, null, "");
-
-
         return convertView;
-    }
-
-    private String getPhotoUrlFromUser(User user) {
-
-        final String photoUrl[] = new String[1];
-        databaseReference.child(mContext.getString(R.string.dbname_user_account_settings)).
-                child(user.getUser_id()).child("profile_photo")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            photoUrl[0] = dataSnapshot.getValue(String.class);
-
-                            Log.d(TAG, "onDataChange: " + photoUrl[0]);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("ErrorGettingPr.Photo", databaseError.toString());
-                    }
-                });
-        return photoUrl[0];
     }
 
     @Override

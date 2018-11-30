@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.models;
 
 public class User {
 
+    private String profile_photo;
     private String user_id;
     private String email;
     private String username;
@@ -9,10 +10,25 @@ public class User {
     public User() {
     }
 
+    public User(String profile_photo, String user_id, String email, String username) {
+        this.profile_photo = profile_photo;
+        this.user_id = user_id;
+        this.email = email;
+        this.username = username;
+    }
+
     public User(String user_id, String email, String username) {
         this.user_id = user_id;
         this.email = email;
         this.username = username;
+    }
+
+    public String getProfile_photo() {
+        return profile_photo;
+    }
+
+    public void setProfile_photo(String profile_photo) {
+        this.profile_photo = profile_photo;
     }
 
     public String getUser_id() {
@@ -47,4 +63,5 @@ public class User {
                 ", username='" + username + '\'' +
                 '}';
     }
+
 }
