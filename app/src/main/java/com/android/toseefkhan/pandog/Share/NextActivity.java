@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class NextActivity extends AppCompatActivity {
 
     //widgets
     private EditText mCaption;
+    private ListView friendsListView;
 
     //vars
     private String mAppend = "file:/";
@@ -51,11 +53,12 @@ public class NextActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate: got the chosen image: " + getIntent().getStringExtra(getString(R.string.selected_image)));
         mFirebaseMethods = new FirebaseMethods(NextActivity.this);
-        mCaption = (EditText) findViewById(R.id.caption) ;
-
+        mCaption = findViewById(R.id.caption);
+        friendsListView = findViewById(R.id.FriendsListView);
         setupFirebaseAuth();
 
-        ImageView backArrow = (ImageView) findViewById(R.id.ivBackArrow);
+        setupFriendsList();
+        ImageView backArrow = findViewById(R.id.ivBackArrow);
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,7 +67,7 @@ public class NextActivity extends AppCompatActivity {
             }
         });
 
-        TextView share = (TextView) findViewById(R.id.tvShare);
+        TextView share = findViewById(R.id.tvShare);
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,7 +88,7 @@ public class NextActivity extends AppCompatActivity {
     private void setImage() {
         Intent intent = getIntent();
         //Image view that is present in the NextActivity
-        ImageView image = (ImageView) findViewById(R.id.imageShare);
+        ImageView image = findViewById(R.id.imageShare);
 
         //imgUrl received as an intent extra
         imgUrl = intent.getStringExtra(getString(R.string.selected_image));
@@ -96,6 +99,11 @@ public class NextActivity extends AppCompatActivity {
                                     //step1: DONE, step 2 half done
     //step1: submit photo to firebase STORAGE(not database)(database will only store an url pointing to that image).
     //step2: in nextActivity, user can see the image he has chosen, and below will be the list of all the persons whom he follows/ or the ones who follow him.
+
+    private void setupFriendsList() {
+        FriendsAdapter friendsAdapter = new FriendsAdapter(mAuth.getCurrentUser().getUid(), mContext);
+        friendsListView.setAdapter(friendsAdapter);
+    }
     //step3: on clicking upon his friends name, this pending post can be seen in an fragment which will be available in HomeActivity(to be created).
     //step4: Now the user's friend will get a notification about this. He can choose to either accept or ignore, and after he submits his photo, a post will
     //be created which will be available on the main feed of both the users and their respective followers.

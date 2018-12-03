@@ -40,6 +40,7 @@ public class ShareActivity extends AppCompatActivity {
     private static final int ACTIVITY_NUM = 2;
     private static final int VERIFY_PERMISSIONS_REQUEST = 1;
     private static final int CAMERA_REQUEST_CODE = 5;
+    private static final int ACTIVITY_SELECT_IMAGE = 1234;
     private Context mContext = ShareActivity.this;
     //widgets
     private GridView gridView;
@@ -61,7 +62,7 @@ public class ShareActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
-        mOpenGallery= findViewById(R.id.open_gallery);
+        mOpenGallery = findViewById(R.id.open_gallery);
         galleryImage = findViewById(R.id.galleryImageView);
         gridView = findViewById(R.id.gridView);
         mProgressBar = findViewById(R.id.progressBar);
@@ -74,7 +75,6 @@ public class ShareActivity extends AppCompatActivity {
                 Log.d(TAG, "onClick: navigating to gallery");
                 Intent i = new Intent(Intent.ACTION_PICK,
                         android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                final int ACTIVITY_SELECT_IMAGE = 1234;
                 startActivityForResult(i, ACTIVITY_SELECT_IMAGE);
             }
         });
@@ -199,8 +199,8 @@ public class ShareActivity extends AppCompatActivity {
         Uri u = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Images.ImageColumns.DATA};
         Cursor c = null;
-        SortedSet<String> dirList = new TreeSet<String>();
-        ArrayList<String> resultIAV = new ArrayList<String>();
+        SortedSet<String> dirList = new TreeSet<>();
+        ArrayList<String> resultIAV = new ArrayList<>();
 
         String[] directories = null;
         if (u != null) {
@@ -274,8 +274,8 @@ public class ShareActivity extends AppCompatActivity {
         //gives the bitmap of the image that is selected from the gallery
         //todo Note: the images selected from gallery and camera doesn't go anywhere currently. I'll write methods for that by today itself and provide you with the same.
         //todo for now you can work with the image that is sent by the gridView and received in the NextActivity.
-        switch(requestCode) {
-            case 1234:
+        switch (requestCode) {
+            case ACTIVITY_SELECT_IMAGE:
                 if (resultCode == RESULT_OK) {
                     Uri selectedImage = data.getData();
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -289,16 +289,19 @@ public class ShareActivity extends AppCompatActivity {
 
 
                     Bitmap mySelectedImage = BitmapFactory.decodeFile(filePath);
+                } else if (resultCode == RESULT_CANCELED) {
+                    Toast.makeText(mContext, "Failed operation", Toast.LENGTH_SHORT).show();
                 }
+                break;
+            case CAMERA_REQUEST_CODE:
+                Log.d(TAG, "onActivityResult: done taking a photo.");
+                Log.d(TAG, "onActivityResult: attempting to navigate to final share screen.");
+                //navigate to the final share screen to publish photo
+                break;
+
         }
 
         //handle the image that is received from a camera
-        if (requestCode == CAMERA_REQUEST_CODE) {
-            Log.d(TAG, "onActivityResult: done taking a photo.");
-            Log.d(TAG, "onActivityResult: attempting to navigate to final share screen.");
-            //navigate to the final share screen to publish photo
-
-        }
     }
 
 

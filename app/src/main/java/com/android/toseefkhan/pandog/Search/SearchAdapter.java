@@ -6,9 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Filter;
-import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
@@ -22,11 +19,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SearchAdapter extends BaseAdapter implements Filterable {
+public class SearchAdapter extends BaseAdapter {
     private static final String TAG = "SearchAdapter";
     String userUID;
     private ProfileFilter filter;
@@ -78,34 +74,30 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
 
         String PhotoUrl = user.getProfile_photo();
-//        }else{
-//            startLoadingPhotoUrlForUser(user);
-//        }
+
         CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
         UniversalImageLoader.setImage(PhotoUrl, photoView, null, "");
         return convertView;
     }
 
-    @Override
-    public Filter getFilter() {
+
+    public void filter(CharSequence constraint) {
         if (filter == null) {
             filter = new ProfileFilter();
         }
-        return filter;
+        filter.filter(constraint);
     }
 
-    private class ProfileFilter extends Filter {
+    private class ProfileFilter {
 
         public ProfileFilter() {
         }
 
-        @Override
 
-        protected FilterResults performFiltering(final CharSequence constraint) {
-            FilterResults filterResults = new FilterResults();
+        public void filter(final CharSequence constraint) {
 
             if (constraint != null && constraint.length() > 0) {
-                final List<User> users = new ArrayList<>();
+                final ArrayList<User> users = new ArrayList<>();
                 databaseReference.child("users").addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -118,6 +110,8 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
                                     users.add(user);
                                 }
                             }
+                            ProfileList = users;
+                            notifyDataSetChanged();
                         }
                     }
 
@@ -126,19 +120,8 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 
                     }
                 });
-                filterResults.count = users.size();
-                filterResults.values = users;
-            } else {
-                filterResults.count = 0;
-                filterResults.values = null;
-            }
-            return filterResults;
-        }
 
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
-            ProfileList = (ArrayList<User>) results.values;
-            notifyDataSetChanged();
+            }
         }
     }
 }

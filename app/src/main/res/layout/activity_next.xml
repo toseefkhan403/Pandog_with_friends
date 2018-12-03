@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="wrap_content">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -41,17 +42,23 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@+id/imageShare"
+                    android:layout_marginStart="20dp"
                     android:id="@+id/caption"
                     android:hint="Write a cool caption..."
-                    android:layout_marginLeft="20dp"
+                    android:layout_toEndOf="@+id/imageShare"
                     android:layout_centerVertical="true"
                     android:background="@null"
                     />
 
             </RelativeLayout>
 
-
         </RelativeLayout>
     </ScrollView>
+
+    <ListView
+        android:id="@+id/FriendsListView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/scrollView"
+        tools:listitem="@layout/profile_item" />
 </RelativeLayout>
