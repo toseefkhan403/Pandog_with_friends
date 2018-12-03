@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -47,6 +48,7 @@ public class ShareActivity extends AppCompatActivity {
     private TextView tvNext;
     private ImageView camera;
     private String mSelectedImage;
+    private TextView mOpenGallery;
     // private Spinner directorySpinner;
 
     //vars
@@ -59,12 +61,23 @@ public class ShareActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
-
+        mOpenGallery= findViewById(R.id.open_gallery);
         galleryImage = findViewById(R.id.galleryImageView);
         gridView = findViewById(R.id.gridView);
         mProgressBar = findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.GONE);
         tvNext = findViewById(R.id.tvNext);
+
+        mOpenGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: navigating to gallery");
+                Intent i = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                final int ACTIVITY_SELECT_IMAGE = 1234;
+                startActivityForResult(i, ACTIVITY_SELECT_IMAGE);
+            }
+        });
 
         tvNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +86,8 @@ public class ShareActivity extends AppCompatActivity {
                 //TODO:- Handle the cases after this... Also an image selected from this screen and taken from the camera has to be taken to the NextActivity
                 //todo that gets displayed using intent extras(that has already been done)
                 Intent intent = new Intent(mContext, NextActivity.class);
+
+                // the selected image gets passed to the nextActivity as an intent extra
                 intent.putExtra(getString(R.string.selected_image), mSelectedImage);
                 startActivity(intent);
 
@@ -256,6 +271,28 @@ public class ShareActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //gives the bitmap of the image that is selected from the gallery
+        //todo Note: the images selected from gallery and camera doesn't go anywhere currently. I'll write methods for that by today itself and provide you with the same.
+        //todo for now you can work with the image that is sent by the gridView and received in the NextActivity.
+        switch(requestCode) {
+            case 1234:
+                if (resultCode == RESULT_OK) {
+                    Uri selectedImage = data.getData();
+                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
+
+                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                    cursor.moveToFirst();
+
+                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                    String filePath = cursor.getString(columnIndex);
+                    cursor.close();
+
+
+                    Bitmap mySelectedImage = BitmapFactory.decodeFile(filePath);
+                }
+        }
+
+        //handle the image that is received from a camera
         if (requestCode == CAMERA_REQUEST_CODE) {
             Log.d(TAG, "onActivityResult: done taking a photo.");
             Log.d(TAG, "onActivityResult: attempting to navigate to final share screen.");

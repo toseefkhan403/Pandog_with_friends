@@ -8,10 +8,11 @@
         android:layout_width="match_parent"
         android:layout_height="100dp">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="75dp"
             android:layout_height="75dp"
-
+            app:civ_border_color="@color/blue"
+            app:civ_border_width="0.5dp"
             android:id="@+id/UserProfilePictureView"
             android:layout_marginLeft="20dp"
             android:layout_centerVertical="true"

@@ -24,6 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class SearchAdapter extends BaseAdapter implements Filterable {
     private static final String TAG = "SearchAdapter";
     String userUID;
@@ -79,7 +81,7 @@ public class SearchAdapter extends BaseAdapter implements Filterable {
 //        }else{
 //            startLoadingPhotoUrlForUser(user);
 //        }
-        ImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
+        CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
         UniversalImageLoader.setImage(PhotoUrl, photoView, null, "");
         return convertView;
     }
