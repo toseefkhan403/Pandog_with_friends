@@ -11,6 +11,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ImageManager {
+    private static int  image_height;
+    private static int image_width;
     private static final String TAG = "ImageManager";
 
     public static Bitmap getBitmap(String imgUrl){
@@ -31,6 +33,7 @@ public class ImageManager {
         }
         return bitmap;
     }
+
 
     /**
      * return byte array from a bitmap

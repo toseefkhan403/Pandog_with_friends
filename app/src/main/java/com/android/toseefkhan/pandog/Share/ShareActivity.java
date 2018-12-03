@@ -8,9 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -25,13 +27,17 @@ import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
+import com.android.toseefkhan.pandog.Utils.ImageManager;
 import com.android.toseefkhan.pandog.Utils.Permissions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -52,6 +58,8 @@ public class ShareActivity extends AppCompatActivity {
     private ImageView camera;
     private String mSelectedImage;
     private TextView mOpenGallery;
+    private Bitmap currentImage;
+    private String mCurrentPhotoPath;
     // private Spinner directorySpinner;
 
     //vars
@@ -279,6 +287,22 @@ public class ShareActivity extends AppCompatActivity {
 
     }
 
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
 
     /**
      * for retrieving images taken by the camera
@@ -292,10 +316,10 @@ public class ShareActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         //gives the bitmap of the image that is selected from the gallery
-        //todo Note: the images selected from gallery doesn't go anywhere currently. I'll write methods for that by today itself and provide you with the same.
+        //todo Note: the images selected from gallery doesn't get passed as intent extras as they are big in size. Fix that if possible.
         switch (requestCode) {
             case ACTIVITY_SELECT_IMAGE:
-                if (resultCode != RESULT_CANCELED) {
+                if (resultCode == RESULT_OK) {
                     Uri selectedImage = data.getData();
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -306,11 +330,17 @@ public class ShareActivity extends AppCompatActivity {
                     String filePath = cursor.getString(columnIndex);
                     cursor.close();
 
-
                     Bitmap mySelectedImage = BitmapFactory.decodeFile(filePath);
 
                     if(isRootTask()){
-
+                        try{
+                            Log.d(TAG, "onActivityResult: received new bitmap from gallery: " + mySelectedImage);
+                            Intent intent = new Intent(mContext, NextActivity.class);
+                            intent.putExtra(getString(R.string.selected_bitmap), mySelectedImage);
+                            startActivity(intent);
+                        }catch (NullPointerException e){
+                            Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
+                        }
                     }else{
                         try{
                             Log.d(TAG, "onActivityResult: received new bitmap from gallery: " + mySelectedImage);
@@ -336,7 +366,14 @@ public class ShareActivity extends AppCompatActivity {
                 bitmap = (Bitmap) data.getExtras().get("data");
 
                 if(isRootTask()){
-
+                    try{
+                        Log.d(TAG, "onActivityResult: received new bitmap from camera: " + bitmap);
+                        Intent intent = new Intent(mContext, NextActivity.class);
+                        intent.putExtra(getString(R.string.selected_bitmap), bitmap);
+                        startActivity(intent);
+                    }catch (NullPointerException e){
+                        Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
+                    }
                 }else{
                     try{
                         Log.d(TAG, "onActivityResult: received new bitmap from camera: " + bitmap);
@@ -355,7 +392,6 @@ public class ShareActivity extends AppCompatActivity {
 
         //handle the image that is received from a camera
     }
-
 
 
     /* ------------------------------------------PERMISSIONS------------------------------------*/

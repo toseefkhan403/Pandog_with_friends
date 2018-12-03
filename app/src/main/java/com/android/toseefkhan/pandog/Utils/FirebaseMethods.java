@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -97,6 +98,7 @@ public class FirebaseMethods {
                     });
 
                     Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onSuccess: this is the filepath "+ filePaths.FIREBASE_IMAGE_STORAGE);
 
                     //add the new photo to 'photos' node and 'user_photos' node
                   //  addPhotoToDatabase(caption, firebaseUrl.toString());
@@ -261,7 +263,6 @@ public class FirebaseMethods {
                     .child(mContext.getString(R.string.field_display_name))
                     .setValue(displayName);
         }
-
 
 
         if(description != null) {

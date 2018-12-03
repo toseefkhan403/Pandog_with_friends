@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.Share;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,8 @@ public class NextActivity extends AppCompatActivity {
     private String mAppend = "file:/";
     private int imageCount = 0;
     private String imgUrl;
+    private Intent intent;
+    private Bitmap bitmap;
 
 
     @Override
@@ -75,7 +78,15 @@ public class NextActivity extends AppCompatActivity {
                 //upload the image to firebase
                 Toast.makeText(mContext, "Attempting to upload new photo", Toast.LENGTH_SHORT).show();
                 String caption = mCaption.getText().toString();
-                mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, imgUrl,null);
+
+                if(intent.hasExtra(getString(R.string.selected_image))){
+                    imgUrl = intent.getStringExtra(getString(R.string.selected_image));
+                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, imgUrl,null);
+                }
+                else if(intent.hasExtra(getString(R.string.selected_bitmap))){
+                    bitmap = (Bitmap) intent.getParcelableExtra(getString(R.string.selected_bitmap));
+                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, null,bitmap);
+                }
             }
         });
 
@@ -86,13 +97,20 @@ public class NextActivity extends AppCompatActivity {
      * gets the image url from the incoming intent and displays the chosen image
      */
     private void setImage() {
-        Intent intent = getIntent();
+        intent = getIntent();
         //Image view that is present in the NextActivity
         ImageView image = findViewById(R.id.imageShare);
 
-        //imgUrl received as an intent extra
-        imgUrl = intent.getStringExtra(getString(R.string.selected_image));
-        UniversalImageLoader.setImage(imgUrl, image, null, mAppend);
+        if(intent.hasExtra(getString(R.string.selected_image))){
+            imgUrl = intent.getStringExtra(getString(R.string.selected_image));
+            Log.d(TAG, "setImage: got new image url: " + imgUrl);
+            UniversalImageLoader.setImage(imgUrl, image, null, mAppend);
+        }
+        else if(intent.hasExtra(getString(R.string.selected_bitmap))){
+            bitmap = (Bitmap) intent.getParcelableExtra(getString(R.string.selected_bitmap));
+            Log.d(TAG, "setImage: got new bitmap");
+            image.setImageBitmap(bitmap);
+        }
     }
 
     //ToDo: Write codes in Next activity so that the user can choose from his friends to compete.
