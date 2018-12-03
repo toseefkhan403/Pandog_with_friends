@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
+import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
 import com.android.toseefkhan.pandog.Utils.Permissions;
@@ -85,12 +87,17 @@ public class ShareActivity extends AppCompatActivity {
                 Log.d(TAG, "onClick: taking user to the next share screen where he can choose amongst his friends");
                 //TODO:- Handle the cases after this... Also an image selected from this screen and taken from the camera has to be taken to the NextActivity
                 //todo that gets displayed using intent extras(that has already been done)
-                Intent intent = new Intent(mContext, NextActivity.class);
-
-                // the selected image gets passed to the nextActivity as an intent extra
-                intent.putExtra(getString(R.string.selected_image), mSelectedImage);
-                startActivity(intent);
-
+                if(isRootTask()){
+                    Intent intent = new Intent(mContext, NextActivity.class);
+                    intent.putExtra(getString(R.string.selected_image), mSelectedImage);
+                    startActivity(intent);
+                }else{
+                    Intent intent = new Intent(mContext, EditProfileActivity.class);
+                    intent.putExtra(getString(R.string.selected_image), mSelectedImage);
+                    intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
+                    startActivity(intent);
+                    finish();
+                }
             }
         });
 
@@ -119,6 +126,19 @@ public class ShareActivity extends AppCompatActivity {
         }
     }
 
+    private int getTask(){
+        Log.d(TAG, "getTask: TASK: " + getIntent().getFlags());
+        return getIntent().getFlags();
+    }
+
+    private boolean isRootTask(){
+        if(((ShareActivity)mContext).getTask() == 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
     private void setupImageGrid(ArrayList<String> filepaths) {
         final ArrayList<String> filep = filepaths;
@@ -272,11 +292,10 @@ public class ShareActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         //gives the bitmap of the image that is selected from the gallery
-        //todo Note: the images selected from gallery and camera doesn't go anywhere currently. I'll write methods for that by today itself and provide you with the same.
-        //todo for now you can work with the image that is sent by the gridView and received in the NextActivity.
+        //todo Note: the images selected from gallery doesn't go anywhere currently. I'll write methods for that by today itself and provide you with the same.
         switch (requestCode) {
             case ACTIVITY_SELECT_IMAGE:
-                if (resultCode == RESULT_OK) {
+                if (resultCode != RESULT_CANCELED) {
                     Uri selectedImage = data.getData();
                     String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -289,14 +308,47 @@ public class ShareActivity extends AppCompatActivity {
 
 
                     Bitmap mySelectedImage = BitmapFactory.decodeFile(filePath);
+
+                    if(isRootTask()){
+
+                    }else{
+                        try{
+                            Log.d(TAG, "onActivityResult: received new bitmap from gallery: " + mySelectedImage);
+                            Intent intent = new Intent(mContext, EditProfileActivity.class);
+                            intent.putExtra(getString(R.string.selected_bitmap), mySelectedImage);
+                            intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
+                            startActivity(intent);
+                            finish();
+                        }catch (NullPointerException e){
+                            Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
+                        }
+                    }
                 } else if (resultCode == RESULT_CANCELED) {
                     Toast.makeText(mContext, "Failed operation", Toast.LENGTH_SHORT).show();
                 }
                 break;
+
             case CAMERA_REQUEST_CODE:
                 Log.d(TAG, "onActivityResult: done taking a photo.");
                 Log.d(TAG, "onActivityResult: attempting to navigate to final share screen.");
-                //navigate to the final share screen to publish photo
+
+                Bitmap bitmap;
+                bitmap = (Bitmap) data.getExtras().get("data");
+
+                if(isRootTask()){
+
+                }else{
+                    try{
+                        Log.d(TAG, "onActivityResult: received new bitmap from camera: " + bitmap);
+                        Intent intent = new Intent(mContext, EditProfileActivity.class);
+                        intent.putExtra(getString(R.string.selected_bitmap), bitmap);
+                        intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
+                        startActivity(intent);
+                        finish();
+                    }catch (NullPointerException e){
+                        Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
+                    }
+                }
                 break;
 
         }

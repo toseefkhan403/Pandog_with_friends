@@ -3,7 +3,6 @@
 
     <!-- fragment names -->
     <string name="edit_profile_fragment">Edit Profile</string>
-    <string name="sign_out_fragment">Sign Out</string>
 
 
     <!-- Firebase messages -->
@@ -37,6 +36,7 @@
     <string name="new_photo">new_photo</string>
     <string name="profile_photo">profile_photo</string>
     <string name="string_share">Share</string>
+    <string name="selected_bitmap">selected_bitmap</string>
 
 
 </resources>
