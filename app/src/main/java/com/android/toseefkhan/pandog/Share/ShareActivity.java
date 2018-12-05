@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -24,10 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
-import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
-import com.android.toseefkhan.pandog.Utils.ImageManager;
 import com.android.toseefkhan.pandog.Utils.Permissions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -35,9 +32,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -58,8 +53,8 @@ public class ShareActivity extends AppCompatActivity {
     private ImageView camera;
     private String mSelectedImage;
     private TextView mOpenGallery;
-    private Bitmap currentImage;
     private String mCurrentPhotoPath;
+    private Uri capturedImageUri;
     // private Spinner directorySpinner;
 
     //vars
@@ -95,13 +90,14 @@ public class ShareActivity extends AppCompatActivity {
                 Log.d(TAG, "onClick: taking user to the next share screen where he can choose amongst his friends");
                 //TODO:- Handle the cases after this... Also an image selected from this screen and taken from the camera has to be taken to the NextActivity
                 //todo that gets displayed using intent extras(that has already been done)
-                if(isRootTask()){
+                Uri mSelectedImageUri = Uri.fromFile(new File(mSelectedImage));
+                if (isRootTask()) {
                     Intent intent = new Intent(mContext, NextActivity.class);
-                    intent.putExtra(getString(R.string.selected_image), mSelectedImage);
+                    intent.putExtra(getString(R.string.selected_image), mSelectedImageUri.toString());
                     startActivity(intent);
-                }else{
+                } else {
                     Intent intent = new Intent(mContext, EditProfileActivity.class);
-                    intent.putExtra(getString(R.string.selected_image), mSelectedImage);
+                    intent.putExtra(getString(R.string.selected_image), mSelectedImageUri.toString());
                     intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
                     startActivity(intent);
                     finish();
@@ -116,7 +112,21 @@ public class ShareActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to the camera");
                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                    File imageFile = null;
+                    try {
+                        imageFile = createUniqueImageFile();
+                    } catch (IOException exception) {
+                        Log.w("File error", exception.toString());
+                    }
+                    if (imageFile != null) {
+                        capturedImageUri = FileProvider.getUriForFile(mContext,
+                                "com.example.android.fileprovider"
+                                , imageFile);
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+                        startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                    }
+                }
             }
         });
 
@@ -134,16 +144,15 @@ public class ShareActivity extends AppCompatActivity {
         }
     }
 
-    private int getTask(){
+    private int getTask() {
         Log.d(TAG, "getTask: TASK: " + getIntent().getFlags());
         return getIntent().getFlags();
     }
 
-    private boolean isRootTask(){
-        if(((ShareActivity)mContext).getTask() == 0){
+    private boolean isRootTask() {
+        if (((ShareActivity) mContext).getTask() == 0) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
@@ -287,19 +296,18 @@ public class ShareActivity extends AppCompatActivity {
 
     }
 
-    private File createImageFile() throws IOException {
+    private File createUniqueImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        long timeStamp = System.currentTimeMillis();
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = image.getAbsolutePath();
+        mCurrentPhotoPath = image.getPath();
         return image;
     }
 
@@ -320,36 +328,25 @@ public class ShareActivity extends AppCompatActivity {
         switch (requestCode) {
             case ACTIVITY_SELECT_IMAGE:
                 if (resultCode == RESULT_OK) {
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                    cursor.moveToFirst();
-
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String filePath = cursor.getString(columnIndex);
-                    cursor.close();
-
-                    Bitmap mySelectedImage = BitmapFactory.decodeFile(filePath);
-
-                    if(isRootTask()){
-                        try{
-                            Log.d(TAG, "onActivityResult: received new bitmap from gallery: " + mySelectedImage);
+                    Uri selectedImageUri = data.getData();
+                    if (isRootTask()) {
+                        try {
+                            Log.d(TAG, "onActivityResult: received new bitmap from gallery: " + selectedImageUri);
                             Intent intent = new Intent(mContext, NextActivity.class);
-                            intent.putExtra(getString(R.string.selected_bitmap), mySelectedImage);
+                            intent.putExtra(getString(R.string.selected_image), selectedImageUri.toString());
                             startActivity(intent);
-                        }catch (NullPointerException e){
+                        } catch (NullPointerException e) {
                             Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
                         }
-                    }else{
-                        try{
-                            Log.d(TAG, "onActivityResult: received new bitmap from gallery: " + mySelectedImage);
+                    } else {
+                        try {
+                            Log.d(TAG, "onActivityResult: received new bitmap from gallery: " + selectedImageUri);
                             Intent intent = new Intent(mContext, EditProfileActivity.class);
-                            intent.putExtra(getString(R.string.selected_bitmap), mySelectedImage);
+                            intent.putExtra(getString(R.string.selected_image), selectedImageUri.toString());
                             intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
                             startActivity(intent);
                             finish();
-                        }catch (NullPointerException e){
+                        } catch (NullPointerException e) {
                             Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
                         }
                     }
@@ -362,27 +359,24 @@ public class ShareActivity extends AppCompatActivity {
                 Log.d(TAG, "onActivityResult: done taking a photo.");
                 Log.d(TAG, "onActivityResult: attempting to navigate to final share screen.");
 
-                Bitmap bitmap;
-                bitmap = (Bitmap) data.getExtras().get("data");
-
-                if(isRootTask()){
-                    try{
-                        Log.d(TAG, "onActivityResult: received new bitmap from camera: " + bitmap);
+                if (isRootTask()) {
+                    try {
+                        Log.d(TAG, "onActivityResult: received new bitmap from camera: " + capturedImageUri);
                         Intent intent = new Intent(mContext, NextActivity.class);
-                        intent.putExtra(getString(R.string.selected_bitmap), bitmap);
+                        intent.putExtra(getString(R.string.selected_image), capturedImageUri.toString());
                         startActivity(intent);
-                    }catch (NullPointerException e){
+                    } catch (NullPointerException e) {
                         Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
                     }
-                }else{
-                    try{
-                        Log.d(TAG, "onActivityResult: received new bitmap from camera: " + bitmap);
+                } else {
+                    try {
+                        Log.d(TAG, "onActivityResult: received new bitmap from camera: " + capturedImageUri);
                         Intent intent = new Intent(mContext, EditProfileActivity.class);
-                        intent.putExtra(getString(R.string.selected_bitmap), bitmap);
+                        intent.putExtra(getString(R.string.selected_bitmap), capturedImageUri.toString());
                         intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
                         startActivity(intent);
                         finish();
-                    }catch (NullPointerException e){
+                    } catch (NullPointerException e) {
                         Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
                     }
                 }

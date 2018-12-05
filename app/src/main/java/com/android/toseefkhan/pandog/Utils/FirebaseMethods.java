@@ -1,8 +1,8 @@
 package com.android.toseefkhan.pandog.Utils;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -239,11 +239,10 @@ public class FirebaseMethods {
     public int getImageCount(DataSnapshot dataSnapshot){
         int count = 0;
         for(DataSnapshot ds: dataSnapshot
-                .child(mContext.getString(R.string.dbname_user_photos))
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .getChildren()){
             count++;
         }
+
         return count;
     }
 

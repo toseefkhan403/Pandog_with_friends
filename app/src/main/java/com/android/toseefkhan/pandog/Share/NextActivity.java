@@ -3,6 +3,7 @@ package com.android.toseefkhan.pandog.Share;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +17,6 @@ import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
-import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -83,10 +83,6 @@ public class NextActivity extends AppCompatActivity {
                     imgUrl = intent.getStringExtra(getString(R.string.selected_image));
                     mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, imgUrl,null);
                 }
-                else if(intent.hasExtra(getString(R.string.selected_bitmap))){
-                    bitmap = (Bitmap) intent.getParcelableExtra(getString(R.string.selected_bitmap));
-                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, null,bitmap);
-                }
             }
         });
 
@@ -104,12 +100,8 @@ public class NextActivity extends AppCompatActivity {
         if(intent.hasExtra(getString(R.string.selected_image))){
             imgUrl = intent.getStringExtra(getString(R.string.selected_image));
             Log.d(TAG, "setImage: got new image url: " + imgUrl);
-            UniversalImageLoader.setImage(imgUrl, image, null, mAppend);
-        }
-        else if(intent.hasExtra(getString(R.string.selected_bitmap))){
-            bitmap = (Bitmap) intent.getParcelableExtra(getString(R.string.selected_bitmap));
-            Log.d(TAG, "setImage: got new bitmap");
-            image.setImageBitmap(bitmap);
+//            UniversalImageLoader.setImage(imgUrl, image, null, mAppend);
+            image.setImageURI(Uri.parse(imgUrl));
         }
     }
 
@@ -163,18 +155,18 @@ public class NextActivity extends AppCompatActivity {
         };
 
 
-        myRef.addValueEventListener(new ValueEventListener() {
+        myRef.child(mContext.getString(R.string.dbname_user_photos))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 imageCount = mFirebaseMethods.getImageCount(dataSnapshot);
                 Log.d(TAG, "onDataChange: image count: " + imageCount);
 
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                Log.i("Firebase", databaseError.toString());
             }
         });
     }

@@ -2,7 +2,6 @@ package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,18 +18,12 @@ import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
-import com.android.toseefkhan.pandog.Utils.ImageManager;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.ProviderQueryResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,12 +60,12 @@ public class EditProfileActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_profile_activity);
-        mProfilePhoto = (ImageView) findViewById(R.id.profile_photo);
-        mDisplayName = (EditText) findViewById(R.id.display_name);
-        mUsername = (EditText) findViewById(R.id.username);
-        mDescription = (EditText) findViewById(R.id.description);
-        mChangeProfilePhoto = (TextView) findViewById(R.id.changeProfilePhoto);
-        mLogOut=(Button) findViewById(R.id.log_out_button);
+        mProfilePhoto = findViewById(R.id.profile_photo);
+        mDisplayName = findViewById(R.id.display_name);
+        mUsername = findViewById(R.id.username);
+        mDescription = findViewById(R.id.description);
+        mChangeProfilePhoto = findViewById(R.id.changeProfilePhoto);
+        mLogOut = findViewById(R.id.log_out_button);
         mFirebaseMethods = new FirebaseMethods(mContext);
 
 
@@ -91,7 +84,7 @@ public class EditProfileActivity extends AppCompatActivity {
         });
 
         //back arrow for navigating back to "ProfileActivity"
-        ImageView backArrow = (ImageView) findViewById(R.id.backArrow);
+        ImageView backArrow = findViewById(R.id.backArrow);
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +93,7 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
-        ImageView checkmark = (ImageView) findViewById(R.id.saveChanges);
+        ImageView checkmark = findViewById(R.id.saveChanges);
         checkmark.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,26 +108,15 @@ public class EditProfileActivity extends AppCompatActivity {
     private void getIncomingIntent(){
         Intent intent = getIntent();
 
-        if(intent.hasExtra(getString(R.string.selected_image))
-                || intent.hasExtra(getString(R.string.selected_bitmap))){
+        if (intent.hasExtra(getString(R.string.selected_image))) {
 
             //if there is an imageUrl attached as an extra, then it was chosen from the gallery/photo fragment
             Log.d(TAG, "getIncomingIntent: New incoming imgUrl");
             if(intent.getStringExtra(getString(R.string.return_to_fragment)).equals(getString(R.string.edit_profile_fragment))){
-
-                if(intent.hasExtra(getString(R.string.selected_image))){
                     //set the new profile picture
                     FirebaseMethods firebaseMethods = new FirebaseMethods(mContext);
                     firebaseMethods.uploadNewPhoto(getString(R.string.profile_photo), null, 0,
                             intent.getStringExtra(getString(R.string.selected_image)), null);
-                }
-                else if(intent.hasExtra(getString(R.string.selected_bitmap))){
-                    //set the new profile picture
-                    FirebaseMethods firebaseMethods = new FirebaseMethods(mContext);
-                    firebaseMethods.uploadNewPhoto(getString(R.string.profile_photo), null, 0,
-                            null,(Bitmap) intent.getParcelableExtra(getString(R.string.selected_bitmap)));
-                }
-
             }
 
         }
