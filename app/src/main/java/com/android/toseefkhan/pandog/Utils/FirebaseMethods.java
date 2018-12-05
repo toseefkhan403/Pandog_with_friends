@@ -77,9 +77,9 @@ public class FirebaseMethods {
                     .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/photo" + (count + 1));
 
             //convert image url to bitmap
-           if (bm==null){
-               bm= ImageManager.getBitmap(imgUrl);
-           }
+            if (bm==null) {
+                bm = ImageManager.getBitmap(imgUrl);
+            }
             byte[] bytes = ImageManager.getBytesFromBitmap(bm, 100);
 
             UploadTask uploadTask = null;
@@ -138,10 +138,9 @@ public class FirebaseMethods {
                     .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo");
 
             //convert image url to bitmap
-            if (bm==null){
-                bm= ImageManager.getBitmap(imgUrl);
+            if (bm==null) {
+                bm = ImageManager.getBitmap(imgUrl);
             }
-
             byte[] bytes = ImageManager.getBytesFromBitmap(bm, 100);
 
             UploadTask uploadTask = null;

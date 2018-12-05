@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
+import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +26,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.io.IOException;
 
 public class NextActivity extends AppCompatActivity {
 
@@ -46,7 +50,6 @@ public class NextActivity extends AppCompatActivity {
     private int imageCount = 0;
     private String imgUrl;
     private Intent intent;
-    private Bitmap bitmap;
 
 
     @Override
@@ -80,8 +83,19 @@ public class NextActivity extends AppCompatActivity {
                 String caption = mCaption.getText().toString();
 
                 if(intent.hasExtra(getString(R.string.selected_image))){
-                    imgUrl = intent.getStringExtra(getString(R.string.selected_image));
-                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, imgUrl,null);
+                    intent=getIntent();
+                    String image_path= intent.getStringExtra(getString(R.string.selected_image));
+                    Uri myUri = Uri.parse(image_path);
+                   // Uri myUri = intent.getParcelableExtra(imgUrl);
+                    Log.d(TAG, "onClick: this is the uri from the intent "+ myUri);
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), myUri);
+                        Log.d(TAG, "onClick: this is the bitmap "+ bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, null,bitmap);
                 }
             }
         });
@@ -100,8 +114,9 @@ public class NextActivity extends AppCompatActivity {
         if(intent.hasExtra(getString(R.string.selected_image))){
             imgUrl = intent.getStringExtra(getString(R.string.selected_image));
             Log.d(TAG, "setImage: got new image url: " + imgUrl);
-//            UniversalImageLoader.setImage(imgUrl, image, null, mAppend);
+     //       UniversalImageLoader.setImage(imgUrl, image, null, mAppend);
             image.setImageURI(Uri.parse(imgUrl));
+            //todo fix the orientation of the image
         }
     }
 

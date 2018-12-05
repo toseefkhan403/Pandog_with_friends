@@ -1,18 +1,25 @@
 package com.android.toseefkhan.pandog.Utils;
 
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.widget.Toast;
+
+import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
+import com.android.toseefkhan.pandog.Share.ShareActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ImageManager {
-    private static int  image_height;
-    private static int image_width;
     private static final String TAG = "ImageManager";
 
     public static Bitmap getBitmap(String imgUrl){
@@ -27,7 +34,7 @@ public class ImageManager {
         }finally {
             try{
                 fis.close();
-            }catch (IOException e){
+            }catch (Exception e){
                 Log.e(TAG, "getBitmap: FileNotFoundException: " + e.getMessage() );
             }
         }
@@ -43,6 +50,7 @@ public class ImageManager {
      * @return
      */
     public static byte[] getBytesFromBitmap(Bitmap bm, int quality){
+
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.JPEG, quality, stream);
         return stream.toByteArray();

@@ -2,7 +2,10 @@ package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +33,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+
+import java.io.IOException;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -109,14 +114,24 @@ public class EditProfileActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent.hasExtra(getString(R.string.selected_image))) {
-
             //if there is an imageUrl attached as an extra, then it was chosen from the gallery/photo fragment
             Log.d(TAG, "getIncomingIntent: New incoming imgUrl");
             if(intent.getStringExtra(getString(R.string.return_to_fragment)).equals(getString(R.string.edit_profile_fragment))){
                     //set the new profile picture
+                String image_path= intent.getStringExtra(getString(R.string.selected_image));
+                Uri myUri = Uri.parse(image_path);
+                // Uri myUri = intent.getParcelableExtra(imgUrl);
+                Log.d(TAG, "onClick: this is the uri from the intent "+ myUri);
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), myUri);
+                    Log.d(TAG, "onClick: this is the bitmap "+ bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                     FirebaseMethods firebaseMethods = new FirebaseMethods(mContext);
                     firebaseMethods.uploadNewPhoto(getString(R.string.profile_photo), null, 0,
-                            intent.getStringExtra(getString(R.string.selected_image)), null);
+                            intent.getStringExtra(getString(R.string.selected_image)),bitmap);
             }
 
         }

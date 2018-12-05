@@ -32,6 +32,8 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -88,8 +90,6 @@ public class ShareActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: taking user to the next share screen where he can choose amongst his friends");
-                //TODO:- Handle the cases after this... Also an image selected from this screen and taken from the camera has to be taken to the NextActivity
-                //todo that gets displayed using intent extras(that has already been done)
                 Uri mSelectedImageUri = Uri.fromFile(new File(mSelectedImage));
                 if (isRootTask()) {
                     Intent intent = new Intent(mContext, NextActivity.class);
@@ -311,7 +311,6 @@ public class ShareActivity extends AppCompatActivity {
         return image;
     }
 
-
     /**
      * for retrieving images taken by the camera
      *
@@ -323,8 +322,6 @@ public class ShareActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        //gives the bitmap of the image that is selected from the gallery
-        //todo Note: the images selected from gallery doesn't get passed as intent extras as they are big in size. Fix that if possible.
         switch (requestCode) {
             case ACTIVITY_SELECT_IMAGE:
                 if (resultCode == RESULT_OK) {
@@ -372,10 +369,10 @@ public class ShareActivity extends AppCompatActivity {
                     try {
                         Log.d(TAG, "onActivityResult: received new bitmap from camera: " + capturedImageUri);
                         Intent intent = new Intent(mContext, EditProfileActivity.class);
-                        intent.putExtra(getString(R.string.selected_bitmap), capturedImageUri.toString());
+                        intent.putExtra(getString(R.string.selected_image), capturedImageUri.toString());
                         intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
                         startActivity(intent);
-                        finish();
+             //           finish();
                     } catch (NullPointerException e) {
                         Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
                     }
