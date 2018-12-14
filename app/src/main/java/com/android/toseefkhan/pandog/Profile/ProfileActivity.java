@@ -28,6 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -50,12 +51,14 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
+    private TextView tvPosts,tvFollowers,tvFollowing;
     private ProgressBar mProgressBar;
     private GridView gridView;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
     private ImageView mProfilePhoto;
     private TextView mEditProfile;
+    private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
 
 
     @Override
@@ -66,14 +69,33 @@ public class ProfileActivity extends AppCompatActivity {
         setupBottomNavigationView();
 
        // setupToolbar();
+        setupActivityWidgets();
+        hideWidgets();
         setupFirebaseAuth();
         initImageLoader();
-        setupActivityWidgets();
 
-        setProfileImage();
+        getFollowersCount();
+        getFollowingCount();
+        getPostsCount();
+
         tempGridSetup();
 
 
+    }
+
+    private void hideWidgets() {
+        mUsername.setVisibility(View.GONE);
+        mProfilePhoto.setVisibility(View.GONE);
+        mDisplayName.setVisibility(View.GONE);
+        mDescription.setVisibility(View.GONE);
+        mPosts.setVisibility(View.GONE);
+        mFollowers.setVisibility(View.GONE);
+        mFollowing.setVisibility(View.GONE);
+        mEditProfile.setVisibility(View.GONE);
+        gridView.setVisibility(View.GONE);
+        tvPosts.setVisibility(View.GONE);
+        tvFollowers.setVisibility(View.GONE);
+        tvFollowing.setVisibility(View.GONE);
     }
 
     /**
@@ -93,9 +115,6 @@ public class ProfileActivity extends AppCompatActivity {
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
         mDescription.setText(settings.getDescription());
-        mPosts.setText(String.valueOf(settings.getPosts()));
-        mFollowing.setText(String.valueOf(settings.getFollowing()));
-        mFollowers.setText(String.valueOf(settings.getFollowers()));
         mProgressBar.setVisibility(View.GONE);
     }
 
@@ -123,7 +142,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void setupImageGrid(ArrayList<String> imgURLs){
-        GridView gridView = (GridView) findViewById(R.id.gridView);
+        gridView = (GridView) findViewById(R.id.gridView);
 
         int gridWidth = getResources().getDisplayMetrics().widthPixels;
         int imageWidth = gridWidth/NUM_GRID_COLUMNS;
@@ -133,15 +152,9 @@ public class ProfileActivity extends AppCompatActivity {
         gridView.setAdapter(adapter);
     }
 
-    private void setProfileImage(){
-        Log.d(TAG, "setProfileImage: setting profile photo.");
-        String imgURL = "i.redd.it/aw7pv8jq4zzy.jpg";
-        UniversalImageLoader.setImage(imgURL, mProfilePhoto, mProgressBar, "https://");
-    }
 
     private void setupActivityWidgets(){
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
-        mProgressBar.setVisibility(View.GONE);
         mProfilePhoto = (ImageView) findViewById(R.id.profile_photo);
 
         mDisplayName = (TextView) findViewById(R.id.display_name);
@@ -151,6 +164,9 @@ public class ProfileActivity extends AppCompatActivity {
         mFollowers = (TextView) findViewById(R.id.tvFollowers);
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
         gridView = (GridView) findViewById(R.id.gridView);
+        tvPosts= findViewById(R.id.textPosts);
+        tvFollowers= findViewById(R.id.textFollowers);
+        tvFollowing= findViewById(R.id.textFollolwing);
 //        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
 //        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
        bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
@@ -164,6 +180,75 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void getFollowersCount(){
+        mFollowersCount = 0;
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_followers))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found follower:" + singleSnapshot.getValue());
+                    mFollowersCount++;
+                }
+                mFollowers.setText(String.valueOf(mFollowersCount));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getFollowingCount(){
+        mFollowingCount = 0;
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_following))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found following user:" + singleSnapshot.getValue());
+                    mFollowingCount++;
+                }
+                mFollowing.setText(String.valueOf(mFollowingCount));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void getPostsCount(){
+        mPostsCount = 0;
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_user_photos))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found post:" + singleSnapshot.getValue());
+                    mPostsCount++;
+                }
+                mPosts.setText(String.valueOf(mPostsCount));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     /**
@@ -235,6 +320,20 @@ public class ProfileActivity extends AppCompatActivity {
 
                 //retrieve user information from the database
                 setProfileWidgets(mFirebaseMethods.getUserSettings(dataSnapshot));
+
+                mProgressBar.setVisibility(View.GONE);
+                mUsername.setVisibility(View.VISIBLE);
+                mProfilePhoto.setVisibility(View.VISIBLE);
+                mDisplayName.setVisibility(View.VISIBLE);
+                mDescription.setVisibility(View.VISIBLE);
+                mPosts.setVisibility(View.VISIBLE);
+                mFollowers.setVisibility(View.VISIBLE);
+                mFollowing.setVisibility(View.VISIBLE);
+                mEditProfile.setVisibility(View.VISIBLE);
+                gridView.setVisibility(View.VISIBLE);
+                tvPosts.setVisibility(View.VISIBLE);
+                tvFollowers.setVisibility(View.VISIBLE);
+                tvFollowing.setVisibility(View.VISIBLE);
 
                 //retrieve images for the user in question
 

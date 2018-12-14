@@ -4,22 +4,15 @@ public class UserAccountSettings {
 
     private String description;
     private String display_name;
-    private long followers;
-    private long following;
-    private long posts;
     private String profile_photo;
     private String username;
 
     public UserAccountSettings() {
     }
 
-    public UserAccountSettings(String description, String display_name,
-                               long followers, long following, long posts, String profile_photo, String username) {
+    public UserAccountSettings(String description, String display_name, String profile_photo, String username) {
         this.description = description;
         this.display_name = display_name;
-        this.followers = followers;
-        this.following = following;
-        this.posts = posts;
         this.profile_photo = profile_photo;
         this.username = username;
     }
@@ -38,30 +31,6 @@ public class UserAccountSettings {
 
     public void setDisplay_name(String display_name) {
         this.display_name = display_name;
-    }
-
-    public long getFollowers() {
-        return followers;
-    }
-
-    public void setFollowers(long followers) {
-        this.followers = followers;
-    }
-
-    public long getFollowing() {
-        return following;
-    }
-
-    public void setFollowing(long following) {
-        this.following = following;
-    }
-
-    public long getPosts() {
-        return posts;
-    }
-
-    public void setPosts(long posts) {
-        this.posts = posts;
     }
 
     public String getProfile_photo() {
@@ -85,9 +54,6 @@ public class UserAccountSettings {
         return "UserAccountSettings{" +
                 "description='" + description + '\'' +
                 ", display_name='" + display_name + '\'' +
-                ", followers=" + followers +
-                ", following=" + following +
-                ", posts=" + posts +
                 ", profile_photo='" + profile_photo + '\'' +
                 ", username='" + username + '\'' +
                 '}';

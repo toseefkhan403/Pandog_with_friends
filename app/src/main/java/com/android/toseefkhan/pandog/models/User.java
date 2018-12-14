@@ -1,6 +1,9 @@
 package com.android.toseefkhan.pandog.models;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class User implements Parcelable {
 
     private String profile_photo;
     private String user_id;
@@ -22,6 +25,25 @@ public class User {
         this.email = email;
         this.username = username;
     }
+
+    protected User(Parcel in) {
+        profile_photo = in.readString();
+        user_id = in.readString();
+        email = in.readString();
+        username = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getProfile_photo() {
         return profile_photo;
@@ -64,4 +86,16 @@ public class User {
                 '}';
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(profile_photo);
+        dest.writeString(user_id);
+        dest.writeString(email);
+        dest.writeString(username);
+    }
 }

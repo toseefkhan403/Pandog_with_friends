@@ -32,6 +32,7 @@
         <activity android:name=".Login.LoginActivity" />
         <activity android:name=".Login.RegisterActivity" />
         <activity android:name=".Profile.EditProfileActivity" />
+        <activity android:name=".Profile.ViewProfileActivity"/>
         <activity android:name=".Share.NextActivity" />
 
         <provider

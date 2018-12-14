@@ -3,7 +3,11 @@ package com.android.toseefkhan.pandog.Utils;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,6 +34,8 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -64,47 +70,41 @@ public class FirebaseMethods {
         }
     }
 
-    public void uploadNewPhoto(String photoType, final String caption,final int count, final String imgUrl, Bitmap bm){
+    public void uploadNewPhoto(String photoType, final String caption, final String imageName, final String imgUrl, Uri imageUri) {
         Log.d(TAG, "uploadNewPhoto: attempting to uplaod new photo.");
 
         final FilePaths filePaths = new FilePaths();
         //case1) new photo
-        if(photoType.equals(mContext.getString(R.string.new_photo))){
+        if (photoType.equals(mContext.getString(R.string.new_photo))) {
             Log.d(TAG, "uploadNewPhoto: uploading NEW photo.");
 
             final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
             final StorageReference storageReference = mStorageReference
-                    .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/photo" + (count + 1));
+                    .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/" + imageName);
 
             //convert image url to bitmap
-            if (bm==null) {
-                bm = ImageManager.getBitmap(imgUrl);
-            }
-            byte[] bytes = ImageManager.getBytesFromBitmap(bm, 100);
-
-            UploadTask uploadTask = null;
-            uploadTask = storageReference.putBytes(bytes);
+            UploadTask uploadTask = storageReference.putFile(imageUri);
 
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                  //  Uri firebaseUrl = taskSnapshot.getDownloadUrl();
-                    mStorageReference.child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/photo" + (count + 1))
+                    //  Uri firebaseUrl = taskSnapshot.getDownloadUrl();
+                    mStorageReference.child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/" + imageName)
                             .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
                         public void onComplete(@NonNull Task<Uri> task) {
-                            addPhotoToDatabase(caption,task.getResult().toString());
+                            addPhotoToDatabase(caption, task.getResult().toString());
                         }
                     });
 
                     Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "onSuccess: this is the filepath "+ filePaths.FIREBASE_IMAGE_STORAGE);
+                    Log.d(TAG, "onSuccess: this is the filepath " + filePaths.FIREBASE_IMAGE_STORAGE);
 
                     //add the new photo to 'photos' node and 'user_photos' node
-                  //  addPhotoToDatabase(caption, firebaseUrl.toString());
+                    //  addPhotoToDatabase(caption, firebaseUrl.toString());
 
                     //navigate to the main feed so the user can see their photo
-                    Intent intent=new Intent(mContext, HomeActivity.class);
+                    Intent intent = new Intent(mContext, HomeActivity.class);
                     mContext.startActivity(intent);
 
                 }
@@ -119,7 +119,7 @@ public class FirebaseMethods {
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                     double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
 
-                    if(progress - 15 > mPhotoUploadProgress){
+                    if (progress - 15 > mPhotoUploadProgress) {
                         Toast.makeText(mContext, "photo upload progress: " + String.format("%.0f", progress) + "%", Toast.LENGTH_SHORT).show();
                         mPhotoUploadProgress = progress;
                     }
@@ -130,21 +130,15 @@ public class FirebaseMethods {
 
         }
         //case new profile photo
-        else if(photoType.equals(mContext.getString(R.string.profile_photo))){
+        else if (photoType.equals(mContext.getString(R.string.profile_photo))) {
             Log.d(TAG, "uploadNewPhoto: uploading new PROFILE photo");
 
             final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
             final StorageReference storageReference = mStorageReference
                     .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo");
 
-            //convert image url to bitmap
-            if (bm==null) {
-                bm = ImageManager.getBitmap(imgUrl);
-            }
-            byte[] bytes = ImageManager.getBytesFromBitmap(bm, 100);
 
-            UploadTask uploadTask = null;
-            uploadTask = storageReference.putBytes(bytes);
+            UploadTask uploadTask = storageReference.putFile(imageUri);
 
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -166,7 +160,7 @@ public class FirebaseMethods {
 
 
                     //navigate to the main feed so the user can see their photo
-                    Intent intent=new Intent(mContext, ProfileActivity.class);
+                    Intent intent = new Intent(mContext, ProfileActivity.class);
                     mContext.startActivity(intent);
 
                 }
@@ -181,7 +175,7 @@ public class FirebaseMethods {
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                     double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
 
-                    if(progress - 15 > mPhotoUploadProgress){
+                    if (progress - 15 > mPhotoUploadProgress) {
                         Toast.makeText(mContext, "photo upload progress: " + String.format("%.0f", progress) + "%", Toast.LENGTH_SHORT).show();
                         mPhotoUploadProgress = progress;
                     }
@@ -192,6 +186,7 @@ public class FirebaseMethods {
 
         }
     }
+
 
     private void setProfilePhoto(String url){
         Log.d(TAG, "setProfilePhoto: setting new profile image: " + url);
@@ -361,9 +356,6 @@ public class FirebaseMethods {
         UserAccountSettings settings = new UserAccountSettings(
                 description,
                 username,
-                0,
-                0,
-                0,
                 profile_photo,
                 StringManipulation.condenseUsername(username)
         );
@@ -415,21 +407,6 @@ public class FirebaseMethods {
                                     .getValue(UserAccountSettings.class)
                                     .getProfile_photo()
                     );
-                    settings.setPosts(
-                            ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
-                                    .getPosts()
-                    );
-                    settings.setFollowing(
-                            ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
-                                    .getFollowing()
-                    );
-                    settings.setFollowers(
-                            ds.child(userID)
-                                    .getValue(UserAccountSettings.class)
-                                    .getFollowers()
-                    );
 
                     Log.d(TAG, "getUserAccountSettings: retrieved user_account_settings information: " + settings.toString());
                 } catch (NullPointerException e) {
@@ -465,4 +442,5 @@ public class FirebaseMethods {
 
     }
 
-}
+
+ }

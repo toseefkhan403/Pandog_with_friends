@@ -26,6 +26,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import java.io.IOException;
 
@@ -86,16 +89,12 @@ public class NextActivity extends AppCompatActivity {
                     intent=getIntent();
                     String image_path= intent.getStringExtra(getString(R.string.selected_image));
                     Uri myUri = Uri.parse(image_path);
-                   // Uri myUri = intent.getParcelableExtra(imgUrl);
                     Log.d(TAG, "onClick: this is the uri from the intent "+ myUri);
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), myUri);
-                        Log.d(TAG, "onClick: this is the bitmap "+ bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageCount, null,bitmap);
+
+                    long timeStamp = System.currentTimeMillis();
+                    String imageName = "photo" + timeStamp;
+                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri);
+
                 }
             }
         });
@@ -113,17 +112,15 @@ public class NextActivity extends AppCompatActivity {
 
         if(intent.hasExtra(getString(R.string.selected_image))){
             imgUrl = intent.getStringExtra(getString(R.string.selected_image));
-            Log.d(TAG, "setImage: got new image url: " + imgUrl);
-     //       UniversalImageLoader.setImage(imgUrl, image, null, mAppend);
-            image.setImageURI(Uri.parse(imgUrl));
-            //todo fix the orientation of the image
+            Log.d(TAG, "setImage: got new image uri: " + imgUrl);
+
+            ImageLoader imageLoader = ImageLoader.getInstance();
+            imageLoader.displayImage(imgUrl.toString(), image);
+
         }
     }
 
     //ToDo: Write codes in Next activity so that the user can choose from his friends to compete.
-                                    //step1: DONE, step 2 half done
-    //step1: submit photo to firebase STORAGE(not database)(database will only store an url pointing to that image).
-    //step2: in nextActivity, user can see the image he has chosen, and below will be the list of all the persons whom he follows/ or the ones who follow him.
 
     private void setupFriendsList() {
         FriendsAdapter friendsAdapter = new FriendsAdapter(mAuth.getCurrentUser().getUid(), mContext);
@@ -138,6 +135,7 @@ public class NextActivity extends AppCompatActivity {
     //ToDo: Create mainFeedListAdapter to display posts in the HomeActivity.
 
     //layout for a basic post is in layout_post
+
   /*
      ------------------------------------ Firebase ---------------------------------------------
      */

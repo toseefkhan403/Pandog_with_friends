@@ -1,8 +1,12 @@
 package com.android.toseefkhan.pandog.Profile;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -33,6 +37,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.io.IOException;
 
@@ -120,20 +126,13 @@ public class EditProfileActivity extends AppCompatActivity {
                     //set the new profile picture
                 String image_path= intent.getStringExtra(getString(R.string.selected_image));
                 Uri myUri = Uri.parse(image_path);
-                // Uri myUri = intent.getParcelableExtra(imgUrl);
                 Log.d(TAG, "onClick: this is the uri from the intent "+ myUri);
-                Bitmap bitmap = null;
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), myUri);
-                    Log.d(TAG, "onClick: this is the bitmap "+ bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                    FirebaseMethods firebaseMethods = new FirebaseMethods(mContext);
-                    firebaseMethods.uploadNewPhoto(getString(R.string.profile_photo), null, 0,
-                            intent.getStringExtra(getString(R.string.selected_image)),bitmap);
-            }
 
+                FirebaseMethods firebaseMethods = new FirebaseMethods(mContext);
+
+                firebaseMethods.uploadNewPhoto(getString(R.string.profile_photo), null, "",
+                        intent.getStringExtra(getString(R.string.selected_image)), myUri);
+            }
         }
     }
 
