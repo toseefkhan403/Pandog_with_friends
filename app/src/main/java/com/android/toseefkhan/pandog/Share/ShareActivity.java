@@ -14,8 +14,10 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +29,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
+import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
 import com.android.toseefkhan.pandog.Utils.Permissions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -60,6 +64,8 @@ public class ShareActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private Uri capturedImageUri;
     // private Spinner directorySpinner;
+    private ImageView mOpenGalleryImage;
+    private ImageView mOpenCameraImage;
 
     //vars
     private ArrayList<String> directories;
@@ -71,6 +77,8 @@ public class ShareActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
+        mOpenGalleryImage= findViewById(R.id.gallery_button);
+        mOpenCameraImage= findViewById(R.id.camera_button);
         mOpenGallery = findViewById(R.id.open_gallery);
         galleryImage = findViewById(R.id.galleryImageView);
         gridView = findViewById(R.id.gridView);
@@ -79,6 +87,16 @@ public class ShareActivity extends AppCompatActivity {
         tvNext = findViewById(R.id.tvNext);
 
         mOpenGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: navigating to gallery");
+                Intent i = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+                startActivityForResult(i, ACTIVITY_SELECT_IMAGE);
+            }
+        });
+
+        mOpenGalleryImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to gallery");
@@ -131,6 +149,30 @@ public class ShareActivity extends AppCompatActivity {
                 }
             }
         });
+
+        mOpenCameraImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: navigating to the camera");
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                    File imageFile = null;
+                    try {
+                        imageFile = createUniqueImageFile();
+                    } catch (IOException exception) {
+                        Log.w("File error", exception.toString());
+                    }
+                    if (imageFile != null) {
+                        capturedImageUri = FileProvider.getUriForFile(mContext,
+                                "com.example.android.fileprovider"
+                                , imageFile);
+                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedImageUri);
+                        startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+                    }
+                }
+            }
+        });
+
 
         try {
             if (checkPermissionsArray(Permissions.PERMISSIONS)) {
@@ -233,6 +275,7 @@ public class ShareActivity extends AppCompatActivity {
             Toast.makeText(this, "Need to grant Permission to work properly", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     public ArrayList<String> getFilePaths() {
         Uri u = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
@@ -350,7 +393,7 @@ public class ShareActivity extends AppCompatActivity {
                         }
                     }
                 } else if (resultCode == RESULT_CANCELED) {
-                    Toast.makeText(mContext, "Failed operation", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Hey! Don't hesitate to share your photo!", Toast.LENGTH_SHORT).show();
                 }
                 break;
 
@@ -358,6 +401,7 @@ public class ShareActivity extends AppCompatActivity {
                 Log.d(TAG, "onActivityResult: done taking a photo.");
                 Log.d(TAG, "onActivityResult: attempting to navigate to final share screen.");
 
+                if (resultCode == RESULT_OK) {
                 if (isRootTask()) {
                     try {
                         Log.d(TAG, "onActivityResult: received new bitmap from camera: " + capturedImageUri);
@@ -374,10 +418,13 @@ public class ShareActivity extends AppCompatActivity {
                         intent.putExtra(getString(R.string.selected_image), capturedImageUri.toString());
                         intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
                         startActivity(intent);
-             //           finish();
+                        finish();
                     } catch (NullPointerException e) {
                         Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
                     }
+                }
+                }else if (resultCode== RESULT_CANCELED){
+
                 }
                 break;
 

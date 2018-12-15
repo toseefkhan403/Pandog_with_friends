@@ -137,8 +137,8 @@ public class FirebaseMethods {
             final StorageReference storageReference = mStorageReference
                     .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo");
 
-
-            UploadTask uploadTask = storageReference.putFile(imageUri);
+                UploadTask uploadTask = storageReference.putFile(imageUri);
+            Log.d(TAG, "uploadNewPhoto: this is the uri " + imageUri);
 
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override

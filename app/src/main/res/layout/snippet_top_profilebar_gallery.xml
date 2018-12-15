@@ -50,7 +50,7 @@
                     android:layout_marginRight="10dp"
                     android:text="NEXT"
                     android:textColor="@color/green"
-                    android:textSize="14sp" />
+                    android:textSize="20sp" />
 
             </RelativeLayout>
 

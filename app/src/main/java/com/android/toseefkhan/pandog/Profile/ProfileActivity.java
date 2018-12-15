@@ -19,6 +19,7 @@ import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
+import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
@@ -53,7 +54,6 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
     private TextView tvPosts,tvFollowers,tvFollowing;
     private ProgressBar mProgressBar;
-    private GridView gridView;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
     private ImageView mProfilePhoto;
@@ -78,7 +78,7 @@ public class ProfileActivity extends AppCompatActivity {
         getFollowingCount();
         getPostsCount();
 
-        tempGridSetup();
+
 
 
     }
@@ -92,7 +92,6 @@ public class ProfileActivity extends AppCompatActivity {
         mFollowers.setVisibility(View.GONE);
         mFollowing.setVisibility(View.GONE);
         mEditProfile.setVisibility(View.GONE);
-        gridView.setVisibility(View.GONE);
         tvPosts.setVisibility(View.GONE);
         tvFollowers.setVisibility(View.GONE);
         tvFollowing.setVisibility(View.GONE);
@@ -124,38 +123,12 @@ public class ProfileActivity extends AppCompatActivity {
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
-    private void tempGridSetup(){
-        ArrayList<String> imgURLs = new ArrayList<>();
-        imgURLs.add("https://i.redd.it/9bf67ygj710z.jpg");
-        imgURLs.add("https://c1.staticflickr.com/5/4276/34102458063_7be616b993_o.jpg");
-        imgURLs.add("http://i.imgur.com/EwZRpvQ.jpg");
-        imgURLs.add("http://i.imgur.com/JTb2pXP.jpg");
-        imgURLs.add("https://i.redd.it/59kjlxxf720z.jpg");
-        imgURLs.add("https://i.redd.it/pwduhknig00z.jpg");
-        imgURLs.add("https://i.redd.it/clusqsm4oxzy.jpg");
-        imgURLs.add("https://i.redd.it/svqvn7xs420z.jpg");
-        imgURLs.add("http://i.imgur.com/j4AfH6P.jpg");
-        imgURLs.add("https://i.redd.it/89cjkojkl10z.jpg");
-        imgURLs.add("https://i.redd.it/aw7pv8jq4zzy.jpg");
 
-        setupImageGrid(imgURLs);
-    }
-
-    private void setupImageGrid(ArrayList<String> imgURLs){
-        gridView = (GridView) findViewById(R.id.gridView);
-
-        int gridWidth = getResources().getDisplayMetrics().widthPixels;
-        int imageWidth = gridWidth/NUM_GRID_COLUMNS;
-        gridView.setColumnWidth(imageWidth);
-
-        GridImageAdapter adapter = new GridImageAdapter(mContext, R.layout.layout_grid_image_view, "", imgURLs);
-        gridView.setAdapter(adapter);
-    }
 
 
     private void setupActivityWidgets(){
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
-        mProfilePhoto = (ImageView) findViewById(R.id.profile_photo);
+        mProfilePhoto = findViewById(R.id.profile_photo);
 
         mDisplayName = (TextView) findViewById(R.id.display_name);
         mUsername = (TextView) findViewById(R.id.username);
@@ -163,7 +136,7 @@ public class ProfileActivity extends AppCompatActivity {
         mPosts = (TextView) findViewById(R.id.tvPosts);
         mFollowers = (TextView) findViewById(R.id.tvFollowers);
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
-        gridView = (GridView) findViewById(R.id.gridView);
+
         tvPosts= findViewById(R.id.textPosts);
         tvFollowers= findViewById(R.id.textFollowers);
         tvFollowing= findViewById(R.id.textFollolwing);
@@ -330,7 +303,6 @@ public class ProfileActivity extends AppCompatActivity {
                 mFollowers.setVisibility(View.VISIBLE);
                 mFollowing.setVisibility(View.VISIBLE);
                 mEditProfile.setVisibility(View.VISIBLE);
-                gridView.setVisibility(View.VISIBLE);
                 tvPosts.setVisibility(View.VISIBLE);
                 tvFollowers.setVisibility(View.VISIBLE);
                 tvFollowing.setVisibility(View.VISIBLE);

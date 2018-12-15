@@ -25,6 +25,7 @@ import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
+import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;

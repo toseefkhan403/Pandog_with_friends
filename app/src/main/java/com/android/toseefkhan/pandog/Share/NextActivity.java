@@ -114,9 +114,8 @@ public class NextActivity extends AppCompatActivity {
             imgUrl = intent.getStringExtra(getString(R.string.selected_image));
             Log.d(TAG, "setImage: got new image uri: " + imgUrl);
 
-            ImageLoader imageLoader = ImageLoader.getInstance();
-            imageLoader.displayImage(imgUrl.toString(), image);
-
+                ImageLoader imageLoader = ImageLoader.getInstance();
+                imageLoader.displayImage(imgUrl.toString(), image);
         }
     }
 

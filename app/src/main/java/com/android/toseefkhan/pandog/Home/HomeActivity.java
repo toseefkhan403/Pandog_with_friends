@@ -3,6 +3,8 @@ package com.android.toseefkhan.pandog.Home;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +14,7 @@ import android.view.MenuItem;
 import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
+import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +41,24 @@ public class HomeActivity extends AppCompatActivity {
 
         initImageLoader();
         setupBottomNavigationView();
+        setupViewPager();
+
+    }
+
+    private void setupViewPager() {
+
+        FragmentPagerAdapter adapter=new FragmentPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new HomeFragment()); //index is 0
+        adapter.addFragment(new NotificationFragment());  //index is 1
+
+        ViewPager viewPager=findViewById(R.id.container);
+        viewPager.setAdapter(adapter);
+
+        TabLayout tabLayout=findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
 
     }
 
