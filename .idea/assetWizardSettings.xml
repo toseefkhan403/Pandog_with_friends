@@ -33,9 +33,11 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_gallery_image" />
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="C:\Users\Twinkle khan\Documents\Android study material\Smiling_Face_with_Heart-Shaped_Eyes-512.png" />
+                                      <entry key="outputName" value="ic_heart" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="736d73" />
+                                      <entry key="themeColor" value="000202" />
                                     </map>
                                   </option>
                                 </PersistentState>

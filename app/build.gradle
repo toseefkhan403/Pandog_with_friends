@@ -40,9 +40,11 @@ dependencies {
     //universal image loader
     implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
-    //implementation 'com.google.firebase:firebase-core:16.0.1'
+    //recyclerview
+    implementation "com.android.support:recyclerview-v7:27.0.2"
 
-    // implementation 'com.google.firebase:firebase-database:11.8.0'
+    //cardview
+    implementation 'com.android.support:cardview-v7:27.0.2'
 
     implementation 'com.google.firebase:firebase-core:16.0.3'	//Analytics
     implementation 'com.google.firebase:firebase-database:16.0.1'	//Realtime Database
