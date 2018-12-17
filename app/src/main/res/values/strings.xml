@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Pandog</string>
+    <string name="google_maps_api_key">my_api_key_here</string>
+
 
     <!-- fragment names -->
     <string name="edit_profile_fragment">Edit Profile</string>

@@ -7,5 +7,10 @@
     <color name="white">#FFF</color>
     <color name="black">#000</color>
     <color name="grey">#efbeaeae</color>
+    <color name="brightred">#ff3943</color>
+    <color name="darkred">#801b20</color>
+    <color name="skyBlue">#abffc0</color>
+    <color name="verydarkGreen">#247b37</color>
+    <color name="darkGreen">#3eb959</color>
     <color name="green">#ef41d607</color>
 </resources>
