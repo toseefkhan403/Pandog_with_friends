@@ -1,15 +1,25 @@
 package com.android.toseefkhan.pandog.Utils;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.ColorDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
@@ -46,6 +56,8 @@ public class FirebaseMethods {
 
     private static final String TAG = "FirebaseMethods";
 
+    private ProgressDialog pd;
+
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -56,7 +68,7 @@ public class FirebaseMethods {
 
     //vars
     private Context mContext;
-    private double mPhotoUploadProgress = 0;
+
 
     public FirebaseMethods(Context context) {
         mAuth = FirebaseAuth.getInstance();
@@ -70,121 +82,162 @@ public class FirebaseMethods {
         }
     }
 
-    public void uploadNewPhoto(String photoType, final String caption, final String imageName, final String imgUrl, Uri imageUri) {
-        Log.d(TAG, "uploadNewPhoto: attempting to uplaod new photo.");
+    public void uploadNewPhoto(final String photoType, final String caption, final String imageName, final String imgUrl,final Uri imageUri) {
+        Log.d(TAG, "uploadNewPhoto: attempting to upload new photo.");
 
-        final FilePaths filePaths = new FilePaths();
-        //case1) new photo
-        if (photoType.equals(mContext.getString(R.string.new_photo))) {
-            Log.d(TAG, "uploadNewPhoto: uploading NEW photo.");
+        final Dialog uploadDialog= new Dialog(mContext);
+        uploadDialog.setContentView(R.layout.layout_confirmation_dialog);
+        ImageView cancelDialog = uploadDialog.findViewById(R.id.cancel_dialog);
+        TextView yesDialog= uploadDialog.findViewById(R.id.tvYes);
+        TextView noDialog= uploadDialog.findViewById(R.id.tvNo);
 
-            final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            final StorageReference storageReference = mStorageReference
-                    .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/" + imageName);
+        cancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadDialog.dismiss();
+            }
+        });
+        noDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadDialog.dismiss();
+            }
+        });
 
-            //convert image url to bitmap
-            UploadTask uploadTask = storageReference.putFile(imageUri);
+        yesDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final FilePaths filePaths = new FilePaths();
+                //case1) new photo
+                if (photoType.equals(mContext.getString(R.string.new_photo))) {
+                    Log.d(TAG, "uploadNewPhoto: uploading NEW photo.");
 
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    //  Uri firebaseUrl = taskSnapshot.getDownloadUrl();
-                    mStorageReference.child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/" + imageName)
-                            .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    final StorageReference storageReference = mStorageReference
+                            .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/" + imageName);
+
+                    //convert image url to bitmap
+                    UploadTask uploadTask = storageReference.putFile(imageUri);
+
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            addPhotoToDatabase(caption, task.getResult().toString());
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //  Uri firebaseUrl = taskSnapshot.getDownloadUrl();
+                            mStorageReference.child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/" + imageName)
+                                    .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    addPhotoToDatabase(caption, task.getResult().toString());
+                                }
+                            });
+
+                            Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onSuccess: this is the filepath " + filePaths.FIREBASE_IMAGE_STORAGE);
+
+                            ((Activity)mContext).finish();
+
+                            //navigate to the main feed so the user can see their photo
+                            Intent intent = new Intent(mContext, HomeActivity.class);
+                            mContext.startActivity(intent);
+
                         }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "onFailure: Photo upload failed.");
+                            Toast.makeText(mContext, "Photo upload failed ", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                            Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
+
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+                                builder.setMessage("Photo upload " + (int)progress + "% done ")
+                                        .setCancelable(false)
+                                        .setView(R.layout.layout_progress_dialog);
+                                final AlertDialog alert = builder.create();
+                                alert.show();
+                                if (progress >= 100) {
+                                    alert.dismiss();
+                                }
+
+                        }
+
                     });
 
-                    Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, "onSuccess: this is the filepath " + filePaths.FIREBASE_IMAGE_STORAGE);
-
-                    //add the new photo to 'photos' node and 'user_photos' node
-                    //  addPhotoToDatabase(caption, firebaseUrl.toString());
-
-                    //navigate to the main feed so the user can see their photo
-                    Intent intent = new Intent(mContext, HomeActivity.class);
-                    mContext.startActivity(intent);
-
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "onFailure: Photo upload failed.");
-                    Toast.makeText(mContext, "Photo upload failed ", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                //case new profile photo
+                else if (photoType.equals(mContext.getString(R.string.profile_photo))) {
+                    Log.d(TAG, "uploadNewPhoto: uploading new PROFILE photo");
 
-                    if (progress - 15 > mPhotoUploadProgress) {
-                        Toast.makeText(mContext, "photo upload progress: " + String.format("%.0f", progress) + "%", Toast.LENGTH_SHORT).show();
-                        mPhotoUploadProgress = progress;
-                    }
+                    final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    final StorageReference storageReference = mStorageReference
+                            .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo");
 
-                    Log.d(TAG, "onProgress: upload progress: " + progress + "% done");
-                }
-            });
+                    UploadTask uploadTask = storageReference.putFile(imageUri);
+                    Log.d(TAG, "uploadNewPhoto: this is the uri " + imageUri);
 
-        }
-        //case new profile photo
-        else if (photoType.equals(mContext.getString(R.string.profile_photo))) {
-            Log.d(TAG, "uploadNewPhoto: uploading new PROFILE photo");
-
-            final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            final StorageReference storageReference = mStorageReference
-                    .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo");
-
-                UploadTask uploadTask = storageReference.putFile(imageUri);
-            Log.d(TAG, "uploadNewPhoto: this is the uri " + imageUri);
-
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    //  Uri firebaseUrl = taskSnapshot.getDownloadUrl();
-                    mStorageReference.child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo")
-                            .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            //insert into 'user_account_settings' node and 'users' node
-                            setProfilePhoto(task.getResult().toString());
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            //  Uri firebaseUrl = taskSnapshot.getDownloadUrl();
+                            mStorageReference.child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo")
+                                    .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    //insert into 'user_account_settings' node and 'users' node
+                                    setProfilePhoto(task.getResult().toString());
+                                }
+                            });
+
+                            Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
+
+                            ((Activity)mContext).finish();
+
+                            //navigate to the profileActivity so the user can see their photo
+                            Intent intent = new Intent(mContext, ProfileActivity.class);
+                            mContext.startActivity(intent);
+
+
                         }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d(TAG, "onFailure: Photo upload failed.");
+                            Toast.makeText(mContext, "Photo upload failed ", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                            Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
+
+
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                                builder.setMessage("Photo upload " + (int)progress + "% done")
+                                        .setCancelable(false)
+                                        .setView(R.layout.layout_progress_dialog);
+                                final AlertDialog alert = builder.create();
+                                alert.show();
+                                if (progress >= 100) {
+                                    alert.dismiss();
+                                }
+
+
+                        }
+
                     });
 
-                    Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
-
-                    //add the new photo to 'photos' node and 'user_photos' node
-                    //  addPhotoToDatabase(caption, firebaseUrl.toString());
-
-
-                    //navigate to the main feed so the user can see their photo
-                    Intent intent = new Intent(mContext, ProfileActivity.class);
-                    mContext.startActivity(intent);
-
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.d(TAG, "onFailure: Photo upload failed.");
-                    Toast.makeText(mContext, "Photo upload failed ", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
 
-                    if (progress - 15 > mPhotoUploadProgress) {
-                        Toast.makeText(mContext, "photo upload progress: " + String.format("%.0f", progress) + "%", Toast.LENGTH_SHORT).show();
-                        mPhotoUploadProgress = progress;
-                    }
+            }
+        });
 
-                    Log.d(TAG, "onProgress: upload progress: " + progress + "% done");
-                }
-            });
-
-        }
+        uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        uploadDialog.show();
     }
 
 

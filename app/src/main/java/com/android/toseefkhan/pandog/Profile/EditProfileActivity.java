@@ -90,6 +90,8 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: signing out the user");
                 mAuth.signOut();
+                Intent i = new Intent(mContext, LoginActivity.class);
+                startActivity(i);
                 Toast.makeText(mContext, "Successfully logged out.", Toast.LENGTH_SHORT).show();
                 finish();
             }

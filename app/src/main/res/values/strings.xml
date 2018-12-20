@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Pandog</string>
-    <string name="google_maps_api_key">my_api_key_here</string>
+    <string name="google_maps_api_key">AIzaSyDgPf_1TpgGVbYfDwV3vgi8hl3y2HgVI30</string>
 
 
     <!-- fragment names -->
@@ -12,13 +12,15 @@
     <string name="auth_success">Authentication Success</string>
 
     <!-- Firebase database fields -->
-    <string name="dbname_users">users</string>dbname_following
+    <string name="dbname_users">users</string>
     <string name="dbname_following">following</string>
     <string name="dbname_followers">followers</string>
-
+    <string name="db_latlng">lat_lng</string>
+    <string name="db_timestamp">time_stamp</string>
     <string name="dbname_user_account_settings">user_account_settings</string>
     <string name="user_profile_picture">User Profile Picture</string>
     <string name="dbname_photos">photos</string>
+    <string name="db_panda_points">panda_points</string>
     <string name="dbname_user_photos">user_photos</string>
     <string name="field_username">username</string>
     <string name="field_email">email</string>

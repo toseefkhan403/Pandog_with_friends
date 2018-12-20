@@ -52,9 +52,6 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-auth:16.0.3'       //auth
 
-    // Firestore Firestore
-    implementation 'com.google.firebase:firebase-firestore:17.0.4'
-
     //Google Play Services for Maps
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
 

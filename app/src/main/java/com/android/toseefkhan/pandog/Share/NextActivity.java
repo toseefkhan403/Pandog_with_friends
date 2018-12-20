@@ -81,10 +81,8 @@ public class NextActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to the final share screen.");
-                //upload the image to firebase
-                Toast.makeText(mContext, "Attempting to upload new photo", Toast.LENGTH_SHORT).show();
-                String caption = mCaption.getText().toString();
 
+                String caption = mCaption.getText().toString();
                 if(intent.hasExtra(getString(R.string.selected_image))){
                     intent=getIntent();
                     String image_path= intent.getStringExtra(getString(R.string.selected_image));
@@ -94,7 +92,6 @@ public class NextActivity extends AppCompatActivity {
                     long timeStamp = System.currentTimeMillis();
                     String imageName = "photo" + timeStamp;
                     mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri);
-
                 }
             }
         });
@@ -119,7 +116,6 @@ public class NextActivity extends AppCompatActivity {
         }
     }
 
-    //ToDo: Write codes in Next activity so that the user can choose from his friends to compete.
 
     private void setupFriendsList() {
         FriendsAdapter friendsAdapter = new FriendsAdapter(mAuth.getCurrentUser().getUid(), mContext);

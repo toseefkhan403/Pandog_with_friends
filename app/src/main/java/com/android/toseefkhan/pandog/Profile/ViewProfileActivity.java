@@ -59,9 +59,8 @@ public class ViewProfileActivity extends AppCompatActivity {
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
     private ImageView mProfilePhoto;
-    private TextView mFollow, mUnfollow;
-    private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
-
+    private TextView mFollow, mUnfollow, PandaPoints;
+    private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0,ppcount=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +77,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         mFollowers = (TextView) findViewById(R.id.tvFollowers);
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
         gridView = (GridView) findViewById(R.id.gridView);
+        PandaPoints= findViewById(R.id.pandaPoints);
 //        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
 //        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
         bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
@@ -105,6 +105,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                         .setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 setFollowing();
                 getFollowersCount();
+                getPandaPointsCount();
             }
         });
 
@@ -127,6 +128,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                         .removeValue();
                 setUnfollowing();
                 getFollowersCount();
+                getPandaPointsCount();
             }
         });
 
@@ -151,7 +153,22 @@ public class ViewProfileActivity extends AppCompatActivity {
         getFollowersCount();
         getPostsCount();
         tempGridSetup();
+    }
 
+
+    private void getPandaPointsCount() {
+        ppcount=0;
+        Log.d(TAG, "getPandaPointsCount: getting the count ");
+
+        // todo later
+      //  ppcount= mFollowersCount+ mPostsCount;
+        ppcount= mFollowersCount;
+        PandaPoints.setText(String.valueOf(ppcount));
+
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(mUser.getUser_id())
+                .child(mContext.getString(R.string.db_panda_points))
+                .setValue(ppcount);
     }
 
     private void init() {
@@ -185,7 +202,7 @@ public class ViewProfileActivity extends AppCompatActivity {
             }
         });
 
-        //todo set the posts(Photos) that the user's profile has
+        //todo set the posts that the user has competed in Ever and display them under his profile
 
     }
 
@@ -229,6 +246,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                     mFollowersCount++;
                 }
                 mFollowers.setText(String.valueOf(mFollowersCount));
+                getPandaPointsCount();
             }
 
             @Override
