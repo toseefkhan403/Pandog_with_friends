@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.Map;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -14,11 +15,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LevelListDrawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -72,20 +77,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.GeoPoint;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Target;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -125,13 +127,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private RelativeLayout mMapContainer;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: map activity called.");
         super.onCreate(savedInstanceState);
         mSavedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_map);
+
+
         setupBottomNavigationView();
         relativeLayout = findViewById(R.id.permission_null);
         linearLayout = findViewById(R.id.permission_not_null);
@@ -210,8 +213,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (int i=0; i<users.size(); i++){
             Log.d(TAG, "onMapReady: the marker is adding of this user " + users.get(i));
             LatLng latLng= new LatLng(users.get(i).getLat_lng().getLatitude(), users.get(i).getLat_lng().getLongitude());
-            Log.d(TAG, "onDataChange: the bitmap icon is: " + BitmapDescriptorFactory.fromBitmap(createMarker(mContext,users.get(i))));
-
             mMap.addMarker(new MarkerOptions().position(latLng).
                     icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,users.get(i))))
                     .title(users.get(i).getUsername())
@@ -219,19 +220,34 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }//resposible for setting the marker on the map
 
-    public Bitmap createMarker(Context context, User user) {
+
+    @SuppressLint("NewApi")
+    private Bitmap createMarker(Context context, User user) {
 
         View marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
         CircleImageView markerImage = marker.findViewById(R.id.user_dp);
 
-        UniversalImageLoader.setImage(user.getProfile_photo(),markerImage,null,"");
+        //All of this isn't working
+//        UniversalImageLoader.setImage(user.getProfile_photo(),markerImage, null, "");
+//        Bitmap bm= ((BitmapDrawable)markerImage.getDrawable()).getBitmap();
+//        Log.d(TAG, "createMarker: the bitmap " + bm);
+//        markerImage.setImageBitmap(bm);
 
-        Bitmap bm=((BitmapDrawable)markerImage.getDrawable()).getBitmap();
 
+        //But this is
+        markerImage.setImageBitmap(((BitmapDrawable)getDrawable(R.drawable.fire_emoji_with_color)).getBitmap());
 
-        Log.d(TAG, "createMarker: the bitmap is "+ bm);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        marker.setLayoutParams(new ViewGroup.LayoutParams(52, ViewGroup.LayoutParams.WRAP_CONTENT));
+        marker.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
+        marker.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
+        marker.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(marker.getMeasuredWidth(), marker.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        marker.draw(canvas);
 
-        return bm;
+        return bitmap;
     }//this is the culprit. It gives the bitmap for the marker which does not work
 
 
