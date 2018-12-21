@@ -29,6 +29,7 @@ public class FriendsAdapter extends BaseAdapter {
     private ArrayList<User> friendUserList;
     private Context mContext;
     private DatabaseReference mDatabaseReference;
+    private int mSelectedUserPosition = -1;
 
     public FriendsAdapter(String mUserUid, Context context) {
         this.mUserUid = mUserUid;
@@ -36,6 +37,10 @@ public class FriendsAdapter extends BaseAdapter {
         this.mContext = context;
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         getFriendsFromUid();
+    }
+
+    public int getSelectedUserPosition() {
+        return mSelectedUserPosition;
     }
 
     private void getFriendsFromUid() {
@@ -127,11 +132,17 @@ public class FriendsAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.profile_item, parent, false);
         }
         User user = (User) getItem(position);
+        convertView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSelectedUserPosition = position;
+            }
+        });
 
         TextView userNameView = convertView.findViewById(R.id.UserNameView);
         userNameView.setText(StringManipulation.expandUsername(user.getUsername()));

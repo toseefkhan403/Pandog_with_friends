@@ -2,10 +2,8 @@ package com.android.toseefkhan.pandog.Share;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -18,7 +16,7 @@ import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
-import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,11 +24,23 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.concurrent.Callable;
+
+import javax.net.ssl.HttpsURLConnection;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class NextActivity extends AppCompatActivity {
 
@@ -54,6 +64,9 @@ public class NextActivity extends AppCompatActivity {
     private String imgUrl;
     private Intent intent;
 
+    private String uriString = "firebaseHostingUrl";
+    private Disposable mDisposable;
+    private FriendsAdapter mFriendsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,26 +93,123 @@ public class NextActivity extends AppCompatActivity {
         share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: navigating to the final share screen.");
-                //upload the image to firebase
-                Toast.makeText(mContext, "Attempting to upload new photo", Toast.LENGTH_SHORT).show();
-                String caption = mCaption.getText().toString();
-
-                if(intent.hasExtra(getString(R.string.selected_image))){
-                    intent=getIntent();
-                    String image_path= intent.getStringExtra(getString(R.string.selected_image));
-                    Uri myUri = Uri.parse(image_path);
-                    Log.d(TAG, "onClick: this is the uri from the intent "+ myUri);
-
-                    long timeStamp = System.currentTimeMillis();
-                    String imageName = "photo" + timeStamp;
-                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri);
-
-                }
+                sharePost();
             }
         });
 
         setImage();
+    }
+
+    private void sharePost() {
+        Callable<String> mCallable = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                Log.d(TAG, "onClick: navigating to the final share screen.");
+                //upload the image to firebase
+                int selectedUserPosition = mFriendsAdapter.getSelectedUserPosition();
+                if (selectedUserPosition == -1) {
+                    return "Select a user from list first";
+                }
+
+                Log.d(TAG, "Attempting to upload new photo");
+                String caption = mCaption.getText().toString();
+
+                if (intent.hasExtra(getString(R.string.selected_image))) {
+                    intent = getIntent();
+                    String image_path = intent.getStringExtra(getString(R.string.selected_image));
+                    Uri myUri = Uri.parse(image_path);
+                    Log.d(TAG, "onClick: this is the uri from the intent " + myUri);
+
+                    long timeStamp = System.currentTimeMillis();
+                    String imageName = "photo" + timeStamp;
+                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri);
+                }
+                User selectedUser = (User) mFriendsAdapter.getItem(selectedUserPosition);
+                String uid = selectedUser.getUser_id();
+                String httpUrlString = parseURL(uid);
+
+                URL httpUrl = new URL(httpUrlString);
+
+                return getResponsefromUrl(httpUrl);
+            }
+
+        };
+
+
+        Observer<String> mObserver = new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                mDisposable = d;
+            }
+
+            @Override
+            public void onNext(String result) {
+                Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.e(TAG, e.getMessage());
+                Toast.makeText(mContext, "Error", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(TAG, "Operation Completed");
+            }
+        };
+
+        Observable.fromCallable(mCallable)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(mObserver);
+    }
+
+    private String getResponsefromUrl(URL httpUrl) throws IOException {
+        String response = "";
+        HttpsURLConnection httpURLConnection = null;
+        InputStream inputStream = null;
+        try {
+            httpURLConnection = (HttpsURLConnection) httpUrl.openConnection();
+            httpURLConnection.setRequestMethod("GET");
+            httpURLConnection.setReadTimeout(15000);
+            httpURLConnection.setConnectTimeout(10000);
+            httpURLConnection.connect();
+
+            if (httpURLConnection.getResponseCode() == 200) {
+                StringBuilder responseBuilder = new StringBuilder();
+                inputStream = httpURLConnection.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String line = bufferedReader.readLine();
+                while (line != null) {
+                    responseBuilder.append(line);
+                    line = bufferedReader.readLine();
+                }
+                response = responseBuilder.toString();
+            } else {
+                response = "Operation Failed";
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        } finally {
+            if (httpURLConnection != null) {
+                httpURLConnection.disconnect();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        }
+        return response;
+    }
+
+    private String parseURL(String uid) {
+
+        Uri baseUri = Uri.parse(uriString);
+        Uri.Builder builder = baseUri.buildUpon();
+
+        builder.appendQueryParameter("user", uid);
+        return builder.toString();
     }
 
     /**
@@ -110,20 +220,20 @@ public class NextActivity extends AppCompatActivity {
         //Image view that is present in the NextActivity
         ImageView image = findViewById(R.id.imageShare);
 
-        if(intent.hasExtra(getString(R.string.selected_image))){
+        if (intent.hasExtra(getString(R.string.selected_image))) {
             imgUrl = intent.getStringExtra(getString(R.string.selected_image));
             Log.d(TAG, "setImage: got new image uri: " + imgUrl);
 
-                ImageLoader imageLoader = ImageLoader.getInstance();
-                imageLoader.displayImage(imgUrl.toString(), image);
+            ImageLoader imageLoader = ImageLoader.getInstance();
+            imageLoader.displayImage(imgUrl.toString(), image);
         }
     }
 
     //ToDo: Write codes in Next activity so that the user can choose from his friends to compete.
 
     private void setupFriendsList() {
-        FriendsAdapter friendsAdapter = new FriendsAdapter(mAuth.getCurrentUser().getUid(), mContext);
-        friendsListView.setAdapter(friendsAdapter);
+        mFriendsAdapter = new FriendsAdapter(mAuth.getCurrentUser().getUid(), mContext);
+        friendsListView.setAdapter(mFriendsAdapter);
     }
     //step3: on clicking upon his friends name, this pending post can be seen in an fragment which will be available in HomeActivity(to be created).
     //step4: Now the user's friend will get a notification about this. He can choose to either accept or ignore, and after he submits his photo, a post will
@@ -139,10 +249,16 @@ public class NextActivity extends AppCompatActivity {
      ------------------------------------ Firebase ---------------------------------------------
      */
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mDisposable.dispose();
+    }
+
     /**
      * Setup the firebase auth object
      */
-    private void setupFirebaseAuth(){
+    private void setupFirebaseAuth() {
         Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -170,17 +286,18 @@ public class NextActivity extends AppCompatActivity {
         myRef.child(mContext.getString(R.string.dbname_user_photos))
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                imageCount = mFirebaseMethods.getImageCount(dataSnapshot);
-                Log.d(TAG, "onDataChange: image count: " + imageCount);
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        imageCount = mFirebaseMethods.getImageCount(dataSnapshot);
+                        Log.d(TAG, "onDataChange: image count: " + imageCount);
 
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.i("Firebase", databaseError.toString());
-            }
-        });
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.i("Firebase", databaseError.toString());
+                    }
+                });
     }
 
 
