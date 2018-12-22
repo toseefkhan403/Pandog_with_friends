@@ -1,7 +1,7 @@
 {
   "functions": {
-    "predeploy": [
-    ]
+    "predeploy": [],
+    "source": "functions"
   },
   "hosting": {
     "public": "public",
@@ -9,12 +9,6 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "fuction": "app"
-      }
     ]
   }
 }

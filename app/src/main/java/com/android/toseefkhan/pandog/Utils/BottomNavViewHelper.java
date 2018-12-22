@@ -22,11 +22,15 @@ public class BottomNavViewHelper {
     private static final String TAG = "BottomNavigationViewHel";
 
     public static void setupBottomNavigationView(BottomNavigationViewEx bottomNavigationViewEx){
-        Log.d(TAG, "setupBottomNavigationView: Setting up BottomNavigationView");
-        bottomNavigationViewEx.enableAnimation(false);
-        bottomNavigationViewEx.enableItemShiftingMode(false);
-        bottomNavigationViewEx.enableShiftingMode(false);
-        bottomNavigationViewEx.setTextVisibility(true);
+        try {
+            Log.d(TAG, "setupBottomNavigationView: Setting up BottomNavigationView");
+            bottomNavigationViewEx.enableAnimation(false);
+            bottomNavigationViewEx.enableItemShiftingMode(false);
+            bottomNavigationViewEx.enableShiftingMode(false);
+            bottomNavigationViewEx.setTextVisibility(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void enableNavigation(final Context context, BottomNavigationViewEx view){

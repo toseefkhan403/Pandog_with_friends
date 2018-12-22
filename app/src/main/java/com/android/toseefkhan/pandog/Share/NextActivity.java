@@ -26,21 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.concurrent.Callable;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class NextActivity extends AppCompatActivity {
 
@@ -64,7 +50,7 @@ public class NextActivity extends AppCompatActivity {
     private String imgUrl;
     private Intent intent;
 
-    private String uriString = "firebaseHostingUrl";
+    private String uriString = "https://pandog-with-friends.firebaseapp.com";
     private Disposable mDisposable;
     private FriendsAdapter mFriendsAdapter;
 
@@ -101,115 +87,28 @@ public class NextActivity extends AppCompatActivity {
     }
 
     private void sharePost() {
-        Callable<String> mCallable = new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                Log.d(TAG, "onClick: navigating to the final share screen.");
-                //upload the image to firebase
-                int selectedUserPosition = mFriendsAdapter.getSelectedUserPosition();
-                if (selectedUserPosition == -1) {
-                    return "Select a user from list first";
-                }
-
-                Log.d(TAG, "Attempting to upload new photo");
-                String caption = mCaption.getText().toString();
-
-                if (intent.hasExtra(getString(R.string.selected_image))) {
-                    intent = getIntent();
-                    String image_path = intent.getStringExtra(getString(R.string.selected_image));
-                    Uri myUri = Uri.parse(image_path);
-                    Log.d(TAG, "onClick: this is the uri from the intent " + myUri);
-
-                    long timeStamp = System.currentTimeMillis();
-                    String imageName = "photo" + timeStamp;
-                    mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri);
-                }
-                User selectedUser = (User) mFriendsAdapter.getItem(selectedUserPosition);
-                String uid = selectedUser.getUser_id();
-                String httpUrlString = parseURL(uid);
-
-                URL httpUrl = new URL(httpUrlString);
-
-                return getResponsefromUrl(httpUrl);
-            }
-
-        };
-
-
-        Observer<String> mObserver = new Observer<String>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                mDisposable = d;
-            }
-
-            @Override
-            public void onNext(String result) {
-                Toast.makeText(mContext, result, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Log.e(TAG, e.getMessage());
-                Toast.makeText(mContext, "Error", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onComplete() {
-                Log.i(TAG, "Operation Completed");
-            }
-        };
-
-        Observable.fromCallable(mCallable)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(mObserver);
-    }
-
-    private String getResponsefromUrl(URL httpUrl) throws IOException {
-        String response = "";
-        HttpsURLConnection httpURLConnection = null;
-        InputStream inputStream = null;
-        try {
-            httpURLConnection = (HttpsURLConnection) httpUrl.openConnection();
-            httpURLConnection.setRequestMethod("GET");
-            httpURLConnection.setReadTimeout(15000);
-            httpURLConnection.setConnectTimeout(10000);
-            httpURLConnection.connect();
-
-            if (httpURLConnection.getResponseCode() == 200) {
-                StringBuilder responseBuilder = new StringBuilder();
-                inputStream = httpURLConnection.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String line = bufferedReader.readLine();
-                while (line != null) {
-                    responseBuilder.append(line);
-                    line = bufferedReader.readLine();
-                }
-                response = responseBuilder.toString();
-            } else {
-                response = "Operation Failed";
-            }
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        } finally {
-            if (httpURLConnection != null) {
-                httpURLConnection.disconnect();
-            }
-            if (inputStream != null) {
-                inputStream.close();
-            }
+        Log.d(TAG, "onClick: navigating to the final share screen.");
+        //upload the image to firebase
+        int selectedUserPosition = mFriendsAdapter.getSelectedUserPosition();
+        if (selectedUserPosition == -1) {
+            Toast.makeText(mContext, "Select a user from list first", Toast.LENGTH_SHORT).show();
+            return;
         }
-        return response;
-    }
 
-    private String parseURL(String uid) {
+        Log.d(TAG, "Attempting to upload new photo");
+        String caption = mCaption.getText().toString();
 
-        Uri baseUri = Uri.parse(uriString);
-        Uri.Builder builder = baseUri.buildUpon();
+        User selectedUser = (User) mFriendsAdapter.getItem(selectedUserPosition);
+        if (intent.hasExtra(getString(R.string.selected_image))) {
+            intent = getIntent();
+            String image_path = intent.getStringExtra(getString(R.string.selected_image));
+            Uri myUri = Uri.parse(image_path);
+            Log.d(TAG, "onClick: this is the uri from the intent " + myUri);
 
-        builder.appendQueryParameter("user", uid);
-        return builder.toString();
+            long timeStamp = System.currentTimeMillis();
+            String imageName = "photo" + timeStamp;
+            mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser);
+        }
     }
 
     /**

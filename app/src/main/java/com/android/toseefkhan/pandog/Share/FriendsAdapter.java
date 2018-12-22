@@ -141,9 +141,15 @@ public class FriendsAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 mSelectedUserPosition = position;
+                notifyDataSetChanged();
             }
         });
 
+        if (position == mSelectedUserPosition) {
+            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.black));
+        } else {
+            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.white));
+        }
         TextView userNameView = convertView.findViewById(R.id.UserNameView);
         userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
 
