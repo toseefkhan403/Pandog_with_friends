@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.models.Challenge;
 import com.android.toseefkhan.pandog.models.Photo;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
@@ -220,6 +221,18 @@ public class FirebaseMethods {
         myRef.child(mContext.getString(R.string.dbname_user_photos))
                 .child(FirebaseAuth.getInstance().getCurrentUser()
                         .getUid()).child(newPhotoKey).setValue(photo);
+
+        String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String selecteduserUid = mSelectedUser.getUser_id();
+        Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, newPhotoKey, false);
+
+        String challengeKey = myRef.child("Challenges").push().getKey();
+        myRef.child("Challenges").child(challengeKey).setValue(mChallenge);
+
+        DatabaseReference challengeReference = myRef.child("User_Challenges");
+        challengeReference.child(currentUserUid).push().setValue(challengeKey);
+        challengeReference.child(selecteduserUid).push().setValue(challengeKey);
+
         myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
 
     }

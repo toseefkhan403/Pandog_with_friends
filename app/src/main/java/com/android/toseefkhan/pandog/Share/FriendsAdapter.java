@@ -80,6 +80,7 @@ public class FriendsAdapter extends BaseAdapter {
     }
 
     private void adduserFromUid(String userUid) {
+        Log.i("addingUser", userUid);
         mDatabaseReference.child(mContext.getString(R.string.dbname_users)).child(userUid)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
@@ -145,6 +146,7 @@ public class FriendsAdapter extends BaseAdapter {
             }
         });
 
+        Log.i("User", user.getUser_id());
         if (position == mSelectedUserPosition) {
             convertView.setBackgroundColor(mContext.getResources().getColor(R.color.black));
         } else {

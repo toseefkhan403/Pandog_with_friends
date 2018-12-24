@@ -26,8 +26,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import io.reactivex.disposables.Disposable;
-
 public class NextActivity extends AppCompatActivity {
 
     private static final String TAG = "NextActivity";
@@ -50,8 +48,6 @@ public class NextActivity extends AppCompatActivity {
     private String imgUrl;
     private Intent intent;
 
-    private String uriString = "https://pandog-with-friends.firebaseapp.com";
-    private Disposable mDisposable;
     private FriendsAdapter mFriendsAdapter;
 
     @Override
@@ -151,7 +147,6 @@ public class NextActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mDisposable.dispose();
     }
 
     /**
