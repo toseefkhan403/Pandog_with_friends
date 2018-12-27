@@ -52,6 +52,8 @@ dependencies {
     //cardview
     implementation 'com.android.support:cardview-v7:28.0.0'
 
+    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+
     implementation 'com.google.firebase:firebase-core:16.0.6'	//Analytics
     implementation 'com.google.firebase:firebase-database:16.0.5'	//Realtime Database
     implementation 'com.google.firebase:firebase-storage:16.0.5'    //storage
