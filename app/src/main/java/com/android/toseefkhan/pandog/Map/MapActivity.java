@@ -13,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -25,6 +26,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +42,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,6 +56,9 @@ import com.android.toseefkhan.pandog.Utils.ViewWeightAnimationWrapper;
 import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserSettings;
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -65,12 +71,15 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -78,18 +87,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
-import com.nostra13.universalimageloader.core.ImageLoader;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Target;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
+import com.koushikdutta.ion.Ion;
 import java.util.ArrayList;
-
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.concurrent.ExecutionException;
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ,View.OnClickListener{
@@ -115,17 +119,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private DatabaseReference myRef;
 
     private ArrayList<User> mUserList = new ArrayList<>();
-    private ArrayList<User> mUserListMaps = new ArrayList<>();
-    private User mBestUser;
+    private ArrayList<User> mUserListViewable = new ArrayList<>();
     private RecyclerViewAdapter mUserRecyclerAdapter;
     private RelativeLayout relativeLayout;
     private LinearLayout linearLayout;
     private TextView gps;
     private Bundle mSavedInstanceState;
-    private LatLng fr,fl,nr,nl;
     private LatLng latLng;
     private GoogleMap mMap;
     private RelativeLayout mMapContainer;
+    private CircleImageView pp;
+    private ProgressBar mProgressbar, dialogProgressbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,19 +139,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mSavedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_map);
 
-
         setupBottomNavigationView();
+
         relativeLayout = findViewById(R.id.permission_null);
         linearLayout = findViewById(R.id.permission_not_null);
         mMapContainer = findViewById(R.id.map_container);
         gps = findViewById(R.id.gps);
         findViewById(R.id.btn_full_screen_map).setOnClickListener(this);
         gpsDialog = new Dialog(mContext);
-
+        mProgressbar = findViewById(R.id.progressBar);
+        mProgressbar.setVisibility(View.VISIBLE);
         mUserListRecyclerView = findViewById(R.id.user_list_recycler_view);
         mMapView = findViewById(R.id.user_list_map);
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
         initGoogleMap(savedInstanceState);
 
         if (checkMapServices()) {
@@ -155,18 +160,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 //todo handle events after the request has been granted
                 showLayout();
                 getLastKnownLocation();
+                //getUsersFromArea();
             } else {
                 getLocationPermission();
             }
         }
+
+
         getUsersFromArea();
     }
 
-    /*
-    todo step 1: Add the markers of all the users on the map with rounded profile photos
-    todo step 2: in the current viewable area, calculate who has the highest panda points and sort them in ascending order and display them in the RecyclerView as well in the same order
-    todo step 3: the person who is at the top of the recyclerViewList should have the biggest marker
-     */
 
     private void getUsersFromArea(){
 
@@ -179,26 +182,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
                     Log.d(TAG, "onDataChange: found user list: " + singleSnapshot.getValue());  // gives the whole user objects
 
-
                     try{
                         User user= singleSnapshot.getValue(User.class);
                         Log.d(TAG, "onDataChange: found the lng of the user: "+ user.getLat_lng().getLatitude() + " " + user.getLat_lng().getLongitude());
-//
-//                        if (user.getLat_lng().getLatitude() > nl.latitude && user.getLat_lng().getLongitude() > nl.longitude
-//                                    && user.getLat_lng().getLatitude() > nr.latitude && user.getLat_lng().getLongitude() < nr.longitude) {
-//                            if (user.getLat_lng().getLatitude() < fl.latitude && user.getLat_lng().getLongitude() > fl.longitude
-//                                    && user.getLat_lng().getLatitude() < fr.latitude && user.getLat_lng().getLongitude() < fr.longitude) {
                         Log.d(TAG, "onDataChange: the user satisfying the coordinates " + user.getUsername().toString());
                         mUserList.add(user);
-                        }catch (NullPointerException e){
+                        }catch (Exception e){
                             Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
                         }
                 }
-                initUserListRecyclerView(mUserList);
-                setMarker(mUserList);
-
-             //   mBestUser= sortList(mUserList);
-
+                setMarkerswithLevels(mUserList);
             }
 
             @Override
@@ -208,34 +201,144 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
     }//gives the list of ALL the users of the application
 
-    private void setMarker(ArrayList<User> users){
+    private ArrayList<Marker> markerList = new ArrayList<>();
 
-        for (int i=0; i<users.size(); i++){
-            Log.d(TAG, "onMapReady: the marker is adding of this user " + users.get(i));
-            LatLng latLng= new LatLng(users.get(i).getLat_lng().getLatitude(), users.get(i).getLat_lng().getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).
-                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,users.get(i))))
-                    .title(users.get(i).getUsername())
-                    .snippet("this is a Genius"));
+    private int count = 0;
+    private void setMarkerswithLevels(ArrayList<User> mUserList) {
+
+        ArrayList<User> userList = new ArrayList<>();    //mUserList instead
+        ArrayList<User> userList1 = new ArrayList<>();
+        ArrayList<User> userList2 = new ArrayList<>();
+        ArrayList<User> userList3 = new ArrayList<>();
+        ArrayList<User> userList4 = new ArrayList<>();
+        ArrayList<User> userList5 = new ArrayList<>();
+
+        if (mUserList != null)
+            userList = sortList(mUserList);         //sortList(mUserList);
+
+        int level = userList.size()/5;
+
+        for (int i=0; i<userList.size(); i++ ){
+
+            if (i<=level)
+                userList1.add(userList.get(i));         //level 5
+            else if (i>level && i<=2*level)
+                userList2.add(userList.get(i));         //level 4
+            else if (i>level && i<=3*level)
+                userList3.add(userList.get(i));
+            else if (i>level && i<=4*level)
+                userList4.add(userList.get(i));
+            else if (i>level && i>4*level)
+                userList5.add(userList.get(i));
         }
-    }//resposible for setting the marker on the map
 
+        for (int i=0; i<userList1.size(); i++){
+            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList1.get(i));
+            LatLng latLng= new LatLng(userList1.get(i).getLat_lng().getLatitude(), userList1.get(i).getLat_lng().getLongitude());
+            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
+                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList1.get(i))))
+                    .title(userList1.get(i).getUsername())
+                    .snippet("Points: " + String.valueOf(userList1.get(i).getPanda_points())));
+            marker.setTag(userList1.get(i));
+            markerList.add(marker);                 //needs this for the recycler view
+        }
 
-    @SuppressLint("NewApi")
-    private Bitmap createMarker(Context context, User user) {
+        count++;
 
-        View marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
+        for (int i=0; i<userList2.size(); i++){
+            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList2.get(i));
+            LatLng latLng= new LatLng(userList2.get(i).getLat_lng().getLatitude(), userList2.get(i).getLat_lng().getLongitude());
+            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
+                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList2.get(i))))
+                    .title(userList2.get(i).getUsername())
+                    .snippet("Points: " + String.valueOf(userList2.get(i).getPanda_points())));
+            marker.setTag(userList2.get(i));
+            markerList.add(marker);                 //needs this for the recycler view
+        }
+
+        count++;
+
+        for (int i=0; i<userList3.size(); i++){
+            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList3.get(i));
+            LatLng latLng= new LatLng(userList3.get(i).getLat_lng().getLatitude(), userList3.get(i).getLat_lng().getLongitude());
+            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
+                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList3.get(i))))
+                    .title(userList3.get(i).getUsername())
+                    .snippet("Points: " + String.valueOf(userList3.get(i).getPanda_points())));
+            marker.setTag(userList3.get(i));
+            markerList.add(marker);                 //needs this for the recycler view
+        }
+
+        count++;
+
+        for (int i=0; i<userList4.size(); i++){
+            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList4.get(i));
+            LatLng latLng= new LatLng(userList4.get(i).getLat_lng().getLatitude(), userList4.get(i).getLat_lng().getLongitude());
+            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
+                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList4.get(i))))
+                    .title(userList4.get(i).getUsername())
+                    .snippet("Points: " + String.valueOf(userList4.get(i).getPanda_points())));
+            marker.setTag(userList4.get(i));
+            markerList.add(marker);                 //needs this for the recycler view
+        }
+
+        count++;
+
+        for (int i=0; i<userList5.size(); i++){
+            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList5.get(i));
+            LatLng latLng= new LatLng(userList5.get(i).getLat_lng().getLatitude(), userList5.get(i).getLat_lng().getLongitude());
+            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
+                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList5.get(i))))
+                    .title(userList5.get(i).getUsername())
+                    .snippet("Points: " + String.valueOf(userList5.get(i).getPanda_points())));
+            marker.setTag(userList5.get(i));
+            markerList.add(marker);                 //needs this for the recycler view
+        }
+
+        count++;
+        checkVisibility(markerList);
+    }
+
+    private View marker;
+
+    @SuppressLint({"NewApi", "StaticFieldLeak"})
+    private Bitmap createMarker(Context context, final User user) {
+
+        switch (count){
+
+            case 0:
+                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
+                break;
+
+            case 1:
+                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout2, null);
+                break;
+
+            case 2:
+                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout3, null);
+                break;
+
+            case 3:
+                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout4, null);
+                break;
+
+            case 4:
+                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout5, null);
+                break;
+
+        }
+
         CircleImageView markerImage = marker.findViewById(R.id.user_dp);
-
-        //All of this isn't working
-//        UniversalImageLoader.setImage(user.getProfile_photo(),markerImage, null, "");
-//        Bitmap bm= ((BitmapDrawable)markerImage.getDrawable()).getBitmap();
-//        Log.d(TAG, "createMarker: the bitmap " + bm);
-//        markerImage.setImageBitmap(bm);
-
-
-        //But this is
-        markerImage.setImageBitmap(((BitmapDrawable)getDrawable(R.drawable.fire_emoji_with_color)).getBitmap());
+        try {
+            Bitmap bmImg = Ion.with(mContext)
+                    .load(user.getBitmap()).asBitmap().get();
+            Log.d(TAG, "getInfoContents: the bitmap in the infowindow " + bmImg);
+            markerImage.setImageBitmap(bmImg);
+        } catch (InterruptedException e) {
+            Log.d(TAG, "createMarker: error");
+        } catch (ExecutionException e) {
+            Log.d(TAG, "createMarker: error");
+        }
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -248,18 +351,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         marker.draw(canvas);
 
         return bitmap;
-    }//this is the culprit. It gives the bitmap for the marker which does not work
+    }
 
 
-    private User sortList(ArrayList<User> userList) {
+    private ArrayList<User> sortList(ArrayList<User> userList) {
 
-        return null;
+        Collections.sort(userList, new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return Integer.valueOf(o2.getPanda_points()).compareTo(Integer.valueOf(o1.getPanda_points()));
+            }
+        });
+
+        for (int i=0; i<userList.size();i++)
+            Log.d(TAG, "sortList: this is how the sorted list looks " + userList.get(i));
+
+
+        return userList;
     }//this should sort the list and provide the highest panda points holder in the currently bounded map area whose marker will be the biggest on the map
 
     private void getLastKnownLocation() {
         Log.d(TAG, "getLastKnownLocation: map activity called.");
-
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -280,15 +392,43 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
 
                     setLatlongs(latLng);
-
-//                    mUserLocation.setGeo_point(geoPoint);
-//                    mUserLocation.setTimestamp(null);
 //                    saveUserLocation();
                 }
             }
         });
     }
 
+    private void checkVisibility(ArrayList<Marker> markerList){
+        boolean show=false;
+        if(mMap != null){
+
+            LatLngBounds latLongBounds = mMap.getProjection().getVisibleRegion().latLngBounds;
+
+            for (int i=0; i<markerList.size() ; i++){
+
+                if(latLongBounds.contains(markerList.get(i).getPosition())){
+                    //If the marker is within the the bounds of the screen add it to the ArrayList
+                    User user = (User) markerList.get(i).getTag();
+                    if (!mUserListViewable.contains(user)){
+                        mUserListViewable.add(user);
+                        Log.d(TAG, "checkVisibility: the markers added of these users " + user.getUsername());
+                    }
+                    show= true;
+                    mUserListRecyclerView.setVisibility(View.VISIBLE);
+                }
+            }
+            if (!show){
+                mUserListRecyclerView.setVisibility(View.INVISIBLE);
+                Snackbar snackbar= Snackbar.make(mMapView,"Uh-oh! Looks like no one interesting lives here",Snackbar.LENGTH_SHORT);
+                snackbar.show();
+            }
+
+            if (!mUserListViewable.isEmpty()){
+                Log.d(TAG, "checkVisibility: this part is running "+ mUserListViewable);
+                initUserListRecyclerView(sortList(mUserListViewable));
+            }
+        }
+    }
 
 
     @Override
@@ -308,6 +448,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 //        map.setMyLocationEnabled(true);
 
+        map.getUiSettings().setMapToolbarEnabled(false);
+        map.getUiSettings().setCompassEnabled(false);
 
         //centers the map on the current user's location
         mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
@@ -334,25 +476,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         });//moves the camera to the current location of the user
 
-
         map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
-            public void onCameraChange(CameraPosition position) {
-                VisibleRegion visibleRegion = map.getProjection().getVisibleRegion();
-
-                fr = visibleRegion.farRight;
-                fl = visibleRegion.farLeft;
-                nr = visibleRegion.nearRight;
-                nl = visibleRegion.nearLeft;
-
-
-                Log.d(TAG, "onCameraChange: farRight " + fr);
-                Log.d(TAG, "onCameraChange: farLeft " + fl);
-                Log.d(TAG, "onCameraChange: nearRight " + nr);
-                Log.d(TAG, "onCameraChange: nearLeft " + nl);
-
+            public void onCameraChange(CameraPosition cameraPosition) {
+                Log.d(TAG, "onCameraChange: the camera is changed. ");
+                mUserListViewable.clear();
+                checkVisibility(markerList);
             }
-        });//please ignore the crossed line, this provides us the coordinates of the corners of the area that is currently being viewed
+        });
 
         long time= System.currentTimeMillis()%10;
         int timeConst= (int) time;
@@ -426,6 +557,41 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }//just some styling stuff
             mMap=map;
 
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter(){
+
+                @Override
+                public View getInfoWindow(Marker marker) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+                    View v = getLayoutInflater().inflate(R.layout.layout_info_window, null);
+
+                    pp = v.findViewById(R.id.profile_photo_infow);
+                    TextView username = v.findViewById(R.id.username_infow);
+                    TextView description = v.findViewById(R.id.description_infow);
+
+                    User user= (User) marker.getTag();
+
+                    try {
+                        Bitmap bmImg = Ion.with(mContext)
+                                .load(user.getBitmap()).asBitmap().get();
+                        Log.d(TAG, "getInfoContents: the bitmap in the infowindow " + bmImg);
+                        pp.setImageBitmap(bmImg);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+
+                    username.setText(marker.getTitle());
+                    description.setText(marker.getSnippet());
+
+                    return v;
+                }
+            });
+
             if (!success) {
                 Log.e(TAG, "Style parsing failed.");
             }
@@ -433,29 +599,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Log.e(TAG, "Can't find style. Error: ", e);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -565,6 +708,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void initUserListRecyclerView(ArrayList<User> users) {
+        mProgressbar.setVisibility(View.GONE);
+        dialogProgressbar.setVisibility(View.GONE);
         mUserRecyclerAdapter = new RecyclerViewAdapter(mContext , users);
         mUserListRecyclerView.setAdapter(mUserRecyclerAdapter);
         mUserListRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -607,6 +752,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onDestroy() {
         mMapView.onDestroy();
         super.onDestroy();
+
     }
 
     @Override
@@ -619,6 +765,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         gpsDialog.setContentView(R.layout.layout_gps_dialog_box);
         ImageView cancelDialog = gpsDialog.findViewById(R.id.cancel_dialog);
         TextView yesDialog= gpsDialog.findViewById(R.id.enable_text);
+        dialogProgressbar = gpsDialog.findViewById(R.id.dialogProgressBar);
+        dialogProgressbar.setVisibility(View.VISIBLE);
 
         cancelDialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -672,6 +820,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 == PackageManager.PERMISSION_GRANTED) {
             mLocationPermissionGranted = true;
             //todo handle events after the request has been granted
+            showLayout();
+            getLastKnownLocation();
            
 
         } else {
@@ -723,6 +873,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if(mLocationPermissionGranted){
                     gpsDialog.dismiss();
                    //todo handle events after the request has been granted
+                    showLayout();
+                    getLastKnownLocation();
                     
                 }
                 else{
@@ -764,9 +916,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
                 break;
             }
-
         }
     }
+
 
     /**
      * BottomNavigationView setup

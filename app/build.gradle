@@ -50,13 +50,19 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:16.0.1'	//Realtime Database
     implementation 'com.google.firebase:firebase-storage:16.0.1'    //storage
 
-    implementation 'com.google.firebase:firebase-auth:16.0.3'       //auth
+    implementation 'com.google.firebase:firebase-auth:16.0.1'      //auth
+
+    implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
 
     //Google Play Services for Maps
     implementation 'com.google.android.gms:play-services-maps:15.0.1'
 
     // Google play services for location information
     implementation 'com.google.android.gms:play-services-location:15.0.1'
+
+    //library to attach bitmaps to markers
+    implementation 'com.koushikdutta.ion:ion:2.+'
+
 
 }
 

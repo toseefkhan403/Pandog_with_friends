@@ -13,9 +13,12 @@
             android:padding="10dp">
 
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:src="@drawable/ic_logo"
+                app:civ_border_color="@color/black"
+                app:civ_border_width="2dp"
                 android:padding="5dp"
                 android:id="@+id/profile_photo"
                 android:layout_marginTop="20dp"

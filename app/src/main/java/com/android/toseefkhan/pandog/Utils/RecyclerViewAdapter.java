@@ -2,6 +2,9 @@ package com.android.toseefkhan.pandog.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,8 +19,14 @@ import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Search.SearchActivity;
 import com.android.toseefkhan.pandog.models.Photo;
 import com.android.toseefkhan.pandog.models.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -30,6 +39,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private static final String TAG = "RecyclerViewAdapter";
     private Context mContext;
     private ArrayList<User> mUserList= new ArrayList<>();
+    private String uid;
 
     public RecyclerViewAdapter(Context mContext, ArrayList<User> mUserList) {
         this.mContext = mContext;
@@ -52,7 +62,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         ImageLoader imageLoader=ImageLoader.getInstance();
         imageLoader.displayImage(mUserList.get(position).getProfile_photo(),holder.pp);
 
-        holder.userName.setText(mUserList.get(position).getUsername());
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+  //      Bitmap bm= ((BitmapDrawable)holder.pp.getDrawable()).getBitmap();
+        if (mUserList.get(position).getUser_id().equals(uid) )
+            holder.userName.setText(mUserList.get(position).getUsername()+ " (You)");
+        else
+            holder.userName.setText(mUserList.get(position).getUsername());
+
+
         holder.email.setText(mUserList.get(position).getEmail());
 
         Log.d(TAG, "onBindViewHolder: the pp is " + mUserList.get(position).getProfile_photo());
@@ -60,12 +78,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.userName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i= new Intent(mContext, ViewProfileActivity.class);
-                i.putExtra(mContext.getString(R.string.intent_user), mUserList.get(position));
-                mContext.startActivity(i);
+
+                if (!mUserList.get(position).getUser_id().equals(uid)){
+                    Intent i= new Intent(mContext, ViewProfileActivity.class);
+                    i.putExtra(mContext.getString(R.string.intent_user), mUserList.get(position));
+                    mContext.startActivity(i);
+                }
             }
         });
-
     }
 
     @Override

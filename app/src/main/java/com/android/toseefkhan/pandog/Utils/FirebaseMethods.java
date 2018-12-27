@@ -1,11 +1,13 @@
 package com.android.toseefkhan.pandog.Utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,6 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -44,6 +47,8 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -193,6 +198,7 @@ public class FirebaseMethods {
                                 }
                             });
 
+                            uploadBitmap(imageUri);
                             Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
 
                             ((Activity)mContext).finish();
@@ -200,7 +206,6 @@ public class FirebaseMethods {
                             //navigate to the profileActivity so the user can see their photo
                             Intent intent = new Intent(mContext, ProfileActivity.class);
                             mContext.startActivity(intent);
-
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -215,7 +220,6 @@ public class FirebaseMethods {
                             double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                             Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
 
-
                                 final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                                 builder.setMessage("Photo upload " + (int)progress + "% done")
                                         .setCancelable(false)
@@ -225,19 +229,58 @@ public class FirebaseMethods {
                                 if (progress >= 100) {
                                     alert.dismiss();
                                 }
-
-
                         }
-
                     });
-
                 }
-
             }
         });
 
         uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         uploadDialog.show();
+    }
+
+    private void uploadBitmap(Uri imageUri) {
+
+        final FilePaths filePaths = new FilePaths();
+        final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final StorageReference storageReference2 = mStorageReference
+                .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo_bitmap");
+
+        InputStream imageStream = null;
+        try {
+            imageStream = mContext.getContentResolver().openInputStream(
+                    imageUri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        Bitmap bmp = BitmapFactory.decodeStream(imageStream);
+        bmp = Bitmap.createScaledBitmap(bmp, 120 , 120, true);
+
+        byte[] bytes = ImageManager.getBytesFromBitmap(bmp, 100);
+
+        UploadTask uploadTask2 = storageReference2.putBytes(bytes);
+        Log.d(TAG, "uploadNewPhoto: this is the uri " + imageUri);
+
+        uploadTask2.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                //  Uri firebaseUrl = taskSnapshot.getDownloadUrl();
+                mStorageReference.child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo_bitmap")
+                        .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        //insert into 'user_account_settings' node and 'users' node
+                        setProfilePhotoBitmap(task.getResult().toString());
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d(TAG, "onFailure: Bitmap upload failed.");
+            }
+        });
     }
 
 
@@ -255,6 +298,14 @@ public class FirebaseMethods {
                 .setValue(url);
     }
 
+    private void setProfilePhotoBitmap(String url) {
+        Log.d(TAG, "setProfilePhoto: setting new profile image bitmap: " + url);
+
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("bitmap")
+                .setValue(url);
+    }
 
     private String getTimestamp(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);

@@ -31,6 +31,7 @@ import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,6 +44,8 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -64,7 +67,7 @@ public class ProfileActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
-    private ImageView mProfilePhoto;
+    private CircleImageView mProfilePhoto;
     private TextView mEditProfile,PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
     private RelativeLayout relativeLayout;
@@ -99,7 +102,7 @@ public class ProfileActivity extends AppCompatActivity {
     private void getPandaPointsCount() {
         Log.d(TAG, "getPandaPointsCount: getting the count ");
         //todo fix later
-        int points= 2 * mPostsCount + mFollowersCount;
+        int points = mFollowersCount;
         PandaPoints.setText(String.valueOf(points));
 
         myRef= FirebaseDatabase.getInstance().getReference();
@@ -189,6 +192,7 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         mAuth.signOut();
+                        LoginManager.getInstance().logOut();
                         dialog.dismiss();
                         Intent intent= new Intent(mContext, LoginActivity.class);
                         startActivity(intent);

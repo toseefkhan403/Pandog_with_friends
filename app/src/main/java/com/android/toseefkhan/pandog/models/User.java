@@ -1,5 +1,6 @@
 package com.android.toseefkhan.pandog.models;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -13,6 +14,7 @@ public class User implements Parcelable {
     private String username;
     private LatLong lat_lng;
     private int panda_points;
+    private String bitmap;
 
     public User() {
     }
@@ -24,6 +26,21 @@ public class User implements Parcelable {
         this.username = username;
         this.lat_lng = lat_lng;
         this.panda_points = panda_points;
+    }
+
+    public User(String profile_photo, String user_id, String email, String username) {
+        this.profile_photo = profile_photo;
+        this.user_id = user_id;
+        this.email = email;
+        this.username = username;
+    }
+
+    public String getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(String bitmap) {
+        this.bitmap = bitmap;
     }
 
     public int getPanda_points() {

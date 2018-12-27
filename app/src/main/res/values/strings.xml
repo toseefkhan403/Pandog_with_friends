@@ -2,10 +2,11 @@
     <string name="app_name">Pandog</string>
     <string name="google_maps_api_key">AIzaSyDgPf_1TpgGVbYfDwV3vgi8hl3y2HgVI30</string>
 
+    <string name="facebook_app_id">334440810712976</string>
+    <string name="fb_login_protocol_scheme">fb334440810712976</string>
 
     <!-- fragment names -->
     <string name="edit_profile_fragment">Edit Profile</string>
-
 
     <!-- Firebase messages -->
     <string name="auth_failed">Failed to Authenticate</string>
@@ -44,6 +45,9 @@
     <string name="profile_photo">profile_photo</string>
     <string name="string_share">Share</string>
     <string name="selected_bitmap">selected_bitmap</string>
+
+    <string name="panda_emoji">0x1F43C</string>
+
 
 
 </resources>

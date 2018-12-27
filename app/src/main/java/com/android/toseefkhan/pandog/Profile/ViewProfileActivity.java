@@ -36,6 +36,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ViewProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "ViewProfileActivity";
@@ -58,9 +60,10 @@ public class ViewProfileActivity extends AppCompatActivity {
     private GridView gridView;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
-    private ImageView mProfilePhoto;
+    private CircleImageView mProfilePhoto;
     private TextView mFollow, mUnfollow, PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0,ppcount=0;
+    private ImageView mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         setContentView(R.layout.view_activity_profile);
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProgressBar.setVisibility(View.GONE);
-        mProfilePhoto = (ImageView) findViewById(R.id.profile_photo);
+        mProfilePhoto = findViewById(R.id.profile_photo);
         mDisplayName = (TextView) findViewById(R.id.display_name);
         mUsername = (TextView) findViewById(R.id.username);
         mDescription = (TextView) findViewById(R.id.description);
@@ -78,6 +81,8 @@ public class ViewProfileActivity extends AppCompatActivity {
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
         gridView = (GridView) findViewById(R.id.gridView);
         PandaPoints= findViewById(R.id.pandaPoints);
+        mMenu = findViewById(R.id.menu);
+        mMenu.setVisibility(View.GONE);
 //        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
 //        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
         bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);

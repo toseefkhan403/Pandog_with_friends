@@ -129,8 +129,6 @@ public class NextActivity extends AppCompatActivity {
     //ToDo: Create the post. It will be available for 24 hours.
     //ToDo: Create mainFeedListAdapter to display posts in the HomeActivity.
 
-    //layout for a basic post is in layout_post
-
   /*
      ------------------------------------ Firebase ---------------------------------------------
      */
