@@ -39,6 +39,7 @@
         <activity android:name=".Profile.ViewProfileActivity"/>
         <activity android:name=".Share.NextActivity" />
         <activity android:name=".Intro.Holder"/>
+        <activity android:name=".Profile.FAQs"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

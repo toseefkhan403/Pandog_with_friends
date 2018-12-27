@@ -20,6 +20,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 public class UniversalImageLoader {
 
     private static final int defaultImage = R.drawable.ic_logo;
+
     private Context mContext;
 
     public UniversalImageLoader(Context context) {

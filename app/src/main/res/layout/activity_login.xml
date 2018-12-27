@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
             android:layout_gravity="center_horizontal"
-            android:text="Continue with Facebook"
+            android:text="Sign in/up with Facebook"
             android:background="@drawable/white_rounded_fb_button"
             android:textColor="@color/white"
             android:padding="20dp"/>

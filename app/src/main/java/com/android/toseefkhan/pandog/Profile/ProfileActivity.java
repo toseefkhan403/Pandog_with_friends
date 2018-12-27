@@ -71,7 +71,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView mEditProfile,PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
     private RelativeLayout relativeLayout;
-    private ImageView mMenu;
+    private TextView mMenu;
 
 
     @Override
@@ -175,34 +175,8 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: clicked on the menu ");
 
-                final Dialog dialog= new Dialog(mContext);
-                dialog.setContentView(R.layout.layout_log_out_dialog);
-                Button cancelDialog = dialog.findViewById(R.id.cancel);
-                Button yesDialog= dialog.findViewById(R.id.log_out);
-
-                cancelDialog.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                //todo the method finish() is not working here properly
-                yesDialog.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mAuth.signOut();
-                        LoginManager.getInstance().logOut();
-                        dialog.dismiss();
-                        Intent intent= new Intent(mContext, LoginActivity.class);
-                        startActivity(intent);
-                        Toast.makeText(mContext, "Successfully logged out.", Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
-
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                dialog.show();
+                Intent i = new Intent(mContext, FAQs.class);
+                startActivity(i);
             }
         });
 

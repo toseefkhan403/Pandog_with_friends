@@ -282,6 +282,12 @@ public class LoginActivity extends AppCompatActivity {
                 .child(uid)
                 .setValue(user);
 
+        //todo
+//        ref1.child(getString(R.string.dbname_users))
+//                .child(uid)
+//                .child("bitmap")
+//                .setValue();
+
         UserAccountSettings userAccountSettings = new UserAccountSettings("This is my cool description",
                 name,
                 image,

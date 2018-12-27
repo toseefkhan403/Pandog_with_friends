@@ -33,10 +33,13 @@
                     android:text="345"
                     android:textSize="20sp"/>
 
-                <ImageView
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_menu"
+                    android:text="FAQs"
+                    android:textColor="@color/green"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
                     android:layout_alignParentRight="true"
                     android:id="@+id/menu"
                     android:padding="1dp"

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/relLayout1">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/relLayout2">
+
+            <include layout="@layout/snippet_top_activitysettings"/>
+        </RelativeLayout>
+
+        <ExpandableListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="55dp"
+            android:layout_marginBottom="60dp"
+            android:background="@color/white"
+            android:id="@+id/expandable_lv">
+
+
+        </ExpandableListView>
+
+        <include layout="@layout/layout_bottom_nav_view"/>
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>
