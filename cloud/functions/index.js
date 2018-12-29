@@ -8,14 +8,17 @@ exports.sendFCMMessage = functions.database.ref('/Challenges/{challengeId}').onC
     const challenge = snapshot.val();
     var challengerUserUid = challenge.challengerUserUid;
     var challengedUserUid = challenge.challengedUserUid;
+    var status = challenge.status;
 
     return admin.database().ref("/token/" + challengedUserUid).once('value').then((snap) => {
         const fcmToken = snap.val();
         console.log("Token:", fcmToken);
         const payload = {
-         notification: {
-                title: "Test1",
-                body: "Hi there"
+         data: {
+             title: "Test1",
+             body: "Hi there",
+             challengerUserUid: challengerUserUid,
+             status:status
             }
         };
 

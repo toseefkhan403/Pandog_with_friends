@@ -29,7 +29,7 @@ public class HomeActivity extends AppCompatActivity {
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,12 @@ public class HomeActivity extends AppCompatActivity {
         setupBottomNavigationView();
         setupViewPager();
 
+        Intent intent = getIntent();
+        if (intent.hasExtra("ChallengerUser")) {
+            mViewPager.setCurrentItem(1);
+        }
     }
+
 
     private void setupViewPager() {
 
@@ -50,11 +55,11 @@ public class HomeActivity extends AppCompatActivity {
         adapter.addFragment(new HomeFragment()); //index is 0
         adapter.addFragment(new NotificationFragment());  //index is 1
 
-        ViewPager viewPager = findViewById(R.id.container);
-        viewPager.setAdapter(adapter);
+        mViewPager = findViewById(R.id.container);
+        mViewPager.setAdapter(adapter);
 
         TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setupWithViewPager(mViewPager);
 
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);

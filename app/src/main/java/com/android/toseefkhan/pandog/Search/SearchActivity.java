@@ -39,9 +39,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = "SearchActivity";
-    private Context mContext=SearchActivity.this;
     private static final int ACTIVITY_NUM = 3;
-
+    private Context mContext = SearchActivity.this;
     private ListView profilesListView;
 
     @Override
@@ -56,7 +55,6 @@ public class SearchActivity extends AppCompatActivity {
         profilesListView = findViewById(R.id.ProfileList);
         final SearchAdapter adapter = new SearchAdapter(mContext, user.getUid());
         profilesListView.setAdapter(adapter);
-
 
 
         profileSearchView.setActivated(true);
@@ -77,15 +75,13 @@ public class SearchActivity extends AppCompatActivity {
         });
 
 
-
-
         setupBottomNavigationView();
     }
 
     /**
      * BottomNavigationView setup
      */
-    private void setupBottomNavigationView(){
+    private void setupBottomNavigationView() {
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
         BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
@@ -112,9 +108,10 @@ public class SearchActivity extends AppCompatActivity {
             this.userUID = uid;
         }
 
-        public ArrayList<User> ProfileList(){
+        public ArrayList<User> ProfileList() {
             return ProfileList;
         }
+
         @Override
         public int getCount() {
             if (ProfileList == null) {
@@ -157,13 +154,12 @@ public class SearchActivity extends AppCompatActivity {
             profilesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "onItemClick: selected user " + ProfileList.get(position));
+                    Log.d(TAG, "onItemClick: selected user " + ProfileList.get(position));
 
                     //navigate to view profile activity
-                    Intent intent =  new Intent(SearchActivity.this, ViewProfileActivity.class);
+                    Intent intent = new Intent(SearchActivity.this, ViewProfileActivity.class);
                     intent.putExtra(getString(R.string.intent_user), ProfileList.get(position));
                     startActivity(intent);
-
 
 
                 }
@@ -218,4 +214,5 @@ public class SearchActivity extends AppCompatActivity {
             }
 
         }
-    }}
+    }
+}
