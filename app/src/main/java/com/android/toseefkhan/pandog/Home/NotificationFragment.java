@@ -57,6 +57,7 @@ public class NotificationFragment extends Fragment {
                             Log.d("String", "ChildAdded" + s);
                             addChallenge(ChallengeKey);
                         }
+                        Log.d("ChildEventListener", "Not exist");
                     }
 
                     @Override

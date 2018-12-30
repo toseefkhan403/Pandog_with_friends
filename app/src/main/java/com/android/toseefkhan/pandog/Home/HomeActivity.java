@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.Home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -18,6 +19,7 @@ import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -101,6 +103,18 @@ public class HomeActivity extends AppCompatActivity {
         if (user == null) {
             Intent intent = new Intent(mContext, LoginActivity.class);
             startActivity(intent);
+        } else {
+            addTokenToDatabase();
+        }
+    }
+
+    private void addTokenToDatabase() {
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PandogPreference",
+                Context.MODE_PRIVATE);
+        String fcmToken = sharedPreferences.getString("FCMToken", null);
+        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (fcmToken != null) {
+            FirebaseDatabase.getInstance().getReference().child("token").child(userUid).setValue(fcmToken);
         }
     }
 
