@@ -224,7 +224,7 @@ public class FirebaseMethods {
 
         String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String selecteduserUid = mSelectedUser.getUser_id();
-        Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, newPhotoKey);
+        Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, newPhotoKey, url);
         mChallenge.setStatus("NOT_DECIDED");
 
         String challengeKey = myRef.child("Challenges").push().getKey();
