@@ -30,6 +30,7 @@ import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -42,6 +43,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.io.IOException;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -61,7 +64,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private EditText mDisplayName, mUsername, mDescription;
     private TextView mChangeProfilePhoto;
     private Context mContext=EditProfileActivity.this;
-    private ImageView mProfilePhoto;
+    private CircleImageView mProfilePhoto;
     private Button mLogOut;
 
     //vars
@@ -90,6 +93,9 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: signing out the user");
                 mAuth.signOut();
+                LoginManager.getInstance().logOut();
+                Intent i = new Intent(mContext, LoginActivity.class);
+                startActivity(i);
                 Toast.makeText(mContext, "Successfully logged out.", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -149,7 +155,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
         //case1: if the user made a change to their username
         if(!mUserSettings.getUser().getUsername().equals(username)){
-
             checkIfUsernameExists(username);
         }
 

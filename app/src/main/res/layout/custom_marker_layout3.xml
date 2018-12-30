@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/custom_marker_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="85dp"
+        android:layout_height="80dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:backgroundTint="@color/blue"
+        android:background="@drawable/marker_image"
+        android:gravity="center"/>
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="3dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        android:src="@drawable/flames_emoji"/>
+
+
+</RelativeLayout>

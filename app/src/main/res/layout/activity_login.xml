@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/loginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -53,17 +54,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
-            android:layout_marginBottom="25dp"
+            android:layout_marginBottom="20dp"
             android:text="Login"
             android:id="@+id/btn_login"
             android:padding="12dp"
             android:background="@drawable/white_rounded_button"/>
 
+
+        <Button
+            android:id="@+id/fb_login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="25dp"
+            android:layout_gravity="center_horizontal"
+            android:text="Sign in/up with Facebook"
+            android:background="@drawable/white_rounded_fb_button"
+            android:textColor="@color/white"
+            android:padding="20dp"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
-            android:text="No account yet? Create one"
+            android:text="Register via email"
             android:gravity="center"
             android:textSize="16dp"
             android:id="@+id/link_signup"
@@ -78,15 +91,16 @@
         android:layout_centerInParent="true"/>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/pleaseWait"
+        android:layout_width="128dp"
         android:layout_height="wrap_content"
-        android:text="Please wait..."
-        android:textColor="@color/black"
-        android:textSize="20sp"
         android:layout_alignBottom="@+id/progressBar"
-        android:layout_alignRight="@+id/progressBar"
         android:layout_alignLeft="@+id/progressBar"
-        android:id="@+id/pleaseWait"/>
+        android:layout_alignRight="@+id/progressBar"
+        android:layout_marginRight="-28dp"
+        android:text="Please Wait"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
 </RelativeLayout>
 

@@ -1,22 +1,27 @@
 <resources>
     <string name="app_name">Pandog</string>
+    <string name="google_maps_api_key">AIzaSyDgPf_1TpgGVbYfDwV3vgi8hl3y2HgVI30</string>
+
+    <string name="facebook_app_id">334440810712976</string>
+    <string name="fb_login_protocol_scheme">fb334440810712976</string>
 
     <!-- fragment names -->
     <string name="edit_profile_fragment">Edit Profile</string>
-
 
     <!-- Firebase messages -->
     <string name="auth_failed">Failed to Authenticate</string>
     <string name="auth_success">Authentication Success</string>
 
     <!-- Firebase database fields -->
-    <string name="dbname_users">users</string>dbname_following
+    <string name="dbname_users">users</string>
     <string name="dbname_following">following</string>
     <string name="dbname_followers">followers</string>
-
+    <string name="db_latlng">lat_lng</string>
+    <string name="db_timestamp">time_stamp</string>
     <string name="dbname_user_account_settings">user_account_settings</string>
     <string name="user_profile_picture">User Profile Picture</string>
     <string name="dbname_photos">photos</string>
+    <string name="db_panda_points">panda_points</string>
     <string name="dbname_user_photos">user_photos</string>
     <string name="field_username">username</string>
     <string name="field_email">email</string>
@@ -43,6 +48,54 @@
     <string name="default_notification_channel_id">PandogNotificationChannel</string>
     <string name="db_user_challenges">User_Challenges</string>
     <string name="db_challenges">Challenges</string>
+
+
+
+    <string-array name="header_questions">
+        <item>What is this app all about?</item>
+        <item>What is the battle section?</item>
+        <item>How to participate in a battle?</item>
+        <item>How will I get the results?</item>
+        <item>What will I get if I win?</item>
+        <item>What are the different levels in the app?</item>
+        <item>What does the Map feature signify in the app?</item>
+        <item>What does the list over the Map mean?</item>
+        <item>Why are there icons of different colors and sizes on the Map?</item>
+        <item>If i manage to get the ultimate black badge, will it always stay a black one?</item>
+        <item>How many people own the ultimate BLACK badge at a time?</item>
+        <item>How to log out from the app?</item>
+    </string-array>
+
+
+    <string-array name="answers">
+        <item>Celfie is all about giddiness and playfulness along with an awesome opportunity to become popular while having fun.</item>
+        <item>The battle section is all heated up with the face-offs of the best pictures of our users. Here you can actually participate or vote for ones you like.</item>
+        <item>To start a battle you have to follow the given steps- \n
+1. Follow the person you want to compete with either from the search screen or from the map screen. \n
+2. Go to the share screen, upload the photo and select the person you want to compete with.
+    (You can select only one person at a time) \n
+3. If he/she accepts your request, your post gets displayed.</item>
+        <item>Your post stays for 24 hours in the feed of all of your followers and all of the followers of your friend with whom you have chosen to compete. Whoever gets the maximum
+        likes, wins. Both of you will be notified about the results when the duration of your post is over.</item>
+        <item>If you win, you will get the precious panda points that determine your visibility on the map section of the app.
+        1 panda point = 2* the number of your wins + the number of followers you have. Panda points will determine your popularity in the app,
+        so make sure you win maximum of your battles and gain more followers at the same time.</item>
+        <item>The different levels in the app reflect the popularity, wins a person is getting on his/her posts. As your wins per post keep on
+            increasing, then your profile is automatically updated to the next level.</item>
+        <item>Its a unique feature to know the most popular person of your locality or any other place. This keeps on updating depending upon the maximum wins got by a person in a particular locality.</item>
+        <item>This list tells you the top contenders in the Map area that you are viewing.As you zoom out or move the map, new people who are more popular can be seen in
+            the list. The person at the top is the most popular.</item>
+        <item>Initially, when you join the app, you are on level 1 which is a GREY BADGE(the smallest guy). It means that on the Map screen, your location will be shown with a grey coloured marker.
+        As you use the app actively and stay updated, get more wins and followers, then you will be updated to level 2 that is a GREEN BADGE.
+        Subsequently, level 3 BLUE BADGE, level 4 PURPLE BADGE and then level 5... the ultimate BLACK BADGE, which can clearly be seen on the Map as it is the biggest of them all.
+            Of course, if you manage to get the BLACK BADGE, your profile will gain more attention among the audience.
+</item>
+        <item>Unfortunately NO. The badge colour that you own depends upon the current users of the app which keep updating every second. And that is the reason that the battle ground is going to stay heated up every time you show up.
+         This option also provides equal opportunity to everyone using the app. You joined the app today and showed up more often then you may get the ultimate BLACK badge and the guy owning one and not showing up will be replaced.
+</item>
+        <item>The ultimate BLACK badge is owned by the top 20% users of the Celfie app.</item>
+        <item>Click the "EDIT YOUR PROFILE" button, go to the bottom and log out of the app.</item>
+    </string-array>
 
 
 </resources>

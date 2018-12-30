@@ -1,7 +1,10 @@
 package com.android.toseefkhan.pandog.Profile;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,11 +13,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.toseefkhan.pandog.Home.HomeActivity;
+import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
@@ -23,6 +31,7 @@ import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,6 +44,8 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -51,14 +62,16 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseMethods mFirebaseMethods;
 
 
+    //widgets
     private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
-    private TextView tvPosts,tvFollowers,tvFollowing;
     private ProgressBar mProgressBar;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
-    private ImageView mProfilePhoto;
-    private TextView mEditProfile;
+    private CircleImageView mProfilePhoto;
+    private TextView mEditProfile,PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
+    private RelativeLayout relativeLayout;
+    private TextView mMenu;
 
 
     @Override
@@ -79,22 +92,30 @@ public class ProfileActivity extends AppCompatActivity {
         getPostsCount();
 
 
+    }
 
+    @Override
+    public void onBackPressed() {
 
     }
 
+    private void getPandaPointsCount() {
+        Log.d(TAG, "getPandaPointsCount: getting the count ");
+        //todo fix later
+        int points = mFollowersCount;
+        PandaPoints.setText(String.valueOf(points));
+
+        myRef= FirebaseDatabase.getInstance().getReference();
+
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child(mContext.getString(R.string.db_panda_points))
+                .setValue(points);
+    }
+
     private void hideWidgets() {
-        mUsername.setVisibility(View.GONE);
-        mProfilePhoto.setVisibility(View.GONE);
-        mDisplayName.setVisibility(View.GONE);
-        mDescription.setVisibility(View.GONE);
-        mPosts.setVisibility(View.GONE);
-        mFollowers.setVisibility(View.GONE);
-        mFollowing.setVisibility(View.GONE);
-        mEditProfile.setVisibility(View.GONE);
-        tvPosts.setVisibility(View.GONE);
-        tvFollowers.setVisibility(View.GONE);
-        tvFollowing.setVisibility(View.GONE);
+        relativeLayout.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -125,21 +146,17 @@ public class ProfileActivity extends AppCompatActivity {
 
 
 
-
     private void setupActivityWidgets(){
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProfilePhoto = findViewById(R.id.profile_photo);
-
+        relativeLayout= findViewById(R.id.main_profile);
         mDisplayName = (TextView) findViewById(R.id.display_name);
         mUsername = (TextView) findViewById(R.id.username);
         mDescription = (TextView) findViewById(R.id.description);
         mPosts = (TextView) findViewById(R.id.tvPosts);
         mFollowers = (TextView) findViewById(R.id.tvFollowers);
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
-
-        tvPosts= findViewById(R.id.textPosts);
-        tvFollowers= findViewById(R.id.textFollowers);
-        tvFollowing= findViewById(R.id.textFollolwing);
+        PandaPoints= findViewById(R.id.pandaPoints);
 //        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
 //        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
        bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
@@ -150,6 +167,16 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent=new Intent(ProfileActivity.this, EditProfileActivity.class);
                 startActivity(intent);
+            }
+        });
+        mMenu = findViewById(R.id.menu);
+        mMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: clicked on the menu ");
+
+                Intent i = new Intent(mContext, FAQs.class);
+                startActivity(i);
             }
         });
 
@@ -215,6 +242,7 @@ public class ProfileActivity extends AppCompatActivity {
                     mPostsCount++;
                 }
                 mPosts.setText(String.valueOf(mPostsCount));
+                getPandaPointsCount();
             }
 
             @Override
@@ -295,17 +323,7 @@ public class ProfileActivity extends AppCompatActivity {
                 setProfileWidgets(mFirebaseMethods.getUserSettings(dataSnapshot));
 
                 mProgressBar.setVisibility(View.GONE);
-                mUsername.setVisibility(View.VISIBLE);
-                mProfilePhoto.setVisibility(View.VISIBLE);
-                mDisplayName.setVisibility(View.VISIBLE);
-                mDescription.setVisibility(View.VISIBLE);
-                mPosts.setVisibility(View.VISIBLE);
-                mFollowers.setVisibility(View.VISIBLE);
-                mFollowing.setVisibility(View.VISIBLE);
-                mEditProfile.setVisibility(View.VISIBLE);
-                tvPosts.setVisibility(View.VISIBLE);
-                tvFollowers.setVisibility(View.VISIBLE);
-                tvFollowing.setVisibility(View.VISIBLE);
+                relativeLayout.setVisibility(View.VISIBLE);
 
                 //retrieve images for the user in question
 

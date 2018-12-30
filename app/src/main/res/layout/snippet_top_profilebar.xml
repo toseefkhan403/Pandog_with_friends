@@ -22,8 +22,28 @@
                     android:text="toseef.khan"
                     android:textSize="20sp"
                     android:textColor="@color/black"
-                    android:layout_marginStart="15dp"
+                    android:layout_marginStart="5dp"
                     android:id="@+id/username"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/pandaPoints"
+                    android:layout_centerInParent="true"
+                    android:text="345"
+                    android:textSize="20sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="FAQs"
+                    android:textColor="@color/green"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/menu"
+                    android:padding="1dp"
+                    android:layout_marginRight="10dp"/>
 
             </RelativeLayout>
 

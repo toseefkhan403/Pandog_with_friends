@@ -1,5 +1,6 @@
 package com.android.toseefkhan.pandog.models;
 
+import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -34,14 +35,6 @@ public class User implements Parcelable {
         this.username = username;
     }
 
-    protected User(Parcel in) {
-        profile_photo = in.readString();
-        user_id = in.readString();
-        email = in.readString();
-        username = in.readString();
-        lat_lng = in.readParcelable(LatLng.class.getClassLoader());
-    }
-
     public String getBitmap() {
         return bitmap;
     }
@@ -54,14 +47,22 @@ public class User implements Parcelable {
         return panda_points;
     }
 
+    public void setPanda_points(int panda_points) {
+        this.panda_points = panda_points;
+    }
+
     public User(String user_id, String email, String username) {
         this.user_id = user_id;
         this.email = email;
         this.username = username;
     }
 
-    public void setPanda_points(int panda_points) {
-        this.panda_points = panda_points;
+    protected User(Parcel in) {
+        profile_photo = in.readString();
+        user_id = in.readString();
+        email = in.readString();
+        username = in.readString();
+        lat_lng = in.readParcelable(LatLng.class.getClassLoader());
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -75,17 +76,6 @@ public class User implements Parcelable {
             return new User[size];
         }
     };
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "profile_photo='" + profile_photo + '\'' +
-                ", user_id='" + user_id + '\'' +
-                ", email='" + email + '\'' +
-                ", username='" + username + '\'' +
-                ", latLng=" + lat_lng +
-                '}';
-    }
 
     public String getProfile_photo() {
         return profile_photo;
@@ -119,12 +109,13 @@ public class User implements Parcelable {
         this.username = username;
     }
 
-    public LatLong getLat_lng() {
-        return lat_lng;
-    }
-
-    public void setLat_lng(LatLong lat_lng) {
-        this.lat_lng = lat_lng;
+    @Override
+    public String toString() {
+        return "User{" +
+                "user_id='" + user_id + '\'' +
+                ", email='" + email + '\'' +
+                ", username='" + username + '\'' +
+                '}';
     }
 
     @Override

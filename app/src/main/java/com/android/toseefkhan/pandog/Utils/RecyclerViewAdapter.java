@@ -2,6 +2,9 @@ package com.android.toseefkhan.pandog.Utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,8 +19,14 @@ import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Search.SearchActivity;
 import com.android.toseefkhan.pandog.models.Photo;
 import com.android.toseefkhan.pandog.models.User;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -28,99 +37,74 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     //ignore this class, this was just for testing i m not deleting it i suppose we can use this in future if we want to use recycler view
 
     private static final String TAG = "RecyclerViewAdapter";
-
     private Context mContext;
-    private ArrayList<String> mProfilePhoto= new ArrayList<>();               //needs to be a user object
-    private ArrayList<Photo> mPhotoList= new ArrayList<>();
+    private ArrayList<User> mUserList= new ArrayList<>();
+    private String uid;
 
-    public RecyclerViewAdapter(Context mContext, ArrayList<String> mProfilePhoto, ArrayList<Photo> mPhotoList) {
+    public RecyclerViewAdapter(Context mContext, ArrayList<User> mUserList) {
         this.mContext = mContext;
-        this.mProfilePhoto = mProfilePhoto;
-        this.mPhotoList = mPhotoList;
+        this.mUserList = mUserList;
     }
-
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_single_photo_listitem, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
-        Log.d(TAG, "onBindViewHolder: received user 1: " + mProfilePhoto.get(0));
-        Log.d(TAG, "onBindViewHolder: received user 2: " + mProfilePhoto.get(1));
+        Log.d(TAG, "onBindViewHolder: received user: " + mUserList.get(position));
 
-
-        //for testing
+        //for pp
         ImageLoader imageLoader=ImageLoader.getInstance();
-        imageLoader.displayImage(mProfilePhoto.get(position),holder.pp);
-        imageLoader.displayImage("https://i.imgur.com/ZcLLrkY.jpg",holder.photoInPost);
+        imageLoader.displayImage(mUserList.get(position).getProfile_photo(),holder.pp);
+
+        uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+  //      Bitmap bm= ((BitmapDrawable)holder.pp.getDrawable()).getBitmap();
+        if (mUserList.get(position).getUser_id().equals(uid) )
+            holder.userName.setText(mUserList.get(position).getUsername()+ " (You)");
+        else
+            holder.userName.setText(mUserList.get(position).getUsername());
 
 
-        Log.d(TAG, "onBindViewHolder: the pp is " + mProfilePhoto.get(position));
-    //    holder.toolbarName.setText(mUserList.get(position).getUsername());
+        holder.email.setText(mUserList.get(position).getEmail());
 
-        //set the photo properties
-//        UniversalImageLoader.setImage(mPhotoList.get(position).getImage_path(),holder.photoInPost, null,null);
-//        holder.caption.setText(mPhotoList.get(position).getCaption());
-//        holder.timePeriod.setText(mPhotoList.get(position).getDate_created());
+        Log.d(TAG, "onBindViewHolder: the pp is " + mUserList.get(position).getProfile_photo());
 
-        //todo get the comments and like stuff with click listeners on the comments link and the likes toggle
-       // holder.comments.setText(mPhotoList.get(position).get);
+        holder.userName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-//        holder.pp.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent =  new Intent(mContext, ViewProfileActivity.class);
-//                intent.putExtra(mContext.getString(R.string.intent_user), mProfilePhoto.get(0));
-//                mContext.startActivity(intent);
-//            }
-//        });
-//        holder.toolbarName.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent =  new Intent(mContext, ViewProfileActivity.class);
-//                intent.putExtra(mContext.getString(R.string.intent_user), mUserList.get(position));
-//                mContext.startActivity(intent);
-//            }
-//        });
-
-
+                if (!mUserList.get(position).getUser_id().equals(uid)){
+                    Intent i= new Intent(mContext, ViewProfileActivity.class);
+                    i.putExtra(mContext.getString(R.string.intent_user), mUserList.get(position));
+                    mContext.startActivity(i);
+                }
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return mProfilePhoto.size();
+        return mUserList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         CircleImageView pp;
-        TextView toolbarName;
-        SquareImageView photoInPost;
-        TextView caption, timePeriod;
-        ImageView likeToggleWhite,likeToggleRed;
-        TextView comments;
+        TextView userName, email;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            pp= itemView.findViewById(R.id.profile_photo);
-            toolbarName = itemView.findViewById(R.id.username);
-            photoInPost= itemView.findViewById(R.id.post_image);
-            likeToggleWhite= itemView.findViewById(R.id.image_heart_white);
-            likeToggleRed= itemView.findViewById(R.id.image_heart_red);
-            likeToggleRed.setVisibility(View.GONE);
-            comments= itemView.findViewById(R.id.image_comments_link);
-            caption= itemView.findViewById(R.id.image_caption);
-            timePeriod= itemView.findViewById(R.id.image_time_posted);
-
+            pp= itemView.findViewById(R.id.UserProfilePictureView);
+            userName= itemView.findViewById(R.id.UserNameView);
+            email= itemView.findViewById(R.id.UserEmailView);
     }
-
-
 
     }
 }

@@ -1,6 +1,7 @@
 package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +36,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ViewProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "ViewProfileActivity";
@@ -57,29 +60,32 @@ public class ViewProfileActivity extends AppCompatActivity {
     private GridView gridView;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
-    private ImageView mProfilePhoto;
-    private TextView mFollow, mUnfollow;
-    private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
-
+    private CircleImageView mProfilePhoto;
+    private TextView mFollow, mUnfollow, PandaPoints;
+    private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0,ppcount=0;
+    private ImageView mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: started.");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_activity_profile);
-        mProgressBar = findViewById(R.id.profileProgressBar);
+        mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProgressBar.setVisibility(View.GONE);
         mProfilePhoto = findViewById(R.id.profile_photo);
-        mDisplayName = findViewById(R.id.display_name);
-        mUsername = findViewById(R.id.username);
-        mDescription = findViewById(R.id.description);
-        mPosts = findViewById(R.id.tvPosts);
-        mFollowers = findViewById(R.id.tvFollowers);
-        mFollowing = findViewById(R.id.tvFollowing);
-        gridView = findViewById(R.id.gridView);
+        mDisplayName = (TextView) findViewById(R.id.display_name);
+        mUsername = (TextView) findViewById(R.id.username);
+        mDescription = (TextView) findViewById(R.id.description);
+        mPosts = (TextView) findViewById(R.id.tvPosts);
+        mFollowers = (TextView) findViewById(R.id.tvFollowers);
+        mFollowing = (TextView) findViewById(R.id.tvFollowing);
+        gridView = (GridView) findViewById(R.id.gridView);
+        PandaPoints= findViewById(R.id.pandaPoints);
+        mMenu = findViewById(R.id.menu);
+        mMenu.setVisibility(View.GONE);
 //        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
 //        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
-        bottomNavigationView = findViewById(R.id.bottomNavViewBar);
+        bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         mFirebaseMethods = new FirebaseMethods(mContext);
         mFollow= findViewById(R.id.textFollow);
         mUnfollow= findViewById(R.id.textUnFollow);
@@ -104,6 +110,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                         .setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 setFollowing();
                 getFollowersCount();
+                getPandaPointsCount();
             }
         });
 
@@ -126,6 +133,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                         .removeValue();
                 setUnfollowing();
                 getFollowersCount();
+                getPandaPointsCount();
             }
         });
 
@@ -150,7 +158,22 @@ public class ViewProfileActivity extends AppCompatActivity {
         getFollowersCount();
         getPostsCount();
         tempGridSetup();
+    }
 
+
+    private void getPandaPointsCount() {
+        ppcount=0;
+        Log.d(TAG, "getPandaPointsCount: getting the count ");
+
+        // todo later
+      //  ppcount= mFollowersCount+ mPostsCount;
+        ppcount= mFollowersCount;
+        PandaPoints.setText(String.valueOf(ppcount));
+
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(mUser.getUser_id())
+                .child(mContext.getString(R.string.db_panda_points))
+                .setValue(ppcount);
     }
 
     private void init() {
@@ -228,6 +251,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                     mFollowersCount++;
                 }
                 mFollowers.setText(String.valueOf(mFollowersCount));
+                getPandaPointsCount();
             }
 
             @Override
@@ -351,7 +375,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     }
 
     private void setupImageGrid(ArrayList<String> imgURLs){
-        GridView gridView = findViewById(R.id.gridView);
+        GridView gridView = (GridView) findViewById(R.id.gridView);
 
         int gridWidth = getResources().getDisplayMetrics().widthPixels;
         int imageWidth = gridWidth/NUM_GRID_COLUMNS;
@@ -392,7 +416,7 @@ public class ViewProfileActivity extends AppCompatActivity {
      */
     private void setupBottomNavigationView(){
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
+        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
         BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
         Menu menu = bottomNavigationViewEx.getMenu();

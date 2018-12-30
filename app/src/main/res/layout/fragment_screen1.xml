@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bg_screen1">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:src="@drawable/ic_logo"
+            app:civ_border_color="@color/white"
+            app:civ_border_width="0.5dp"
+            android:layout_marginTop="5dp"
+            android:padding="25dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Celfie"
+            android:textColor="@color/white"
+            android:textSize="45dp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Compete with your selfies!"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="23dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Introducing the Celfie app, a place to prove your awesomeness and show the world that you are the best!"
+            android:textStyle="italic"
+            android:layout_margin="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/white"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="NEXT"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:id="@+id/tvNext"/>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Have a look at the FAQs section of the app to know more"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:textColor="@color/black"
+        android:textSize="14dp"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentBottom="true"
+        android:textStyle="italic" />
+
+</RelativeLayout>

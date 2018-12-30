@@ -20,6 +20,8 @@ import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -31,9 +33,11 @@ import android.widget.Toast;
 import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
 import com.android.toseefkhan.pandog.Utils.Permissions;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -76,6 +80,7 @@ public class ShareActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
+        setupBottomNavigationView();
 
         mOpenGalleryImage= findViewById(R.id.gallery_button);
         mOpenCameraImage= findViewById(R.id.camera_button);
@@ -483,5 +488,17 @@ public class ShareActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * BottomNavigationView setup
+     */
+    private void setupBottomNavigationView(){
+        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
+        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
+        BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
+    }
 
 }

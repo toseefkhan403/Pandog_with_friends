@@ -7,5 +7,22 @@
     <color name="white">#FFF</color>
     <color name="black">#000</color>
     <color name="grey">#efbeaeae</color>
+    <color name="brightred">#ff3943</color>
+    <color name="darkred">#801b20</color>
+    <color name="skyBlue">#abffc0</color>
+    <color name="verydarkGreen">#247b37</color>
+    <color name="darkGreen">#3eb959</color>
     <color name="green">#ef41d607</color>
+    <color name="red">#e60000</color>
+    <color name="purple">#990099</color>
+    <color name="lightgreen">#efbbf9a3</color>
+
+    <color name="bg_screen1">#f64c73</color>
+    <color name="bg_screen2">#20d2bb</color>
+    <color name="bg_screen3">#3395ff</color>
+    <color name="bg_screen4">#c873f4</color>
+    <color name="bg_screen5">#a033ff</color>
+
+    <color name="activedots">#faf3f5</color>
+    <color name="inactivedots">#9b979c</color>
 </resources>
