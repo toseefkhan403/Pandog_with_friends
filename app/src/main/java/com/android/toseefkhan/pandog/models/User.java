@@ -97,6 +97,14 @@ public class User implements Parcelable {
         return email;
     }
 
+    public LatLong getLat_lng() {
+        return lat_lng;
+    }
+
+    public void setLat_lng(LatLong lat_lng) {
+        this.lat_lng = lat_lng;
+    }
+
     public void setEmail(String email) {
         this.email = email;
     }

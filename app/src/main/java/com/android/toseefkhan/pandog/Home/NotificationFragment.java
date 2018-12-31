@@ -28,18 +28,30 @@ import java.util.ArrayList;
 
 public class NotificationFragment extends Fragment {
 
+    private static final String TAG = "NotificationFragment";
 
     private RecyclerView mNotificationRecyclerView;
-    private ArrayList<Challenge> challengesList;
+    private ArrayList<Challenge> challengesList= new ArrayList<>();
     private ProgressBar progressBar;
     private NotificationsAdapter notificationsAdapter;
     private DatabaseReference mDatabaseReference;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
-        challengesList = new ArrayList<>();
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_notification, container, false);
+
+        Log.d(TAG, "onCreateView: called");
+        mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mNotificationRecyclerView.setLayoutManager(layoutManager);
+        mNotificationRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mNotificationRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        mNotificationRecyclerView.setAdapter(notificationsAdapter);
+
+        progressBar = view.findViewById(R.id.NotifProgressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
         String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
@@ -78,9 +90,12 @@ public class NotificationFragment extends Fragment {
                     }
                 });
 
+        return view;
     }
 
     private void addChallenge(String challengeKey) {
+
+        Log.d(TAG, "addChallenge: challengekey " + challengeKey);
         mDatabaseReference.child(getString(R.string.db_challenges))
                 .child(challengeKey)
                 .addValueEventListener(new ValueEventListener() {
@@ -92,7 +107,7 @@ public class NotificationFragment extends Fragment {
                             notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
                             if (progressBar != null) {
                                 if (progressBar.getVisibility() != View.GONE) {
-                                    progressBar.setVisibility(View.GONE);
+                                    //progressBar.setVisibility(View.GONE);
                                 }
                             }
                         }
@@ -106,22 +121,4 @@ public class NotificationFragment extends Fragment {
                 });
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notification, container, false);
-
-        mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mNotificationRecyclerView.setLayoutManager(layoutManager);
-
-        mNotificationRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mNotificationRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-
-        mNotificationRecyclerView.setAdapter(notificationsAdapter);
-
-
-        progressBar = view.findViewById(R.id.NotifProgressBar);
-        return view;
-    }
 }

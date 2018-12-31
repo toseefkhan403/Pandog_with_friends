@@ -25,13 +25,7 @@
                     android:layout_marginStart="5dp"
                     android:id="@+id/username"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/pandaPoints"
-                    android:layout_centerInParent="true"
-                    android:text="345"
-                    android:textSize="20sp"/>
+
 
                 <TextView
                     android:layout_width="wrap_content"

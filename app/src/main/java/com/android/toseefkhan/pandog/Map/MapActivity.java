@@ -231,9 +231,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             else if (i>level && i>4*level)
                 userList5.add(userList.get(i));
         }
+        Log.d(TAG, "setMarkerswithLevels: checking the lists " + userList1 +userList2 + userList3+ userList4+ userList5);
+
+        try{
 
         for (int i=0; i<userList1.size(); i++){
             Log.d(TAG, "onMapReady: the marker is adding of this user " + userList1.get(i));
+            Log.d(TAG, "setMarkerswithLevels: is the map null? " + mMap);
             LatLng latLng= new LatLng(userList1.get(i).getLat_lng().getLatitude(), userList1.get(i).getLat_lng().getLongitude());
             Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
                     icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList1.get(i))))
@@ -297,6 +301,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         count++;
         checkVisibility(markerList);
+
+        }catch (NullPointerException e){
+            Log.d(TAG, "setMarkerswithLevels: NullPointerException " + e.getMessage());
+        }
     }
 
     private View marker;

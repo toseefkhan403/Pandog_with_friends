@@ -55,7 +55,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     //vars
     private User mUser;
 
-    private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
+    private TextView mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
     private ProgressBar mProgressBar;
     private GridView gridView;
 //    private Toolbar toolbar;
@@ -63,7 +63,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     private CircleImageView mProfilePhoto;
     private TextView mFollow, mUnfollow, PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0,ppcount=0;
-    private ImageView mMenu;
+    private TextView mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +76,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         mDisplayName = (TextView) findViewById(R.id.display_name);
         mUsername = (TextView) findViewById(R.id.username);
         mDescription = (TextView) findViewById(R.id.description);
-        mPosts = (TextView) findViewById(R.id.tvPosts);
+     //   mPosts = (TextView) findViewById(R.id.);
         mFollowers = (TextView) findViewById(R.id.tvFollowers);
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
         gridView = (GridView) findViewById(R.id.gridView);
@@ -156,7 +156,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         isFollowing();
         getFollowingCount();
         getFollowersCount();
-        getPostsCount();
+     //   getPostsCount();
         tempGridSetup();
     }
 
@@ -207,7 +207,7 @@ public class ViewProfileActivity extends AppCompatActivity {
             }
         });
 
-        //todo set the posts(Photos) that the user's profile has
+        //todo set the posts that the user has competed in Ever and display them under his profile
 
     }
 
@@ -284,28 +284,28 @@ public class ViewProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void getPostsCount(){
-        mPostsCount = 0;
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference.child(getString(R.string.dbname_user_photos))
-                .child(mUser.getUser_id());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found post:" + singleSnapshot.getValue());
-                    mPostsCount++;
-                }
-                mPosts.setText(String.valueOf(mPostsCount));
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    private void getPostsCount(){
+//        mPostsCount = 0;
+//
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+//        Query query = reference.child(getString(R.string.dbname_user_photos))
+//                .child(mUser.getUser_id());
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
+//                    Log.d(TAG, "onDataChange: found post:" + singleSnapshot.getValue());
+//                    mPostsCount++;
+//                }
+//                mPosts.setText(String.valueOf(mPostsCount));
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
         private void setFollowing(){
         Log.d(TAG, "setFollowing: updating UI for following this user");

@@ -45,9 +45,6 @@
     <string name="profile_photo">profile_photo</string>
     <string name="string_share">Share</string>
     <string name="selected_bitmap">selected_bitmap</string>
-    <string name="default_notification_channel_id">PandogNotificationChannel</string>
-    <string name="db_user_challenges">User_Challenges</string>
-    <string name="db_challenges">Challenges</string>
 
 
 
@@ -96,6 +93,12 @@
         <item>The ultimate BLACK badge is owned by the top 20% users of the Celfie app.</item>
         <item>Click the "EDIT YOUR PROFILE" button, go to the bottom and log out of the app.</item>
     </string-array>
+    <string name="default_notification_channel_id">PandogNotificationChannel</string>
+    <string name="db_user_challenges">User_Challenges</string>
+    <string name="db_challenges">Challenges</string>
+
+
+
 
 
 </resources>

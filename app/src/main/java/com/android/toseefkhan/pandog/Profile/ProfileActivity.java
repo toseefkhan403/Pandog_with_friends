@@ -63,7 +63,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     //widgets
-    private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
+    private TextView  mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
     private ProgressBar mProgressBar;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
@@ -89,7 +89,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         getFollowersCount();
         getFollowingCount();
-        getPostsCount();
+   //     getPostsCount();
 
 
     }
@@ -153,7 +153,7 @@ public class ProfileActivity extends AppCompatActivity {
         mDisplayName = (TextView) findViewById(R.id.display_name);
         mUsername = (TextView) findViewById(R.id.username);
         mDescription = (TextView) findViewById(R.id.description);
-        mPosts = (TextView) findViewById(R.id.tvPosts);
+      //  mPosts = (TextView) findViewById(R.id.tvPosts);
         mFollowers = (TextView) findViewById(R.id.tvFollowers);
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
         PandaPoints= findViewById(R.id.pandaPoints);
@@ -196,6 +196,7 @@ public class ProfileActivity extends AppCompatActivity {
                     mFollowersCount++;
                 }
                 mFollowers.setText(String.valueOf(mFollowersCount));
+                getPandaPointsCount();
             }
 
             @Override
@@ -228,29 +229,29 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    private void getPostsCount(){
-        mPostsCount = 0;
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference.child(getString(R.string.dbname_user_photos))
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found post:" + singleSnapshot.getValue());
-                    mPostsCount++;
-                }
-                mPosts.setText(String.valueOf(mPostsCount));
-                getPandaPointsCount();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    private void getPostsCount(){
+//        mPostsCount = 0;
+//
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+//        Query query = reference.child(getString(R.string.dbname_user_photos))
+//                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
+//                    Log.d(TAG, "onDataChange: found post:" + singleSnapshot.getValue());
+//                    mPostsCount++;
+//                }
+//                mPosts.setText(String.valueOf(mPostsCount));
+//                getPandaPointsCount();
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     /**
      * Responsible for setting up the profile toolbar

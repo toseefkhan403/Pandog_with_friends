@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/white_pink_border_bottom">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/NotifImageView"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
         android:layout_centerVertical="true"
         android:layout_marginLeft="20dp"
         app:civ_border_color="@color/blue"
@@ -20,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@+id/NotifImageView"
         android:textSize="25sp"
+        android:layout_margin="20dp"
         tools:text="abc challenged you" />
 
 </RelativeLayout>
