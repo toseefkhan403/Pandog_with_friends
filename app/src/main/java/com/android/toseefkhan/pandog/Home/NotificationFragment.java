@@ -28,21 +28,35 @@ import java.util.ArrayList;
 
 public class NotificationFragment extends Fragment {
 
+    private static final String TAG = "NotificationFragment";
 
     private RecyclerView mNotificationRecyclerView;
-    private ArrayList<Challenge> challengesList;
+    private ArrayList<Challenge> challengesList = new ArrayList<>();
     private ProgressBar progressBar;
     private NotificationsAdapter notificationsAdapter;
     private DatabaseReference mDatabaseReference;
 
+
+    @Nullable
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_notification, container, false);
 
-        challengesList = new ArrayList<>();
+        Log.d(TAG, "onCreateView: called");
+        mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
 
-        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        progressBar = view.findViewById(R.id.NotifProgressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
+        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        mNotificationRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mNotificationRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mNotificationRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
+        NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
+        mNotificationRecyclerView.setAdapter(notificationAdapter);
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -57,7 +71,6 @@ public class NotificationFragment extends Fragment {
                             Log.d("String", "ChildAdded" + s);
                             addChallenge(ChallengeKey);
                         }
-                        Log.d("ChildEventListener", "Not exist");
                     }
 
                     @Override
@@ -79,9 +92,12 @@ public class NotificationFragment extends Fragment {
                     }
                 });
 
+        return view;
     }
 
     private void addChallenge(String challengeKey) {
+
+        Log.d(TAG, "addChallenge: challengekey " + challengeKey);
         mDatabaseReference.child(getString(R.string.db_challenges))
                 .child(challengeKey)
                 .addValueEventListener(new ValueEventListener() {
@@ -97,6 +113,8 @@ public class NotificationFragment extends Fragment {
                                 }
                             }
                         }
+                        Log.d(TAG, "onDataChange: are you empty " + challengesList.size());
+                        Log.d(TAG, "Adpater" + notificationsAdapter.getItemCount());
                     }
 
                     @Override
@@ -105,24 +123,7 @@ public class NotificationFragment extends Fragment {
                         Log.d("DatabaseError", databaseError.toString());
                     }
                 });
+
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notification, container, false);
-
-        mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mNotificationRecyclerView.setLayoutManager(layoutManager);
-
-        mNotificationRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mNotificationRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-
-        mNotificationRecyclerView.setAdapter(notificationsAdapter);
-
-
-        progressBar = view.findViewById(R.id.NotifProgressBar);
-        return view;
-    }
 }

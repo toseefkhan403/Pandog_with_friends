@@ -40,13 +40,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         Challenge challenge = challengesList.get(position);
         UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, null, "");
 
-        holder.notifTextView.setText(challenge.getChallengedName());
+        holder.notifTextView.setText(challenge.getChallengerUserUid());
     }
 
     @Override
     public int getItemCount() {
-
-        return (challengesList != null) ? 0 : challengesList.size();
+        return (challengesList == null) ? 0 : challengesList.size();
     }
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {

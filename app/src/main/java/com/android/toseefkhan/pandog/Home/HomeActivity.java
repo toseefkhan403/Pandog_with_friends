@@ -61,7 +61,7 @@ public class HomeActivity extends AppCompatActivity {
         mViewPager.setAdapter(adapter);
 
         TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
+        tabLayout.setupWithViewPager(mViewPager, true);
 
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);

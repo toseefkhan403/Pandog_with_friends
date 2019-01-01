@@ -1,5 +1,7 @@
 package com.android.toseefkhan.pandog.Notifications;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -22,6 +25,8 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
 public class PandogMessagingService extends FirebaseMessagingService {
+
+    private static final String NOTIFICATION_CHANNEL_ID = "1001010101";
 
     @Override
     public void onNewToken(String token) {
@@ -95,6 +100,24 @@ public class PandogMessagingService extends FirebaseMessagingService {
 
         builder.setContentIntent(notificationPendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mNotificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, getResources().getString(R.string.default_notification_channel_id),
+                    importance);
+            mNotificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+
+            mNotificationChannel.enableLights(true);
+            mNotificationChannel.setLightColor(Color.YELLOW);
+
+            mNotificationChannel.canShowBadge();
+
+            mNotificationChannel.enableVibration(true);
+            mNotificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
+            notificationManager.createNotificationChannel(mNotificationChannel);
+        }
+
         notificationManager.notify(1, builder.build());
     }
 

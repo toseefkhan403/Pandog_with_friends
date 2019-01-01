@@ -6,15 +6,14 @@
     tools:context=".Home.HomeActivity">
 
 
-
-    <!-- Top toolbar-->
+    <!--&lt;!&ndash; Top toolbar&ndash;&gt;
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <include layout="@layout/layout_top_tabs"/>
 
-    </RelativeLayout>
+
+    </RelativeLayout>-->
 
 
     <android.support.v4.view.ViewPager
@@ -23,6 +22,7 @@
         android:id="@+id/container"
         android:layout_marginBottom="55dp">
 
+        <include layout="@layout/layout_top_tabs" />
 
     </android.support.v4.view.ViewPager>
     <!--bottom navigation view-->
