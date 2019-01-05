@@ -42,9 +42,9 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_alignParentBottom="true"
-                android:background="@color/white">
+                android:layout_height="50dp"
+                android:background="@color/white"
+                android:layout_alignParentBottom="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -55,41 +55,32 @@
                     <RelativeLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="34">
+                        android:layout_weight="50">
 
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_centerInParent="true"
-                            android:background="@drawable/ic_grid"/>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="34">
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                        <Button
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_centerInParent="true"
                             android:id="@+id/gallery_button"
-                            android:background="@drawable/ic_gallery_image"/>
+                            android:text="gallery"
+                            android:textColor="@color/white"
+                            android:background="@drawable/white_rounded_purple_button"/>
 
                     </RelativeLayout>
 
                     <RelativeLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="34">
+                        android:layout_weight="50">
 
-                        <ImageView
-                            android:layout_width="35dp"
-                            android:layout_height="35dp"
+                        <Button
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:id="@+id/camera_button"
                             android:layout_centerInParent="true"
-                            android:background="@drawable/ic_camera"/>
+                            android:textColor="@color/white"
+                            android:text="camera"
+                            android:background="@drawable/white_rounded_purple_button"/>
 
                     </RelativeLayout>
 

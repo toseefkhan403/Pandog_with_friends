@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
@@ -24,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -37,6 +39,7 @@ import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
 import com.android.toseefkhan.pandog.Utils.Permissions;
+import com.android.toseefkhan.pandog.models.User;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -68,12 +71,13 @@ public class ShareActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private Uri capturedImageUri;
     // private Spinner directorySpinner;
-    private ImageView mOpenGalleryImage;
-    private ImageView mOpenCameraImage;
+    private Button mOpenGalleryImage;
+    private Button mOpenCameraImage;
 
     //vars
     private ArrayList<String> directories;
     private String mAppend = "file:/";
+    private User mChosenUser;
 
 
     @Override
@@ -90,6 +94,17 @@ public class ShareActivity extends AppCompatActivity {
         mProgressBar = findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.GONE);
         tvNext = findViewById(R.id.tvNext);
+
+        Intent i = getIntent();
+        if (i.hasExtra("chosen_user")){
+            Log.d(TAG, "onCreate: the user " + i.getExtras());
+
+            mChosenUser = getUserFromBundle();
+            Log.d(TAG, "onCreate: the chosen user " + mChosenUser);
+
+            //todo this user should be automatically selected in the NextActivity
+            Toast.makeText(mContext, "Please upload a photo to compete with: " + mChosenUser.getUsername() , Toast.LENGTH_SHORT).show();
+        }
 
         mOpenGallery.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,6 +206,18 @@ public class ShareActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(TAG, "onCreate: caught a exception" + e.getMessage());
         }
+    }
+
+    private User getUserFromBundle(){
+        Log.d(TAG, "getUserFromBundle: " + getIntent().getExtras());
+
+            Bundle bundle = getIntent().getExtras();
+
+            if(bundle != null){
+                return bundle.getParcelable("chosen_user");
+            }else{
+                return null;
+            }
     }
 
     private int getTask() {

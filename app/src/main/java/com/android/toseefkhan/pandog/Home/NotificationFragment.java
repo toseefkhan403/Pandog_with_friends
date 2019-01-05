@@ -15,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.RecyclerViewAdapter;
 import com.android.toseefkhan.pandog.models.Challenge;
+import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,17 +46,19 @@ public class NotificationFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: called");
         mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getContext());
-        mNotificationRecyclerView.setLayoutManager(layoutManager);
-        mNotificationRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mNotificationRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        mNotificationRecyclerView.setAdapter(notificationsAdapter);
 
         progressBar = view.findViewById(R.id.NotifProgressBar);
         progressBar.setVisibility(View.VISIBLE);
 
-        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
+
+        String userUid = "something";
+        try{
+            userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        }catch (NullPointerException e){
+            Log.d(TAG, "onCreateView: " + e.getMessage());
+        }
+
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -107,10 +111,12 @@ public class NotificationFragment extends Fragment {
                             notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
                             if (progressBar != null) {
                                 if (progressBar.getVisibility() != View.GONE) {
-                                    //progressBar.setVisibility(View.GONE);
+                                    progressBar.setVisibility(View.GONE);
                                 }
                             }
                         }
+                        Log.d(TAG, "onDataChange: are you empty " + challengesList);
+                        initUserListRecyclerView();
                     }
 
                     @Override
@@ -119,6 +125,17 @@ public class NotificationFragment extends Fragment {
                         Log.d("DatabaseError", databaseError.toString());
                     }
                 });
+
+    }
+
+    private void initUserListRecyclerView() {
+
+        mNotificationRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mNotificationRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mNotificationRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+
+        NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
+        mNotificationRecyclerView.setAdapter(notificationAdapter);
     }
 
 }

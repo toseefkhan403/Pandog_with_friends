@@ -29,6 +29,7 @@ import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
 import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
 import com.facebook.login.LoginManager;
@@ -72,6 +73,8 @@ public class ProfileActivity extends AppCompatActivity {
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
     private RelativeLayout relativeLayout;
     private TextView mMenu;
+    private ProgressBar pb;
+    private RelativeLayout profile;
 
 
     @Override
@@ -84,6 +87,7 @@ public class ProfileActivity extends AppCompatActivity {
        // setupToolbar();
         setupActivityWidgets();
         hideWidgets();
+        setBackGroundTint();
         setupFirebaseAuth();
         initImageLoader();
 
@@ -94,8 +98,61 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public void onBackPressed() {
+    private void setBackGroundTint() {
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        reference.child(getString(R.string.dbname_users))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .orderByChild(getString(R.string.db_level))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onDataChange: datasnapshot " + dataSnapshot);
+                        Log.d(TAG, "onDataChange: datasnapshot.getValue " + dataSnapshot.getValue());
+
+                        User user = dataSnapshot.getValue(User.class);
+                        String level =user.getLevel();
+
+                        setProfileColor(level);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void setProfileColor(String level){
+
+        Log.d(TAG, "setTint: the level of the current user is " + level);
+
+        switch (level){
+
+            case "BLACK":
+                profile.setBackgroundColor(getResources().getColor(R.color.black));
+                break;
+
+            case "PURPLE":
+                profile.setBackgroundColor(getResources().getColor(R.color.purple));
+                break;
+
+            case "BLUE":
+                profile.setBackgroundColor(getResources().getColor(R.color.blue));
+                break;
+
+            case "GREEN":
+                profile.setBackgroundColor(getResources().getColor(R.color.lightgreen));
+                break;
+
+            case "GREY":
+                profile.setBackgroundColor(getResources().getColor(R.color.grey));
+                break;
+
+             default:
+                 profile.setBackgroundColor(getResources().getColor(R.color.white));
+                 break;
+        }
 
     }
 
@@ -130,7 +187,7 @@ public class ProfileActivity extends AppCompatActivity {
         //User user = userSettings.getUser();
         UserAccountSettings settings = userSettings.getSettings();
 
-        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, pb, "");
 
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
@@ -147,6 +204,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private void setupActivityWidgets(){
+        profile = findViewById(R.id.rel_profile);
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProfilePhoto = findViewById(R.id.profile_photo);
         relativeLayout= findViewById(R.id.main_profile);
@@ -161,6 +219,7 @@ public class ProfileActivity extends AppCompatActivity {
 //        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
        bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         mFirebaseMethods = new FirebaseMethods(mContext);
+        pb = findViewById(R.id.pb);
         mEditProfile=(TextView) findViewById(R.id.textEditProfile);
         mEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override

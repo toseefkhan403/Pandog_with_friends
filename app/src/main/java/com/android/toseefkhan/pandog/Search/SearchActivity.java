@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
@@ -145,11 +146,12 @@ public class SearchActivity extends AppCompatActivity {
             TextView userEmailView = convertView.findViewById(R.id.UserEmailView);
             userEmailView.setText(user.getEmail());
 
+            ProgressBar pb = convertView.findViewById(R.id.pb);
 
             String PhotoUrl = user.getProfile_photo();
 
             CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
-            UniversalImageLoader.setImage(PhotoUrl, photoView, null, "");
+            UniversalImageLoader.setImage(PhotoUrl, photoView, pb, "");
 
             profilesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

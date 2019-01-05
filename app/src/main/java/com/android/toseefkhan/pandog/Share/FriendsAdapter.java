@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -148,7 +149,7 @@ public class FriendsAdapter extends BaseAdapter {
 
         Log.i("User", user.getUser_id());
         if (position == mSelectedUserPosition) {
-            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.black));
+            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.skyBlue));
         } else {
             convertView.setBackgroundColor(mContext.getResources().getColor(R.color.white));
         }
@@ -161,7 +162,9 @@ public class FriendsAdapter extends BaseAdapter {
         String PhotoUrl = user.getProfile_photo();
 
         CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
-        UniversalImageLoader.setImage(PhotoUrl, photoView, null, "");
+        ProgressBar pb = convertView.findViewById(R.id.pb);
+        UniversalImageLoader.setImage(PhotoUrl, photoView, pb, "");
+
         return convertView;
     }
 }

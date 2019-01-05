@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +67,7 @@ public class EditProfileActivity extends AppCompatActivity {
     private Context mContext=EditProfileActivity.this;
     private CircleImageView mProfilePhoto;
     private Button mLogOut;
+    private ProgressBar pb;
 
     //vars
     private UserSettings mUserSettings;
@@ -82,6 +84,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mChangeProfilePhoto = findViewById(R.id.changeProfilePhoto);
         mLogOut = findViewById(R.id.log_out_button);
         mFirebaseMethods = new FirebaseMethods(mContext);
+        pb = findViewById(R.id.pb);
 
 
         //setProfileImage();
@@ -220,7 +223,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mUserSettings = userSettings;
         //User user = userSettings.getUser();
         UserAccountSettings settings = userSettings.getSettings();
-        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, pb, "");
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
         mDescription.setText(settings.getDescription());

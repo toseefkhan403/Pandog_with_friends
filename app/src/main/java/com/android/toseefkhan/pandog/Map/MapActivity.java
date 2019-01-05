@@ -166,10 +166,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
 
-
         getUsersFromArea();
     }
-
 
     private void getUsersFromArea(){
 
@@ -178,14 +176,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .child(getString(R.string.dbname_users));
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
                     Log.d(TAG, "onDataChange: found user list: " + singleSnapshot.getValue());  // gives the whole user objects
 
                     try{
                         User user= singleSnapshot.getValue(User.class);
                         Log.d(TAG, "onDataChange: found the lng of the user: "+ user.getLat_lng().getLatitude() + " " + user.getLat_lng().getLongitude());
-                        Log.d(TAG, "onDataChange: the user satisfying the coordinates " + user.getUsername().toString());
+                        Log.d(TAG, "onDataChange: the user satisfying the coordinates " + user.getUsername());
                         mUserList.add(user);
                         }catch (Exception e){
                             Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
@@ -203,108 +201,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private ArrayList<Marker> markerList = new ArrayList<>();
 
-    private int count = 0;
+
     private void setMarkerswithLevels(ArrayList<User> mUserList) {
 
-        ArrayList<User> userList = new ArrayList<>();    //mUserList instead
-        ArrayList<User> userList1 = new ArrayList<>();
-        ArrayList<User> userList2 = new ArrayList<>();
-        ArrayList<User> userList3 = new ArrayList<>();
-        ArrayList<User> userList4 = new ArrayList<>();
-        ArrayList<User> userList5 = new ArrayList<>();
 
-        if (mUserList != null)
-            userList = sortList(mUserList);         //sortList(mUserList);
-
-        int level = userList.size()/5;
-
-        for (int i=0; i<userList.size(); i++ ){
-
-            if (i<=level)
-                userList1.add(userList.get(i));         //level 5
-            else if (i>level && i<=2*level)
-                userList2.add(userList.get(i));         //level 4
-            else if (i>level && i<=3*level)
-                userList3.add(userList.get(i));
-            else if (i>level && i<=4*level)
-                userList4.add(userList.get(i));
-            else if (i>level && i>4*level)
-                userList5.add(userList.get(i));
-        }
-        Log.d(TAG, "setMarkerswithLevels: checking the lists " + userList1 +userList2 + userList3+ userList4+ userList5);
-
-        try{
-
-        for (int i=0; i<userList1.size(); i++){
-            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList1.get(i));
-            Log.d(TAG, "setMarkerswithLevels: is the map null? " + mMap);
-            LatLng latLng= new LatLng(userList1.get(i).getLat_lng().getLatitude(), userList1.get(i).getLat_lng().getLongitude());
+        for (int i=0; i<mUserList.size(); i++){
+            Log.d(TAG, "onMapReady: the marker is adding of this user " + mUserList.get(i));
+            LatLng latLng= new LatLng(mUserList.get(i).getLat_lng().getLatitude(), mUserList.get(i).getLat_lng().getLongitude());
             Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
-                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList1.get(i))))
-                    .title(userList1.get(i).getUsername())
-                    .snippet("Points: " + String.valueOf(userList1.get(i).getPanda_points())));
-            marker.setTag(userList1.get(i));
+                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,mUserList.get(i))))
+                    .title(mUserList.get(i).getUsername())
+                    .snippet("Points: " + String.valueOf(mUserList.get(i).getPanda_points())));
+            marker.setTag(mUserList.get(i));
             markerList.add(marker);                 //needs this for the recycler view
         }
 
-        count++;
-
-        for (int i=0; i<userList2.size(); i++){
-            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList2.get(i));
-            LatLng latLng= new LatLng(userList2.get(i).getLat_lng().getLatitude(), userList2.get(i).getLat_lng().getLongitude());
-            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
-                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList2.get(i))))
-                    .title(userList2.get(i).getUsername())
-                    .snippet("Points: " + String.valueOf(userList2.get(i).getPanda_points())));
-            marker.setTag(userList2.get(i));
-            markerList.add(marker);                 //needs this for the recycler view
-        }
-
-        count++;
-
-        for (int i=0; i<userList3.size(); i++){
-            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList3.get(i));
-            LatLng latLng= new LatLng(userList3.get(i).getLat_lng().getLatitude(), userList3.get(i).getLat_lng().getLongitude());
-            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
-                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList3.get(i))))
-                    .title(userList3.get(i).getUsername())
-                    .snippet("Points: " + String.valueOf(userList3.get(i).getPanda_points())));
-            marker.setTag(userList3.get(i));
-            markerList.add(marker);                 //needs this for the recycler view
-        }
-
-        count++;
-
-        for (int i=0; i<userList4.size(); i++){
-            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList4.get(i));
-            LatLng latLng= new LatLng(userList4.get(i).getLat_lng().getLatitude(), userList4.get(i).getLat_lng().getLongitude());
-            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
-                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList4.get(i))))
-                    .title(userList4.get(i).getUsername())
-                    .snippet("Points: " + String.valueOf(userList4.get(i).getPanda_points())));
-            marker.setTag(userList4.get(i));
-            markerList.add(marker);                 //needs this for the recycler view
-        }
-
-        count++;
-
-        for (int i=0; i<userList5.size(); i++){
-            Log.d(TAG, "onMapReady: the marker is adding of this user " + userList5.get(i));
-            LatLng latLng= new LatLng(userList5.get(i).getLat_lng().getLatitude(), userList5.get(i).getLat_lng().getLongitude());
-            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
-                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,userList5.get(i))))
-                    .title(userList5.get(i).getUsername())
-                    .snippet("Points: " + String.valueOf(userList5.get(i).getPanda_points())));
-            marker.setTag(userList5.get(i));
-            markerList.add(marker);                 //needs this for the recycler view
-        }
-
-        count++;
         checkVisibility(markerList);
 
-        }catch (NullPointerException e){
-            Log.d(TAG, "setMarkerswithLevels: NullPointerException " + e.getMessage());
-        }
     }
 
     private View marker;
@@ -312,28 +225,27 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @SuppressLint({"NewApi", "StaticFieldLeak"})
     private Bitmap createMarker(Context context, final User user) {
 
-        switch (count){
+        switch (user.getLevel()){
 
-            case 0:
+            case "BLACK":
                 marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
                 break;
 
-            case 1:
+            case "PURPLE":
                 marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout2, null);
                 break;
 
-            case 2:
+            case "BLUE":
                 marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout3, null);
                 break;
 
-            case 3:
+            case "GREEN":
                 marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout4, null);
                 break;
 
-            case 4:
+            case "GREY":
                 marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout5, null);
                 break;
-
         }
 
         CircleImageView markerImage = marker.findViewById(R.id.user_dp);
@@ -360,23 +272,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         return bitmap;
     }
-
-
-    private ArrayList<User> sortList(ArrayList<User> userList) {
-
-        Collections.sort(userList, new Comparator<User>() {
-            @Override
-            public int compare(User o1, User o2) {
-                return Integer.valueOf(o2.getPanda_points()).compareTo(Integer.valueOf(o1.getPanda_points()));
-            }
-        });
-
-        for (int i=0; i<userList.size();i++)
-            Log.d(TAG, "sortList: this is how the sorted list looks " + userList.get(i));
-
-
-        return userList;
-    }//this should sort the list and provide the highest panda points holder in the currently bounded map area whose marker will be the biggest on the map
 
     private void getLastKnownLocation() {
         Log.d(TAG, "getLastKnownLocation: map activity called.");
@@ -926,6 +821,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         }
     }
+
+    private ArrayList<User> sortList(ArrayList<User> userList) {
+
+        Collections.sort(userList, new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return Integer.valueOf(o2.getPanda_points()).compareTo(Integer.valueOf(o1.getPanda_points()));
+            }
+        });
+
+        return userList;
+    }//this should sort the list and provide the highest panda points holder in the currently bounded map area whose marker will be the biggest on the map
 
 
     /**

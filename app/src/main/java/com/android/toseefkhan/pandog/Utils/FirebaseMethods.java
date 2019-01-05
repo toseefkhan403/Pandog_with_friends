@@ -1,5 +1,8 @@
 package com.android.toseefkhan.pandog.Utils;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -252,7 +255,7 @@ public class FirebaseMethods {
         }
 
         Bitmap bmp = BitmapFactory.decodeStream(imageStream);
-        bmp = Bitmap.createScaledBitmap(bmp, 120 , 120, true);
+        bmp = Bitmap.createScaledBitmap(bmp, 100 , 100, true);
 
         byte[] bytes = ImageManager.getBytesFromBitmap(bmp, 100);
 

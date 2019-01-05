@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
@@ -61,16 +62,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         //for pp
         ImageLoader imageLoader=ImageLoader.getInstance();
         imageLoader.displayImage(mUserList.get(position).getProfile_photo(),holder.pp);
+        holder.pb.setVisibility(View.GONE);
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-  //      Bitmap bm= ((BitmapDrawable)holder.pp.getDrawable()).getBitmap();
         if (mUserList.get(position).getUser_id().equals(uid) )
             holder.userName.setText(mUserList.get(position).getUsername()+ " (You)");
         else
             holder.userName.setText(mUserList.get(position).getUsername());
 
-
+        //todo set the local champion title here
         holder.email.setText(mUserList.get(position).getEmail());
 
         Log.d(TAG, "onBindViewHolder: the pp is " + mUserList.get(position).getProfile_photo());
@@ -97,6 +98,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         CircleImageView pp;
         TextView userName, email;
+        ProgressBar pb;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -104,7 +106,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             pp= itemView.findViewById(R.id.UserProfilePictureView);
             userName= itemView.findViewById(R.id.UserNameView);
             email= itemView.findViewById(R.id.UserEmailView);
-    }
-
+            pb = itemView.findViewById(R.id.pb);
+            pb.setVisibility(View.VISIBLE);
+        }
     }
 }

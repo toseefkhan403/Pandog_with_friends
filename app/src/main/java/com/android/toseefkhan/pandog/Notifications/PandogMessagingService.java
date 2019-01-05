@@ -23,6 +23,8 @@ import com.google.firebase.messaging.RemoteMessage;
 
 public class PandogMessagingService extends FirebaseMessagingService {
 
+    private static final String TAG = "PandogMessagingService";
+
     @Override
     public void onNewToken(String token) {
         Log.e("TokenRegistration", token);
@@ -31,6 +33,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(final RemoteMessage remoteMessage) {
+        Log.d(TAG, "onMessageReceived: remoteMessage " + remoteMessage);
         final String notificationTitle = "";
         final String notificationBody = "He wants to Challenge you";
         String challengerUserUid = "";
@@ -61,7 +64,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                         });
             }
         } catch (NullPointerException exception) {
-            Log.e("remoteMessage", exception.getMessage());
+            Log.d(TAG, "onMessageReceived: NullPointerException " + exception.getMessage());
         }
 
     }
@@ -69,6 +72,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
     private void buildNotification
             (RemoteMessage remoteMessage, String notificationTitle, String notificationBody, User user) {
 
+        Log.d(TAG, "buildNotification: " + remoteMessage + notificationTitle + notificationBody + user);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
                 getString(R.string.default_notification_channel_id));
 
@@ -82,7 +86,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 pendingIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
-        builder.setSmallIcon(R.mipmap.ic_launcher)
+        builder.setSmallIcon(R.drawable.ic_logo)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentTitle(notificationTitle)
                 .setColor(Color.RED)
@@ -91,9 +95,9 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 .setOnlyAlertOnce(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentText(notificationBody);
+                .setContentText(notificationBody)
+                .setContentIntent(notificationPendingIntent);
 
-        builder.setContentIntent(notificationPendingIntent);
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(1, builder.build());
     }

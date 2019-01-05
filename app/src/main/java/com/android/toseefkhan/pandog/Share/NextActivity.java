@@ -54,6 +54,7 @@ public class NextActivity extends AppCompatActivity {
     private int imageCount = 0;
     private String imgUrl;
     private Intent intent;
+    private ImageView image;
 
     private FriendsAdapter mFriendsAdapter;
 
@@ -66,6 +67,7 @@ public class NextActivity extends AppCompatActivity {
         mFirebaseMethods = new FirebaseMethods(NextActivity.this);
         mCaption = findViewById(R.id.caption);
         friendsListView = findViewById(R.id.FriendsListView);
+        image = findViewById(R.id.imageShare);
         setupFirebaseAuth();
 
         setupFriendsList();
@@ -98,6 +100,11 @@ public class NextActivity extends AppCompatActivity {
             return;
         }
 
+        if (image == null){
+            Toast.makeText(mContext, "Please wait for the image to load", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Log.d(TAG, "Attempting to upload new photo");
         String caption = mCaption.getText().toString();
 
@@ -120,14 +127,13 @@ public class NextActivity extends AppCompatActivity {
     private void setImage() {
         intent = getIntent();
         //Image view that is present in the NextActivity
-        ImageView image = findViewById(R.id.imageShare);
 
         if (intent.hasExtra(getString(R.string.selected_image))) {
             imgUrl = intent.getStringExtra(getString(R.string.selected_image));
             Log.d(TAG, "setImage: got new image uri: " + imgUrl);
 
             ImageLoader imageLoader = ImageLoader.getInstance();
-            imageLoader.displayImage(imgUrl.toString(), image);
+            imageLoader.displayImage(imgUrl, image);
         }
     }
 

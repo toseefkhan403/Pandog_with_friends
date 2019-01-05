@@ -15,6 +15,7 @@ public class User implements Parcelable {
     private LatLong lat_lng;
     private int panda_points;
     private String bitmap;
+    private String level;
 
     public User() {
     }
@@ -33,6 +34,14 @@ public class User implements Parcelable {
         this.user_id = user_id;
         this.email = email;
         this.username = username;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 
     public String getBitmap() {

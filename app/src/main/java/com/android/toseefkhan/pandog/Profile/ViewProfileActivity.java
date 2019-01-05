@@ -4,18 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
@@ -25,6 +30,7 @@ import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.koushikdutta.async.http.filter.DataRemainingException;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -58,20 +65,27 @@ public class ViewProfileActivity extends AppCompatActivity {
     private TextView mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
     private ProgressBar mProgressBar;
     private GridView gridView;
-//    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
     private CircleImageView mProfilePhoto;
     private TextView mFollow, mUnfollow, PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0,ppcount=0;
     private TextView mMenu;
+    private ProgressBar pb;
+    private RelativeLayout profile;
+    private Button mButtonChallenge;
+    private RelativeLayout relativeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: started.");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_activity_profile);
+        mButtonChallenge = findViewById(R.id.challenge_me);
+        relativeLayout = findViewById(R.id.reltohide);
+        relativeLayout.setVisibility(View.INVISIBLE);
+        profile = findViewById(R.id.rel_profile);
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
-        mProgressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.VISIBLE);
         mProfilePhoto = findViewById(R.id.profile_photo);
         mDisplayName = (TextView) findViewById(R.id.display_name);
         mUsername = (TextView) findViewById(R.id.username);
@@ -83,12 +97,27 @@ public class ViewProfileActivity extends AppCompatActivity {
         PandaPoints= findViewById(R.id.pandaPoints);
         mMenu = findViewById(R.id.menu);
         mMenu.setVisibility(View.GONE);
-//        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
-//        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
         bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         mFirebaseMethods = new FirebaseMethods(mContext);
         mFollow= findViewById(R.id.textFollow);
         mUnfollow= findViewById(R.id.textUnFollow);
+        pb = findViewById(R.id.pb);
+
+        mButtonChallenge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: navigating to share screen ");
+
+                if (isFollow){
+                    Intent intent = new Intent(mContext, ShareActivity.class);
+                    Log.d(TAG, "onClick: the user " + mUser);
+                    intent.putExtra("chosen_user", mUser);
+                    startActivity(intent);
+                }else {
+                    Snackbar.make(profile,"You need to follow this user for a challenge" , Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         mFollow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,6 +176,7 @@ public class ViewProfileActivity extends AppCompatActivity {
             mUser = getUserFromBundle();
             Log.d(TAG, "onCreate: mUser" + mUser);
             init();
+            checkLevel(mUser);
         }catch (NullPointerException e){
             Log.e(TAG, "onCreateView: NullPointerException: "  + e.getMessage() );
             Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();
@@ -158,6 +188,59 @@ public class ViewProfileActivity extends AppCompatActivity {
         getFollowersCount();
      //   getPostsCount();
         tempGridSetup();
+    }
+
+    private void checkLevel(User user){
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child(getString(R.string.dbname_users))
+                .child(user.getUser_id())
+                .orderByChild(getString(R.string.db_level))
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        User currentUser = dataSnapshot.getValue(User.class);
+                        setProfileColor(currentUser.getLevel());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void setProfileColor(String level){
+
+        Log.d(TAG, "setTint: the level of the current user is " + level);
+
+        switch (level){
+
+            case "BLACK":
+                profile.setBackgroundColor(getResources().getColor(R.color.black));
+                break;
+
+            case "PURPLE":
+                profile.setBackgroundColor(getResources().getColor(R.color.purple));
+                break;
+
+            case "BLUE":
+                profile.setBackgroundColor(getResources().getColor(R.color.blue));
+                break;
+
+            case "GREEN":
+                profile.setBackgroundColor(getResources().getColor(R.color.lightgreen));
+                break;
+
+            case "GREY":
+                profile.setBackgroundColor(getResources().getColor(R.color.grey));
+                break;
+
+            default:
+                profile.setBackgroundColor(getResources().getColor(R.color.black));
+                break;
+        }
+
     }
 
 
@@ -211,6 +294,8 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     }
 
+    private boolean isFollow = false;
+
     private void isFollowing() {
         Log.d(TAG, "isFollowing: checking if following this users.");
         setUnfollowing();
@@ -226,6 +311,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                     Log.d(TAG, "onDataChange: found user:" + singleSnapshot.getValue());
 
                     setFollowing();
+                    isFollow= true;
                 }
             }
 
@@ -234,7 +320,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     private void getFollowersCount(){
@@ -311,12 +396,14 @@ public class ViewProfileActivity extends AppCompatActivity {
         Log.d(TAG, "setFollowing: updating UI for following this user");
         mFollow.setVisibility(View.GONE);
         mUnfollow.setVisibility(View.VISIBLE);
+        isFollow = true;
     }
 
     private void setUnfollowing(){
         Log.d(TAG, "setFollowing: updating UI for unfollowing this user");
         mFollow.setVisibility(View.VISIBLE);
         mUnfollow.setVisibility(View.GONE);
+        isFollow = false;
     }
 
 
@@ -343,18 +430,13 @@ public class ViewProfileActivity extends AppCompatActivity {
         //User user = userSettings.getUser();
         UserAccountSettings settings = userSettings.getSettings();
 
-        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "");
+        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, pb, "");
 
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
         mDescription.setText(settings.getDescription());
         mProgressBar.setVisibility(View.GONE);
-    }
-
-    private void initImageLoader() {
-
-        UniversalImageLoader universalImageLoader=new UniversalImageLoader(mContext);
-        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+        relativeLayout.setVisibility(View.VISIBLE);
     }
 
     private void tempGridSetup(){
@@ -383,12 +465,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         GridImageAdapter adapter = new GridImageAdapter(mContext, R.layout.layout_grid_image_view, "", imgURLs);
         gridView.setAdapter(adapter);
-    }
-
-    private void setProfileImage(){
-        Log.d(TAG, "setProfileImage: setting profile photo.");
-        String imgURL = "i.redd.it/aw7pv8jq4zzy.jpg";
-        UniversalImageLoader.setImage(imgURL, mProfilePhoto, mProgressBar, "https://");
     }
 
 

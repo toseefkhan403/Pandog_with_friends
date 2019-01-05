@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
@@ -19,6 +20,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder> {
 
+    private static final String TAG = "NotificationsAdapter";
     private ArrayList<Challenge> challengesList;
     private Context mContext;
 
@@ -30,16 +32,16 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     @NonNull
     @Override
     public NotificationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(mContext)
+        View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.layout_notif_item, parent, false);
-        Log.d("NotificationsAdapter", "onCreateViewHolder: called");
+        Log.d(TAG, "onCreateViewHolder: called");
         return new NotificationViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
         Challenge challenge = challengesList.get(position);
-        UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, null, "");
+        UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, holder.pb, "");
 
         holder.notifTextView.setText(challenge.getChallengedName());
     }
@@ -47,18 +49,20 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     @Override
     public int getItemCount() {
 
-        return (challengesList != null) ? 0 : challengesList.size();
+        return (challengesList == null) ? 0 : challengesList.size();
     }
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
 
         public TextView notifTextView;
         public CircleImageView mCircleImageView;
+        public ProgressBar pb;
 
         public NotificationViewHolder(View itemView) {
             super(itemView);
             notifTextView = itemView.findViewById(R.id.NotifTextView);
             mCircleImageView = itemView.findViewById(R.id.NotifImageView);
+            pb = itemView.findViewById(R.id.pb);
         }
     }
 }

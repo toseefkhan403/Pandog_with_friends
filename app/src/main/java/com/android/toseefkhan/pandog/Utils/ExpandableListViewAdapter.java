@@ -17,10 +17,10 @@ import java.util.List;
 public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     private List<String> header_questions;
-    private HashMap<String,String> answers;
+    private HashMap<String,List<String>> answers;
     private Context mContext;
 
-    public ExpandableListViewAdapter(List<String> header_questions, HashMap<String, String> answers, Context mContext) {
+    public ExpandableListViewAdapter(List<String> header_questions, HashMap<String, List<String>> answers, Context mContext) {
         this.header_questions = header_questions;
         this.answers = answers;
         this.mContext = mContext;
@@ -33,7 +33,7 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return 1;
+        return answers.get(header_questions.get(groupPosition)).size();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class ExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return answers.get(groupPosition);
+        return answers.get(header_questions.get(groupPosition)).get(childPosition);
     }
 
     @Override

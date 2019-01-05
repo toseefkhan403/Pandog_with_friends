@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pandog</string>
+    <string name="app_name">Celfie</string>
     <string name="google_maps_api_key">AIzaSyDgPf_1TpgGVbYfDwV3vgi8hl3y2HgVI30</string>
 
     <string name="facebook_app_id">334440810712976</string>
@@ -23,6 +23,7 @@
     <string name="dbname_photos">photos</string>
     <string name="db_panda_points">panda_points</string>
     <string name="dbname_user_photos">user_photos</string>
+    <string name="db_level">level</string>
     <string name="field_username">username</string>
     <string name="field_email">email</string>
     <string name="field_display_name">display_name</string>
@@ -46,6 +47,9 @@
     <string name="string_share">Share</string>
     <string name="selected_bitmap">selected_bitmap</string>
 
+    <string name="default_notification_channel_id">PandogNotificationChannel</string>
+    <string name="db_user_challenges">User_Challenges</string>
+    <string name="db_challenges">Challenges</string>
 
 
     <string-array name="header_questions">
@@ -74,8 +78,8 @@
 3. If he/she accepts your request, your post gets displayed.</item>
         <item>Your post stays for 24 hours in the feed of all of your followers and all of the followers of your friend with whom you have chosen to compete. Whoever gets the maximum
         likes, wins. Both of you will be notified about the results when the duration of your post is over.</item>
-        <item>If you win, you will get the precious panda points that determine your visibility on the map section of the app.
-        1 panda point = 2* the number of your wins + the number of followers you have. Panda points will determine your popularity in the app,
+        <item>If you win, you will get the precious flames that determine your visibility on the Map section of the app.
+        1 Flame = 2* the number of your wins + the number of followers you have. Flames will determine your popularity in the app,
         so make sure you win maximum of your battles and gain more followers at the same time.</item>
         <item>The different levels in the app reflect the popularity, wins a person is getting on his/her posts. As your wins per post keep on
             increasing, then your profile is automatically updated to the next level.</item>
@@ -84,7 +88,7 @@
             the list. The person at the top is the most popular.</item>
         <item>Initially, when you join the app, you are on level 1 which is a GREY BADGE(the smallest guy). It means that on the Map screen, your location will be shown with a grey coloured marker.
         As you use the app actively and stay updated, get more wins and followers, then you will be updated to level 2 that is a GREEN BADGE.
-        Subsequently, level 3 BLUE BADGE, level 4 PURPLE BADGE and then level 5... the ultimate BLACK BADGE, which can clearly be seen on the Map as it is the biggest of them all.
+        Subsequently, level 3 BLUE BADGE, level 4 PURPLE BADGE and then level 5.. the ultimate BLACK BADGE, which can clearly be seen on the Map as it is the biggest of them all.
             Of course, if you manage to get the BLACK BADGE, your profile will gain more attention among the audience.
 </item>
         <item>Unfortunately NO. The badge colour that you own depends upon the current users of the app which keep updating every second. And that is the reason that the battle ground is going to stay heated up every time you show up.
@@ -93,9 +97,7 @@
         <item>The ultimate BLACK badge is owned by the top 20% users of the Celfie app.</item>
         <item>Click the "EDIT YOUR PROFILE" button, go to the bottom and log out of the app.</item>
     </string-array>
-    <string name="default_notification_channel_id">PandogNotificationChannel</string>
-    <string name="db_user_challenges">User_Challenges</string>
-    <string name="db_challenges">Challenges</string>
+
 
 
 
