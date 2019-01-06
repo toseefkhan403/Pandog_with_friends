@@ -13,6 +13,7 @@
         android:required="true"/>
 
     <application
+        android:name=".Utils.MyLeakCanaryActivity"
         android:allowBackup="true"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"

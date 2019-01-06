@@ -66,6 +66,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:17.3.1' //fcm
 //    implementation "android.arch.paging:runtime:1.0.1"
 
+    //library for detecting memory leaks : leakcanary
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+
 
 }
 

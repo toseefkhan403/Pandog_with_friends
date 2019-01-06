@@ -60,9 +60,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Log.d(TAG, "onBindViewHolder: received user: " + mUserList.get(position));
 
         //for pp
-        ImageLoader imageLoader=ImageLoader.getInstance();
-        imageLoader.displayImage(mUserList.get(position).getProfile_photo(),holder.pp);
-        holder.pb.setVisibility(View.GONE);
+       // ImageLoader imageLoader=ImageLoader.getInstance();
+ //       imageLoader.displayImage(mUserList.get(position).getProfile_photo(),holder.pp);
+        UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),holder.pp,holder.pb,"");
+ //       holder.pb.setVisibility(View.GONE);
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 

@@ -187,7 +187,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         getFollowingCount();
         getFollowersCount();
      //   getPostsCount();
-        tempGridSetup();
+        //tempGridSetup();
     }
 
     private void checkLevel(User user){
@@ -196,7 +196,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         ref.child(getString(R.string.dbname_users))
                 .child(user.getUser_id())
                 .orderByChild(getString(R.string.db_level))
-                .addValueEventListener(new ValueEventListener() {
+                .addValueEventListener(new ValueEventListener() {       //todo this is giving a memory leak
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         User currentUser = dataSnapshot.getValue(User.class);
