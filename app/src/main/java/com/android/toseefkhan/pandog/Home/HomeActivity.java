@@ -6,16 +6,19 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
-import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +36,9 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ViewPager mViewPager;
 
+    private View fragmentHome;
+    private View fragmentNotif;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +48,10 @@ public class HomeActivity extends AppCompatActivity {
 
         initImageLoader();
         setupBottomNavigationView();
-        setupViewPager();
+        setupTabs();
+
+        fragmentHome = findViewById(R.id.fragmentHome);
+        fragmentNotif = findViewById(R.id.fragmentNotif);
 
         Intent intent = getIntent();
         if (intent.hasExtra("ChallengerUser")) {
@@ -51,20 +60,74 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    private void setupViewPager() {
+    private void setupTabs() {
+        final String TAG = "TABLAYOUT";
+        final TabLayout homeTabLayout = findViewById(R.id.Hometabs);
 
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new HomeFragment()); //index is 0
-        adapter.addFragment(new NotificationFragment());  //index is 1
+        homeTabLayout.addTab(homeTabLayout.newTab().setIcon(R.drawable.ic_notifications));
+        homeTabLayout.addTab(homeTabLayout.newTab().setIcon(R.drawable.ic_house));
 
-        mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(adapter);
+        /* View fragment = findViewById(R.id.fragmentInHome);*/
+        homeTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int selectedTabPosition = homeTabLayout.getSelectedTabPosition();
+                Log.d(TAG, "STP" + selectedTabPosition);
+                changeFragment(selectedTabPosition);
+            }
 
-        TabLayout tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager, true);
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                int tabPosition = tab.getPosition();
+                Log.d(TAG, "UnselectedTab" + tabPosition);
+                //removeFragment(tabPosition);
+            }
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                int tabPosition = tab.getPosition();
+                Log.d(TAG, "ReselectedTab" + tabPosition);
+                onTabSelected(tab);
+            }
+        });
+
+    }
+
+    private void removeFragment(int tabPosition) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        switch (tabPosition) {
+            case 0:
+                fragmentTransaction.replace(R.id.fragmentHome, null);
+                fragmentTransaction.commit();
+                break;
+            case 1:
+                fragmentTransaction.replace(R.id.fragmentNotif, null);
+                fragmentTransaction.commit();
+                break;
+        }
+    }
+
+    private void changeFragment(int selectedTabPosition) {
+        Fragment fragment;
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        switch (selectedTabPosition) {
+            case 1:
+                fragment = new HomeFragment();
+                fragmentTransaction.replace(R.id.fragmentHome, fragment);
+                fragmentTransaction.commitNow();
+                fragmentNotif.setVisibility(View.GONE);
+                break;
+
+            case 0:
+                fragment = new NotificationFragment();
+                fragmentTransaction.replace(R.id.fragmentNotif, fragment);
+                fragmentTransaction.commitNow();
+                fragmentHome.setVisibility(View.GONE);
+                break;
+
+        }
 
     }
 

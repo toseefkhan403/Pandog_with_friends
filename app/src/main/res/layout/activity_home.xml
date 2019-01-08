@@ -3,8 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Home.HomeActivity">
 
+    <android.support.design.widget.TabLayout
+        android:id="@+id/Hometabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:tabBackground="@color/colorPrimaryDark"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/colorPrimary"
+        app:tabMode="fixed"
+        app:tabSelectedTextColor="#ff9900"
+        app:tabTextColor="@color/black" />
+
+    <fragment
+        android:id="@+id/fragmentHome"
+        android:name="com.android.toseefkhan.pandog.Home.HomeFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Hometabs" />
+
+    <fragment
+        android:id="@+id/fragmentNotif"
+        android:name="com.android.toseefkhan.pandog.Home.NotificationFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Hometabs" />
 
     <!--&lt;!&ndash; Top toolbar&ndash;&gt;
     <RelativeLayout
@@ -16,7 +42,7 @@
     </RelativeLayout>-->
 
 
-    <android.support.v4.view.ViewPager
+    <!--<android.support.v4.view.ViewPager
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/container"
@@ -24,7 +50,7 @@
 
         <include layout="@layout/layout_top_tabs" />
 
-    </android.support.v4.view.ViewPager>
+    </android.support.v4.view.ViewPager>-->
     <!--bottom navigation view-->
     <include layout="@layout/layout_bottom_nav_view"/>
 </RelativeLayout>
