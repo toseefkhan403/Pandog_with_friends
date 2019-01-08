@@ -53,6 +53,15 @@
                 android:id="@+id/UserEmailView"
                 />
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp"
+                android:id="@+id/bestTag"
+                android:visibility="invisible"
+                android:src="@drawable/mostpopular"/>
+
 
         </RelativeLayout>
 

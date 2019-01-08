@@ -51,14 +51,8 @@ import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.RecyclerViewAdapter;
-import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.Utils.ViewWeightAnimationWrapper;
-import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.User;
-import com.android.toseefkhan.pandog.models.UserSettings;
-import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxCallback;
-import com.androidquery.callback.AjaxStatus;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -75,11 +69,9 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.VisibleRegion;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -88,6 +80,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.koushikdutta.ion.Ion;
+
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -98,7 +92,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ,View.OnClickListener{
 
-    private static final String TAG = "MapActivity";
 
     //constants
     private Context mContext = MapActivity.this;
@@ -134,7 +127,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(TAG, "onCreate: map activity called.");
         super.onCreate(savedInstanceState);
         mSavedInstanceState = savedInstanceState;
         setContentView(R.layout.activity_map);
@@ -178,15 +170,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found user list: " + singleSnapshot.getValue());  // gives the whole user objects
 
                     try{
                         User user= singleSnapshot.getValue(User.class);
-                        Log.d(TAG, "onDataChange: found the lng of the user: "+ user.getLat_lng().getLatitude() + " " + user.getLat_lng().getLongitude());
-                        Log.d(TAG, "onDataChange: the user satisfying the coordinates " + user.getUsername());
                         mUserList.add(user);
                         }catch (Exception e){
-                            Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+                            Log.d("Error", "onDataChange: NullPointerException " + e.getMessage());
                         }
                 }
                 setMarkerswithLevels(mUserList);
@@ -206,7 +195,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
         for (int i=0; i<mUserList.size(); i++){
-            Log.d(TAG, "onMapReady: the marker is adding of this user " + mUserList.get(i));
             LatLng latLng= new LatLng(mUserList.get(i).getLat_lng().getLatitude(), mUserList.get(i).getLat_lng().getLongitude());
             Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
                     icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,mUserList.get(i))))
@@ -246,18 +234,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             case "GREY":
                 marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout5, null);
                 break;
+
         }
 
-        CircleImageView markerImage = marker.findViewById(R.id.user_dp);
+        final CircleImageView markerImage = marker.findViewById(R.id.user_dp);
         try {
-            Bitmap bmImg = Ion.with(mContext)
-                    .load(user.getBitmap()).asBitmap().get();
-            Log.d(TAG, "getInfoContents: the bitmap in the infowindow " + bmImg);
+            Bitmap bmImg =  Ion.with(mContext)
+                    .load(user.getBitmap())
+                    .asBitmap().get();
             markerImage.setImageBitmap(bmImg);
-        } catch (InterruptedException e) {
-            Log.d(TAG, "createMarker: error");
-        } catch (ExecutionException e) {
-            Log.d(TAG, "createMarker: error");
+        } catch (Exception e) {
+            Log.d("Error", "createMarker: error");
         }
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -274,7 +261,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void getLastKnownLocation() {
-        Log.d(TAG, "getLastKnownLocation: map activity called.");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -287,11 +273,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         //the map does not show when the gps on the device is on(api key issues). Therefore this latlng is always null since i can't
                         // get the current location of the user from the gps, I am using hard coded coordinates
                         latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        Log.d(TAG, "onComplete: latlng " + latLng.latitude + "  " + latLng.longitude);
 
                     }catch (NullPointerException e){
-                        Log.d(TAG, "onComplete: NullPointerException " + e.getMessage());
-                        latLng = new LatLng(28.572945, 77.255721);
+                        Log.d("Error", "onComplete: NullPointerException " + e.getMessage());
+                        latLng = new LatLng(28.582945, 77.255721);
                     }
 
                     setLatlongs(latLng);
@@ -314,7 +299,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     User user = (User) markerList.get(i).getTag();
                     if (!mUserListViewable.contains(user)){
                         mUserListViewable.add(user);
-                        Log.d(TAG, "checkVisibility: the markers added of these users " + user.getUsername());
                     }
                     show= true;
                     mUserListRecyclerView.setVisibility(View.VISIBLE);
@@ -327,7 +311,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
 
             if (!mUserListViewable.isEmpty()){
-                Log.d(TAG, "checkVisibility: this part is running "+ mUserListViewable);
                 initUserListRecyclerView(sortList(mUserListViewable));
             }
         }
@@ -382,7 +365,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         map.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
             @Override
             public void onCameraChange(CameraPosition cameraPosition) {
-                Log.d(TAG, "onCameraChange: the camera is changed. ");
                 mUserListViewable.clear();
                 checkVisibility(markerList);
             }
@@ -390,7 +372,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         long time= System.currentTimeMillis()%10;
         int timeConst= (int) time;
-        Log.d(TAG, "onMapReady: the constant received " + timeConst);
         boolean success;
         try {
             // Customise the styling of the base map using a JSON object defined
@@ -474,17 +455,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     pp = v.findViewById(R.id.profile_photo_infow);
                     TextView username = v.findViewById(R.id.username_infow);
                     TextView description = v.findViewById(R.id.description_infow);
-
                     User user= (User) marker.getTag();
 
                     try {
                         Bitmap bmImg = Ion.with(mContext)
                                 .load(user.getBitmap()).asBitmap().get();
-                        Log.d(TAG, "getInfoContents: the bitmap in the infowindow " + bmImg);
                         pp.setImageBitmap(bmImg);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (NullPointerException e){
                         e.printStackTrace();
                     }
 
@@ -496,13 +477,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             });
 
             if (!success) {
-                Log.e(TAG, "Style parsing failed.");
+                Log.e("error", "Style parsing failed.");
             }
         } catch (Resources.NotFoundException e) {
-            Log.e(TAG, "Can't find style. Error: ", e);
+            Log.e("error", "Can't find style. Error: ", e);
         }
     }
-
 
 
 
@@ -634,7 +614,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart: map activity called.");
         super.onStart();
         mMapView.onStart();
     }
@@ -712,7 +691,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void getLocationPermission() {
-        Log.d(TAG, "getLocationPermission: map activity called ");
         /*
          * Request location permission, so that we can get the location of the
          * device. The result of the permission request is handled by a callback,
@@ -745,20 +723,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public boolean isServicesOK(){
-        Log.d(TAG, "isServicesOK: map activity checking google services version");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapActivity.this);
 
         if(available == ConnectionResult.SUCCESS){
             //everything is fine and the user can make map requests
-            Log.d(TAG, "isServicesOK: Google Play Services is working");
             return true;
 
             //todo if the user denies the google's dialog request, the system goes in an infinite loop. Fix that.
         }
         else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
             //an error occured but we can resolve it
-            Log.d(TAG, "isServicesOK: an error occured but we can fix it");
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         }else{
@@ -770,7 +745,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult: map activity called.");
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ENABLE_GPS: {
                 if(mLocationPermissionGranted){
@@ -792,7 +766,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String permissions[],
                                            @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: map activity called");
         mLocationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
@@ -839,7 +812,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      * BottomNavigationView setup
      */
     private void setupBottomNavigationView(){
-        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
         BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
         BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx);

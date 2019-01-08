@@ -76,6 +76,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
                 getString(R.string.default_notification_channel_id));
 
+
         Intent pendingIntent = new Intent(this, HomeActivity.class);
         pendingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         pendingIntent.putExtra("ChallengerUser", user);

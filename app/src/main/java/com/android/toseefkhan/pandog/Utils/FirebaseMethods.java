@@ -1,5 +1,6 @@
 package com.android.toseefkhan.pandog.Utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -8,14 +9,18 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -48,8 +53,11 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -73,7 +81,8 @@ public class FirebaseMethods {
     private User mSelectedUser;
     //vars
     private Context mContext;
-    private double mPhotoUploadProgress = 0;
+    private static final float maxHeight = 1280.0f;
+    private static final float maxWidth = 1280.0f;
 
     public FirebaseMethods(Context context) {
         mAuth = FirebaseAuth.getInstance();
@@ -186,6 +195,7 @@ public class FirebaseMethods {
                     Log.d(TAG, "uploadNewPhoto: this is the uri " + imageUri);
 
                     uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @SuppressLint("NewApi")
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                             //  Uri firebaseUrl = taskSnapshot.getDownloadUrl();
@@ -257,7 +267,7 @@ public class FirebaseMethods {
         Bitmap bmp = BitmapFactory.decodeStream(imageStream);
         bmp = Bitmap.createScaledBitmap(bmp, 100 , 100, true);
 
-        byte[] bytes = ImageManager.getBytesFromBitmap(bmp, 100);
+        byte[] bytes = ImageManager.getBytesFromBitmap(bmp, 80);
 
         UploadTask uploadTask2 = storageReference2.putBytes(bytes);
         Log.d(TAG, "uploadNewPhoto: this is the uri " + imageUri);
@@ -282,7 +292,6 @@ public class FirebaseMethods {
             }
         });
     }
-
 
     private void setProfilePhoto(String url){
         Log.d(TAG, "setProfilePhoto: setting new profile image: " + url);

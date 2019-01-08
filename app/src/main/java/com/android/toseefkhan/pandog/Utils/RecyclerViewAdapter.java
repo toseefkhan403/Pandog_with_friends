@@ -35,11 +35,9 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
-    //ignore this class, this was just for testing i m not deleting it i suppose we can use this in future if we want to use recycler view
-
     private static final String TAG = "RecyclerViewAdapter";
     private Context mContext;
-    private ArrayList<User> mUserList= new ArrayList<>();
+    private ArrayList<User> mUserList;
     private String uid;
 
     public RecyclerViewAdapter(Context mContext, ArrayList<User> mUserList) {
@@ -60,12 +58,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Log.d(TAG, "onBindViewHolder: received user: " + mUserList.get(position));
 
         //for pp
-       // ImageLoader imageLoader=ImageLoader.getInstance();
- //       imageLoader.displayImage(mUserList.get(position).getProfile_photo(),holder.pp);
+
         UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),holder.pp,holder.pb,"");
- //       holder.pb.setVisibility(View.GONE);
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        if (mUserList.get(position).getLevel().equals("BLACK"))
+            holder.bestTag.setVisibility(View.VISIBLE);
 
         if (mUserList.get(position).getUser_id().equals(uid) )
             holder.userName.setText(mUserList.get(position).getUsername()+ " (You)");
@@ -74,8 +73,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         //todo set the local champion title here
         holder.email.setText(mUserList.get(position).getEmail());
-
-        Log.d(TAG, "onBindViewHolder: the pp is " + mUserList.get(position).getProfile_photo());
 
         holder.userName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +94,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        CircleImageView pp;
+        CircleImageView pp,bestTag;
         TextView userName, email;
         ProgressBar pb;
 
@@ -109,6 +106,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             email= itemView.findViewById(R.id.UserEmailView);
             pb = itemView.findViewById(R.id.pb);
             pb.setVisibility(View.VISIBLE);
+            bestTag = itemView.findViewById(R.id.bestTag);
         }
     }
 }

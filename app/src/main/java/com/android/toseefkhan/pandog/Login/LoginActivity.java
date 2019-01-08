@@ -156,10 +156,18 @@ public class LoginActivity extends AppCompatActivity {
             finish();
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putBoolean(welcomeScreenShownPref, true);
-            editor.commit(); // Very important to save the preference
+            editor.apply(); // Very important to save the preference
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Log.d(TAG, "onBackPressed: back button pressed");
+        mPleaseWait.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
+    }
 
     private String uid,name,email,image;
 

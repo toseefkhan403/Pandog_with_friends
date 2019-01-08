@@ -187,7 +187,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         getFollowingCount();
         getFollowersCount();
      //   getPostsCount();
-        //tempGridSetup();
+        tempGridSetup();
     }
 
     private void checkLevel(User user){
@@ -225,7 +225,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                 break;
 
             case "BLUE":
-                profile.setBackgroundColor(getResources().getColor(R.color.blue));
+                profile.setBackgroundColor(getResources().getColor(R.color.lightblue));
                 break;
 
             case "GREEN":
@@ -237,7 +237,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                 break;
 
             default:
-                profile.setBackgroundColor(getResources().getColor(R.color.black));
+                profile.setBackgroundColor(getResources().getColor(R.color.white));
                 break;
         }
 

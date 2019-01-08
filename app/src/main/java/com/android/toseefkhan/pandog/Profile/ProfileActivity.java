@@ -138,7 +138,7 @@ public class ProfileActivity extends AppCompatActivity {
                 break;
 
             case "BLUE":
-                profile.setBackgroundColor(getResources().getColor(R.color.blue));
+                profile.setBackgroundColor(getResources().getColor(R.color.lightblue));
                 break;
 
             case "GREEN":
