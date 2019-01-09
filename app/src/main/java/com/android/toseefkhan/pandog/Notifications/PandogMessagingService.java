@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
+import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.database.DataSnapshot;
@@ -106,7 +107,12 @@ public class PandogMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
                 getString(R.string.default_notification_channel_id));
 
-        Intent pendingIntent = new Intent(this, HomeActivity.class);
+        Intent pendingIntent = null;
+        if (remoteMessage.getData().get("type").equals("Challenge")) {
+            pendingIntent = new Intent(this, HomeActivity.class);
+        } else if (remoteMessage.getData().get("type").equals("Following")) {
+            pendingIntent = new Intent(this, ViewProfileActivity.class);
+        }
         pendingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         pendingIntent.putExtra("ChallengerUser", user);
 

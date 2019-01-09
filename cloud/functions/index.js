@@ -3,8 +3,8 @@ const admin = require('firebase-admin');
 
 admin.initializeApp(functions.config().firebase);
 
-exports.sendFCMMessage = functions.database.ref('/Challenges/{challengeId}').onCreate((snapshot, context) => {
-    console.log("function invoked");
+exports.sendChallengeMessage = functions.database.ref('/Challenges/{challengeId}').onCreate((snapshot, context) => {
+    console.log("sendChallengeMessage function invoked");
     const challenge = snapshot.val();
     var challengerUserUid = challenge.challengerUserUid;
     var challengedUserUid = challenge.challengedUserUid;
@@ -14,11 +14,10 @@ exports.sendFCMMessage = functions.database.ref('/Challenges/{challengeId}').onC
         const fcmToken = snap.val();
         console.log("Token:", fcmToken);
         const payload = {
-         data: {
-             title: "Test1",
-             body: "Hi there",
-             challengerUserUid: challengerUserUid,
-             status:status
+            data: {
+                challengerUserUid: challengerUserUid,
+                status: status,
+                type: "Challenge"
             }
         };
 
@@ -33,9 +32,30 @@ exports.sendFCMMessage = functions.database.ref('/Challenges/{challengeId}').onC
         });
 });
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
+exports.sendFollowingMessage = functions.database.ref('/followers/{userUid}/{followingUserUid}')
+    .onCreate((snapshot, context) => {
+
+        console.log("sendFollowingMessage function invoked");
+        const followedUserUid = context.params.userUid;
+        const data = snapshot.val();
+        const followingUserUid = data.user_id;
+        return admin.database().ref("/token/" + followedUserUid).once('value').then((snap) => {
+            const fcmToken = snap.val();
+            const payload = {
+                data: {
+                    type: "Following",
+                    followerUserUid: followingUserUid
+                }
+            };
+            return admin.messaging().sendToDevice(fcmToken, payload).then((response) => {
+                console.log("Successfully sent", response);
+            })
+                .catch((error) => {
+                    console.log("Following Message MessageLevelError", error);
+                });
+
+        })
+            .catch((error) => {
+                console.log("Following Message tokenLevel Error", error);
+            });
+    });
