@@ -95,6 +95,8 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: signing out the user");
+                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                databaseReference.child("token").child(userID).removeValue();
                 mAuth.signOut();
                 LoginManager.getInstance().logOut();
                 Intent i = new Intent(mContext, LoginActivity.class);

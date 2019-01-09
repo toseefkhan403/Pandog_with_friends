@@ -1,5 +1,7 @@
 package com.android.toseefkhan.pandog.Notifications;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -7,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -24,10 +27,12 @@ import com.google.firebase.messaging.RemoteMessage;
 public class PandogMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "PandogMessagingService";
+    private static final String NOTIFICATION_CHANNEL_ID = "1001010101";
+
 
     @Override
     public void onNewToken(String token) {
-        Log.e("TokenRegistration", token);
+        Log.d("TokenRegistration", token);
         addTokenToDevice(token);
     }
 
@@ -35,7 +40,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(final RemoteMessage remoteMessage) {
         Log.d(TAG, "onMessageReceived: remoteMessage " + remoteMessage);
         final String notificationTitle = "";
-        final String notificationBody = "He wants to Challenge you";
+        final String notificationBody = "wants to Challenge you";
         String challengerUserUid = "";
         String status = "";
 
@@ -76,7 +81,6 @@ public class PandogMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
                 getString(R.string.default_notification_channel_id));
 
-
         Intent pendingIntent = new Intent(this, HomeActivity.class);
         pendingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         pendingIntent.putExtra("ChallengerUser", user);
@@ -100,12 +104,34 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 .setContentIntent(notificationPendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, builder.build());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel mNotificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                    getResources().getString(R.string.default_notification_channel_id),
+                    importance);
+            mNotificationChannel.setLockscreenVisibility(Notification.VISIBILITY_SECRET);
+
+            mNotificationChannel.enableLights(true);
+            mNotificationChannel.setLightColor(Color.YELLOW);
+
+            mNotificationChannel.canShowBadge();
+
+            mNotificationChannel.enableVibration(true);
+            mNotificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+
+            Log.d(TAG, "buildNotification: create notif " + mNotificationChannel);
+            notificationManager.createNotificationChannel(mNotificationChannel);
+        }
+
+        builder.setChannelId(NOTIFICATION_CHANNEL_ID);          //very important to set channel id
+        notificationManager.notify(0, builder.build());
     }
 
     private void addTokenToDevice(String token) {
         SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PandogPreference",
                 Context.MODE_PRIVATE);
+        Log.d(TAG, "addTokenToDevice: The new token that is being added to the device " + token);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("FCMToken", token);
         editor.apply();

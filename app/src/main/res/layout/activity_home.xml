@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     tools:context=".Home.HomeActivity">
 
-
-
     <!-- Top toolbar-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,10 +19,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/container"
+        android:layout_marginTop="55dp"
         android:layout_marginBottom="55dp">
 
 
     </android.support.v4.view.ViewPager>
     <!--bottom navigation view-->
     <include layout="@layout/layout_bottom_nav_view"/>
+
 </RelativeLayout>

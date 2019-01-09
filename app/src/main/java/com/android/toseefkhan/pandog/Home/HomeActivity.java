@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.Home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -203,7 +204,6 @@ public class HomeActivity extends AppCompatActivity {
 
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
-
     }
 
     private void initImageLoader(){
@@ -241,7 +241,21 @@ public class HomeActivity extends AppCompatActivity {
             Intent intent = new Intent(mContext, LoginActivity.class);
             startActivity(intent);
         }
+        else{
+            addTokenToDatabase();
+        }
     }
+
+    private void addTokenToDatabase() {
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PandogPreference",
+                Context.MODE_PRIVATE);
+        String fcmToken = sharedPreferences.getString("FCMToken", null);
+        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (fcmToken != null) {
+            FirebaseDatabase.getInstance().getReference().child("token").child(userUid).setValue(fcmToken);
+        }
+    }
+
     /**
      * Setup the firebase auth object
      */

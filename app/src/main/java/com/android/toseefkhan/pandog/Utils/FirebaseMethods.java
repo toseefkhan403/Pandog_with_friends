@@ -81,8 +81,6 @@ public class FirebaseMethods {
     private User mSelectedUser;
     //vars
     private Context mContext;
-    private static final float maxHeight = 1280.0f;
-    private static final float maxWidth = 1280.0f;
 
     public FirebaseMethods(Context context) {
         mAuth = FirebaseAuth.getInstance();
@@ -265,9 +263,20 @@ public class FirebaseMethods {
         }
 
         Bitmap bmp = BitmapFactory.decodeStream(imageStream);
-        bmp = Bitmap.createScaledBitmap(bmp, 100 , 100, true);
+//        int width = bmp.getWidth()/4;
+//        int height = bmp.getHeight()/4;
+//        bmp = Bitmap.createScaledBitmap(bmp, width , height, true);
 
-        byte[] bytes = ImageManager.getBytesFromBitmap(bmp, 80);
+        int maxHeight = 320;
+        int maxWidth = 320;
+        float scale = Math.min(((float)maxHeight / bmp.getWidth()), ((float)maxWidth / bmp.getHeight()));
+
+        Matrix matrix = new Matrix();
+        matrix.postScale(scale, scale);
+
+        bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true);
+
+        byte[] bytes = ImageManager.getBytesFromBitmap(bmp, 20);
 
         UploadTask uploadTask2 = storageReference2.putBytes(bytes);
         Log.d(TAG, "uploadNewPhoto: this is the uri " + imageUri);

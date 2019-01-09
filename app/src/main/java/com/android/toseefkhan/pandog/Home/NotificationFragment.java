@@ -62,77 +62,76 @@ public class NotificationFragment extends Fragment {
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-        mDatabaseReference.child(getString(R.string.db_user_challenges))
-                .child(userUid)
-                .orderByKey()
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        if (dataSnapshot.exists()) {
-                            String ChallengeKey = dataSnapshot.getValue(String.class);
-                            Log.d("String", "ChildAdded" + s);
-                            addChallenge(ChallengeKey);
+            mDatabaseReference.child(getString(R.string.db_user_challenges))
+                    .child(userUid)
+                    .orderByKey()
+                    .addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                            if (dataSnapshot.exists()) {
+                                String ChallengeKey = dataSnapshot.getValue(String.class);
+                                Log.d("String", "ChildAdded" + s);
+                                addChallenge(ChallengeKey);
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    }
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        }
 
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    }
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        }
 
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    }
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("Db ERROR", databaseError.toString());
-                    }
-                });
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.d("Db ERROR", databaseError.toString());
+                        }
+                    });
 
         return view;
     }
 
     private void addChallenge(String challengeKey) {
 
-        Log.d(TAG, "addChallenge: challengekey " + challengeKey);
-        mDatabaseReference.child(getString(R.string.db_challenges))
-                .child(challengeKey)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            Challenge challenge = dataSnapshot.getValue(Challenge.class);
-                            challengesList.add(challenge);
-                            notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
-                            if (progressBar != null) {
-                                if (progressBar.getVisibility() != View.GONE) {
-                                    progressBar.setVisibility(View.GONE);
+        if (isAdded()) {
+            Log.d(TAG, "addChallenge: challengekey " + challengeKey);
+            mDatabaseReference.child(getString(R.string.db_challenges))
+                    .child(challengeKey)
+                    .addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                Challenge challenge = dataSnapshot.getValue(Challenge.class);
+                                challengesList.add(challenge);
+                                notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
+                                if (progressBar != null) {
+                                    if (progressBar.getVisibility() != View.GONE) {
+                                        progressBar.setVisibility(View.GONE);
+                                    }
                                 }
                             }
+                            Log.d(TAG, "onDataChange: are you empty " + challengesList);
+                            initUserListRecyclerView();
                         }
-                        Log.d(TAG, "onDataChange: are you empty " + challengesList);
-                        initUserListRecyclerView();
-                    }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        Log.d("DatabaseError", databaseError.toString());
-                    }
-                });
-
+                            Log.d("DatabaseError", databaseError.toString());
+                        }
+                    });
+        }
     }
 
     private void initUserListRecyclerView() {
 
         mNotificationRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mNotificationRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mNotificationRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
         NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
         mNotificationRecyclerView.setAdapter(notificationAdapter);
