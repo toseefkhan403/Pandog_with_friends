@@ -1,15 +1,6 @@
 package com.android.toseefkhan.pandog.models;
 
-import android.support.annotation.NonNull;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
 public class Challenge {
-
     private String challengerUserUid;
     private String challengedUserUid;
     private String photoKey;
@@ -23,7 +14,6 @@ public class Challenge {
         this.challengedUserUid = challengedUserUid;
         this.photoKey = photoKey;
         this.photoUrl = photoUrl;
-        getNames();
     }
 
     public Challenge() {
@@ -41,41 +31,16 @@ public class Challenge {
         return challengerName;
     }
 
+    public void setChallengerName(String challengerName) {
+        this.challengerName = challengerName;
+    }
+
     public String getChallengedName() {
         return challengedName;
     }
 
-    private void getNames() {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        databaseReference.child("users").child(challengedUserUid).child("username").
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            challengedName = dataSnapshot.getValue(String.class);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-        databaseReference.child("users").child(challengerUserUid).child("username").
-                addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            challengerName = dataSnapshot.getValue(String.class);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+    public void setChallengedName(String challengedName) {
+        this.challengedName = challengedName;
     }
 
     public String getChallengerUserUid() {

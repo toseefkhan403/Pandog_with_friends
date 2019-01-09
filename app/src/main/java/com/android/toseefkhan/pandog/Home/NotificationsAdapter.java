@@ -32,7 +32,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     @NonNull
     @Override
     public NotificationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
+        View itemView = LayoutInflater.from(mContext)
                 .inflate(R.layout.layout_notif_item, parent, false);
 
         return new NotificationViewHolder(itemView);
@@ -46,7 +46,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, holder.pb, "");
 
         Log.d(TAG, "onBindViewHolder: the challenge details " + challenge.getChallengedName() + challenge.getChallengerName());
-        holder.notifTextView.setText(challenge.getChallengedName());
+        holder.notifTextView.setText(challenge.getChallengerName());
     }
 
     @Override

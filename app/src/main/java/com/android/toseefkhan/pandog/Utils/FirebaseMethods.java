@@ -6,21 +6,13 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
-import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.Build;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -44,20 +36,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -331,11 +320,11 @@ public class FirebaseMethods {
         return sdf.format(new Date());
     }
 
-    private void addPhotoToDatabase(String caption, String url){
+    private void addPhotoToDatabase(String caption, final String url) {
         Log.d(TAG, "addPhotoToDatabase: adding photo to database.");
 
         String tags = StringManipulation.getTags(caption);
-        String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
+        final String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
         Photo photo = new Photo();
         photo.setCaption(caption);
         photo.setDate_created(getTimestamp());
@@ -349,18 +338,36 @@ public class FirebaseMethods {
                 .child(FirebaseAuth.getInstance().getCurrentUser()
                         .getUid()).child(newPhotoKey).setValue(photo);
 
-        String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String selecteduserUid = mSelectedUser.getUser_id();
-        Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, newPhotoKey, url);
+        final String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String selecteduserUid = mSelectedUser.getUser_id();
+        final Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, newPhotoKey, url);
         mChallenge.setStatus("NOT_DECIDED");
+        final String challengedUserName = mSelectedUser.getUsername();
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(currentUserUid)
+                .child("username")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            String challengerUserName = dataSnapshot.getValue(String.class);
+                            mChallenge.setChallengedName(challengedUserName);
+                            mChallenge.setChallengerName(challengerUserName);
+                            String challengeKey = myRef.child("Challenges").push().getKey();
+                            myRef.child("Challenges").child(challengeKey).setValue(mChallenge);
 
-        String challengeKey = myRef.child("Challenges").push().getKey();
-        myRef.child("Challenges").child(challengeKey).setValue(mChallenge);
+                            DatabaseReference challengeReference = myRef.child("User_Challenges");
+                            challengeReference.child(currentUserUid).push().setValue(challengeKey);
+                            challengeReference.child(selecteduserUid).push().setValue(challengeKey);
 
-        DatabaseReference challengeReference = myRef.child("User_Challenges");
-        challengeReference.child(currentUserUid).push().setValue(challengeKey);
-        challengeReference.child(selecteduserUid).push().setValue(challengeKey);
+                        }
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
         myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
 
     }

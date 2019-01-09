@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,9 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.android.toseefkhan.pandog.R;
-import com.android.toseefkhan.pandog.Utils.RecyclerViewAdapter;
 import com.android.toseefkhan.pandog.models.Challenge;
-import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -131,7 +127,10 @@ public class NotificationFragment extends Fragment {
 
     private void initUserListRecyclerView() {
 
-        mNotificationRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        ((LinearLayoutManager) mLayoutManager).setReverseLayout(true);
+        ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
+        mNotificationRecyclerView.setLayoutManager(mLayoutManager);
 
         NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
         mNotificationRecyclerView.setAdapter(notificationAdapter);
