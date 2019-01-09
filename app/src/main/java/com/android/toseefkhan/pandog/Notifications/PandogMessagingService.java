@@ -29,7 +29,6 @@ public class PandogMessagingService extends FirebaseMessagingService {
     private static final String TAG = "PandogMessagingService";
     private static final String NOTIFICATION_CHANNEL_ID = "1001010101";
 
-
     @Override
     public void onNewToken(String token) {
         Log.d("TokenRegistration", token);
@@ -39,37 +38,63 @@ public class PandogMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(final RemoteMessage remoteMessage) {
         Log.d(TAG, "onMessageReceived: remoteMessage " + remoteMessage);
-        final String notificationTitle = "";
-        final String notificationBody = "wants to Challenge you";
-        String challengerUserUid = "";
-        String status = "";
+        String notificationType = remoteMessage.getData().get("type");
+        if (notificationType.equals("Challenge")) {
+            final String notificationTitle = "";
+            final String notificationBody = "wants to Challenge you";
+            String challengerUserUid = "";
+            String status = "";
 
-        try {
-            status = remoteMessage.getData().get("status");
-            if (status.equals("NOT_DECIDED")) {
-                challengerUserUid = remoteMessage.getData().get("challengerUserUid");
-                FirebaseDatabase.getInstance().getReference()
-                        .child(getApplicationContext().getString(R.string.dbname_users))
-                        .child(challengerUserUid)
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()) {
-                                    User challengerUser = dataSnapshot.getValue(User.class);
-                                    String userName = challengerUser.getUsername();
-                                    buildNotification(remoteMessage, notificationTitle + userName, notificationBody,
-                                            challengerUser);
+            try {
+                status = remoteMessage.getData().get("status");
+                if (status.equals("NOT_DECIDED")) {
+                    challengerUserUid = remoteMessage.getData().get("challengerUserUid");
+                    FirebaseDatabase.getInstance().getReference()
+                            .child(getApplicationContext().getString(R.string.dbname_users))
+                            .child(challengerUserUid)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        User challengerUser = dataSnapshot.getValue(User.class);
+                                        String userName = challengerUser.getUsername();
+                                        buildNotification(remoteMessage, notificationTitle + userName, notificationBody,
+                                                challengerUser);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                Log.d("Db Error", databaseError.getMessage());
-                            }
-                        });
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.d("Db Error", databaseError.getMessage());
+                                }
+                            });
+                }
+            } catch (NullPointerException exception) {
+                Log.d(TAG, "onMessageReceived: NullPointerException " + exception.getMessage());
             }
-        } catch (NullPointerException exception) {
-            Log.d(TAG, "onMessageReceived: NullPointerException " + exception.getMessage());
+        } else if (notificationType.equals("Following")) {
+            final String notificationTitle = "You received a new follower";
+            final String notificationBody = "";
+            String followerUserUid = "";
+            followerUserUid = remoteMessage.getData().get("followerUserUid");
+            FirebaseDatabase.getInstance().getReference()
+                    .child(getApplicationContext().getString(R.string.dbname_users))
+                    .child(followerUserUid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                User followerUser = dataSnapshot.getValue(User.class);
+                                String followerName = followerUser.getUsername();
+                                buildNotification(remoteMessage, notificationTitle, notificationBody + followerName, followerUser);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.d("Db Error", databaseError.getMessage());
+                        }
+                    });
         }
 
     }
