@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Challenge;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
@@ -42,11 +43,24 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
 
         Challenge challenge = challengesList.get(position);
-
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, holder.pb, "");
 
-        Log.d(TAG, "onBindViewHolder: the challenge details " + challenge.getChallengedName() + challenge.getChallengerName());
-        holder.notifTextView.setText(challenge.getChallengerName());
+        holder.notifTextView.setText(challenge.getChallengerName() + " challenged you!");
+
+        Log.d(TAG, "onBindViewHolder: challenge " + challenge.getChallengerName() + challenge.getChallengedName());
+
+        if (challenge.getChallengerUserUid().equals(uid)){
+            holder.notifTextView.setText("You challenged "+challenge.getChallengedName());
+            holder.status.setText("Awaiting response");
+        }
+
+        holder.status.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo pop up a dialog
+            }
+        });
     }
 
     @Override
@@ -57,7 +71,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
 
-        TextView notifTextView;
+        TextView notifTextView, status;
         CircleImageView mCircleImageView;
         ProgressBar pb;
 
@@ -66,6 +80,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             notifTextView = itemView.findViewById(R.id.NotifTextView);
             mCircleImageView = itemView.findViewById(R.id.NotifImageView);
             pb = itemView.findViewById(R.id.pb);
+            status = itemView.findViewById(R.id.status);
         }
     }
 }

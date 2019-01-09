@@ -50,6 +50,7 @@ import android.widget.Toast;
 import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
+import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.RecyclerViewAdapter;
 import com.android.toseefkhan.pandog.Utils.ViewWeightAnimationWrapper;
 import com.android.toseefkhan.pandog.models.User;
@@ -61,6 +62,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -72,12 +74,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.koushikdutta.ion.Ion;
 
@@ -92,6 +90,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     ,View.OnClickListener{
 
+    private static final String TAG = "MapActivity";
 
     //constants
     private Context mContext = MapActivity.this;
@@ -111,7 +110,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private FusedLocationProviderClient mFusedLocationClient;
     private DatabaseReference myRef;
 
-    private ArrayList<User> mUserList = new ArrayList<>();
     private ArrayList<User> mUserListViewable = new ArrayList<>();
     private RecyclerViewAdapter mUserRecyclerAdapter;
     private RelativeLayout relativeLayout;
@@ -123,7 +121,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private RelativeLayout mMapContainer;
     private CircleImageView pp;
     private ProgressBar mProgressbar, dialogProgressbar;
-
+    private ArrayList<Marker> markerList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,107 +155,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 getLocationPermission();
             }
         }
-
-        getUsersFromArea();
     }
 
-    private void getUsersFromArea(){
+    private void setMarkersOnMap(ArrayList<User> mUserList,ArrayList<MarkerOptions> markerOptions){
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference
-                .child(getString(R.string.dbname_users));
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-
-                    try{
-                        User user= singleSnapshot.getValue(User.class);
-                        mUserList.add(user);
-                        }catch (Exception e){
-                            Log.d("Error", "onDataChange: NullPointerException " + e.getMessage());
-                        }
-                }
-                setMarkerswithLevels(mUserList);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }//gives the list of ALL the users of the application
-
-    private ArrayList<Marker> markerList = new ArrayList<>();
-
-
-    private void setMarkerswithLevels(ArrayList<User> mUserList) {
-
-
-        for (int i=0; i<mUserList.size(); i++){
-            LatLng latLng= new LatLng(mUserList.get(i).getLat_lng().getLatitude(), mUserList.get(i).getLat_lng().getLongitude());
-            Marker marker=mMap.addMarker(new MarkerOptions().position(latLng).
-                    icon(BitmapDescriptorFactory.fromBitmap(createMarker(mContext,mUserList.get(i))))
-                    .title(mUserList.get(i).getUsername())
-                    .snippet("Points: " + String.valueOf(mUserList.get(i).getPanda_points())));
+        Marker marker;
+        for (int i= 0 ; i<mUserList.size() ; i++){
+            marker= mMap.addMarker(markerOptions.get(i));
             marker.setTag(mUserList.get(i));
-            markerList.add(marker);                 //needs this for the recycler view
+            markerList.add(marker);                  //needs this for the recycler view
         }
-
         checkVisibility(markerList);
-
-    }
-
-    private View marker;
-
-    @SuppressLint({"NewApi", "StaticFieldLeak"})
-    private Bitmap createMarker(Context context, final User user) {
-
-        switch (user.getLevel()){
-
-            case "BLACK":
-                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout, null);
-                break;
-
-            case "PURPLE":
-                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout2, null);
-                break;
-
-            case "BLUE":
-                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout3, null);
-                break;
-
-            case "GREEN":
-                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout4, null);
-                break;
-
-            case "GREY":
-                marker = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_marker_layout5, null);
-                break;
-
-        }
-
-        final CircleImageView markerImage = marker.findViewById(R.id.user_dp);
-        try {
-            Bitmap bmImg =  Ion.with(mContext)
-                    .load(user.getBitmap())
-                    .asBitmap().get();
-            markerImage.setImageBitmap(bmImg);
-        } catch (Exception e) {
-            Log.d("Error", "createMarker: error");
-        }
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        marker.setLayoutParams(new ViewGroup.LayoutParams(52, ViewGroup.LayoutParams.WRAP_CONTENT));
-        marker.measure(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        marker.layout(0, 0, displayMetrics.widthPixels, displayMetrics.heightPixels);
-        marker.buildDrawingCache();
-        Bitmap bitmap = Bitmap.createBitmap(marker.getMeasuredWidth(), marker.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        marker.draw(canvas);
-
-        return bitmap;
     }
 
     private void getLastKnownLocation() {
@@ -276,11 +184,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                     }catch (NullPointerException e){
                         Log.d("Error", "onComplete: NullPointerException " + e.getMessage());
-                        latLng = new LatLng(28.582945, 77.255721);
+                        latLng = new LatLng(28.582985, 77.255820);
                     }
 
                     setLatlongs(latLng);
-//                    saveUserLocation();
                 }
             }
         });
@@ -440,6 +347,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         break;
             }//just some styling stuff
             mMap=map;
+
+            setMarkersOnMap(((InitialSetup)getApplicationContext()).mUserList,((InitialSetup)getApplicationContext()).markerOptionsList);
 
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter(){
 
@@ -634,7 +543,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void onDestroy() {
         mMapView.onDestroy();
         super.onDestroy();
-
     }
 
     @Override
