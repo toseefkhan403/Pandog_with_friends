@@ -110,11 +110,13 @@ public class PandogMessagingService extends FirebaseMessagingService {
         Intent pendingIntent = null;
         if (remoteMessage.getData().get("type").equals("Challenge")) {
             pendingIntent = new Intent(this, HomeActivity.class);
+            pendingIntent.putExtra("ChallengerUser", user);
         } else if (remoteMessage.getData().get("type").equals("Following")) {
             pendingIntent = new Intent(this, ViewProfileActivity.class);
+            pendingIntent.putExtra(getResources().getString(R.string.intent_user), user);
         }
         pendingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        pendingIntent.putExtra("ChallengerUser", user);
+
 
         PendingIntent notificationPendingIntent = PendingIntent.getActivity(
                 this,
