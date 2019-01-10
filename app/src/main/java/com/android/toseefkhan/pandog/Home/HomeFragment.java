@@ -29,7 +29,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        view=inflater.inflate(R.layout.fragment_home,container,false);
+        view=inflater.inflate(R.layout.layout_mainfeed_listitem,container,false);
 
 
     //    mProfilePhoto.add("https://firebasestorage.googleapis.com/v0/b/pandog-with-friends.appspot.com/o/photos%2Fusers%2FWnkWgAskxMfSXxeWgxdcQEkXOWG3%2Fphoto2?alt=media&token=503ddc1f-a0f3-440a-84b1-baa0e9e3d34b");

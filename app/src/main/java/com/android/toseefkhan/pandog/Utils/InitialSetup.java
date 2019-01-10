@@ -38,6 +38,7 @@ public class InitialSetup extends Application {
 
     public ArrayList<User> mUserList;
     public ArrayList<MarkerOptions> markerOptionsList;
+    public boolean isStartupComplete = false;
 
 
     @Override
