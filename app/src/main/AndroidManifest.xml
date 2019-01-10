@@ -24,15 +24,14 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".Home.HomeActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
         <activity android:name=".Map.MapActivity" />
         <activity android:name=".Profile.ProfileActivity" />
-        <activity android:name=".Home.InitActivity" />
         <activity
             android:name=".Search.SearchActivity"
             android:windowSoftInputMode="adjustNothing" />

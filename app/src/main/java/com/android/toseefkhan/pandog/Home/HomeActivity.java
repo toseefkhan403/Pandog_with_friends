@@ -18,23 +18,11 @@ import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
-import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -50,19 +38,24 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
 
-        setupFirebaseAuth();
+        if (!((InitialSetup)getApplicationContext()).isTaskCompleted)
+        {
+            setContentView(R.layout.progress_anim);
+            setupFirebaseAuth();
+       }
+        else {
+            setContentView(R.layout.activity_home);
+            setupFirebaseAuth();
+            initImageLoader();
+            setupBottomNavigationView();
+            setupViewPager();
 
-        initImageLoader();
-        setupBottomNavigationView();
-        setupViewPager();
-
-        Intent intent = getIntent();
-        if (intent.hasExtra("ChallengerUser")) {
-            mViewPager.setCurrentItem(1);
+            Intent intent = getIntent();
+            if (intent.hasExtra("ChallengerUser")) {
+                mViewPager.setCurrentItem(1);
+            }
         }
-
     }
 
     private void setupViewPager() {
@@ -118,13 +111,6 @@ public class HomeActivity extends AppCompatActivity {
         }
         else{
             addTokenToDatabase();
-
-//            if (!((InitialSetup)getApplicationContext()).isStartupComplete){
-//                Log.d(TAG, "checkCurrentUser: running init ");
-//                Intent intent = new Intent(mContext, InitActivity.class);
-//                startActivity(intent);
-//                ((InitialSetup)getApplicationContext()).isStartupComplete = true;
-//            }
         }
     }
 
