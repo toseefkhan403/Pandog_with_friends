@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
         {
             setContentView(R.layout.progress_anim);
             setupFirebaseAuth();
-       }
+        }
         else {
             setContentView(R.layout.activity_home);
             setupFirebaseAuth();

@@ -225,6 +225,7 @@ public class InitialSetup extends Application {
 
         isTaskCompleted= true;
         Intent i = new Intent(this, HomeActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
 
     }

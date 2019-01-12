@@ -16,9 +16,20 @@
         android:id="@+id/ProfileList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/searchProfiles" />
+        android:layout_below="@+id/searchProfiles"
+        android:visibility="visible"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/holder_vertical"
+        android:layout_below="@id/searchProfiles">
+
+    </android.support.v7.widget.RecyclerView>
+
 
     <!--bottom navigation view-->
 
     <include layout="@layout/layout_bottom_nav_view"/>
+
 </RelativeLayout>

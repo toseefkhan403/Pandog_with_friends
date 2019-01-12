@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +32,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -43,11 +46,46 @@ public class SearchActivity extends AppCompatActivity {
     private static final int ACTIVITY_NUM = 3;
     private Context mContext = SearchActivity.this;
     private ListView profilesListView;
+    private ArrayList<User> userList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+
+        final RecyclerView vertical = findViewById(R.id.holder_vertical);
+        vertical.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(mContext);
+        vertical.setLayoutManager(llm);
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference
+                .child(getString(R.string.dbname_users));
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found user list: " + singleSnapshot.getValue());  // gives the whole user objects
+
+                    try{
+                        User user= singleSnapshot.getValue(User.class);
+                        userList.add(user);
+                    }catch (Exception e){
+                        Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+                    }
+                }
+
+                VerticalRecyclerViewAdapter adapter = new VerticalRecyclerViewAdapter(userList, mContext);
+                vertical.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
         SearchView profileSearchView = findViewById(R.id.searchProfiles);
@@ -71,6 +109,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.filter(newText);
+                vertical.setVisibility(View.GONE);
                 return true;
             }
         });
