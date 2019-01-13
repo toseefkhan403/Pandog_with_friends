@@ -59,6 +59,13 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
         UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),  holder.first_photo, null, "");
         UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),  holder.second_photo, null, "");
 
+        holder.first_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo navigate to that particular post
+            }
+        });
+
     }
 
     @Override

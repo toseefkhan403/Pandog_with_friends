@@ -20,7 +20,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.0.1'
+    implementation 'com.android.support:appcompat-v7:27.0.2'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
@@ -32,7 +32,7 @@ dependencies {
 
     //dependencies for BottomNavigationViewEx
     implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
-    implementation "com.android.support:design:26.+"
+    implementation "com.android.support:design:27.0.2"
 
     //circle view dependency
     implementation 'de.hdodenhof:circleimageview:2.2.0'
@@ -48,6 +48,8 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-core:16.0.3'	//Analytics
     implementation 'com.google.firebase:firebase-database:16.0.1'	//Realtime Database
+    // FirebaseUI for Firebase Realtime Database
+    implementation 'com.firebaseui:firebase-ui-database:4.1.0'
     implementation 'com.google.firebase:firebase-storage:16.0.1'    //storage
 
     implementation 'com.google.firebase:firebase-auth:16.0.1'      //auth
@@ -70,6 +72,10 @@ dependencies {
     //library for detecting memory leaks : leakcanary
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+
+    //Arch
+    implementation "android.arch.core:runtime:1.1.1"
+    implementation "android.arch.core:common:1.1.1"
 
 
 }

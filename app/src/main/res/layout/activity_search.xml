@@ -1,32 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/white">
 
-    <android.support.v7.widget.SearchView
-        android:id="@+id/searchProfiles"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true">
+        android:layout_marginBottom="55dp">
 
-        <requestFocus />
-    </android.support.v7.widget.SearchView>
+        <android.support.v7.widget.SearchView
+            android:id="@+id/searchProfiles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:background="@drawable/search_layout"
+            android:focusable="true">
 
-    <ListView
-        android:id="@+id/ProfileList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/searchProfiles"
-        android:visibility="visible"/>
+            <requestFocus />
+        </android.support.v7.widget.SearchView>
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/holder_vertical"
-        android:layout_below="@id/searchProfiles">
+        <ListView
+            android:id="@+id/ProfileList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/searchProfiles"
+            android:visibility="visible"/>
 
-    </android.support.v7.widget.RecyclerView>
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/holder_vertical"
+            android:layout_below="@id/searchProfiles"
+            >
 
+        </android.support.v7.widget.RecyclerView>
+
+
+
+    </RelativeLayout>
 
     <!--bottom navigation view-->
 

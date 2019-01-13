@@ -52,11 +52,19 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
         Log.d(TAG, "onBindViewHolder: received user: " + mUserList.get(position));
 
         //todo a query to get different hash tags
+
+
         //for testing
-        holder.hashtag_title.setText("Featured posts");
-  //      holder.hashtag_title.setText("Trending hashtags");
+        int time =(int) System.currentTimeMillis()%2;
 
-
+        if (time ==1){
+            holder.for_style.setImageDrawable(mContext.getResources().getDrawable(R.drawable.heart_red));
+            holder.hashtag_title.setText("Featured posts");
+        }
+        else{
+            holder.for_style.setImageDrawable(mContext.getResources().getDrawable(R.drawable.fire_emoji_with_color));
+            holder.hashtag_title.setText("Trending hashtags");
+        }
 
     }
 

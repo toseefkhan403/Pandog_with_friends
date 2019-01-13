@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
@@ -74,7 +75,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         //todo set the local champion title here
         holder.email.setText(mUserList.get(position).getEmail());
 
-        holder.userName.setOnClickListener(new View.OnClickListener() {
+        holder.main.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -94,6 +95,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
+        RelativeLayout main;
         CircleImageView pp,bestTag;
         TextView userName, email;
         ProgressBar pb;
@@ -107,6 +109,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             pb = itemView.findViewById(R.id.pb);
             pb.setVisibility(View.VISIBLE);
             bestTag = itemView.findViewById(R.id.bestTag);
+            main = itemView.findViewById(R.id.main);
         }
     }
 }

@@ -201,10 +201,9 @@ public class SearchActivity extends AppCompatActivity {
                     Intent intent = new Intent(SearchActivity.this, ViewProfileActivity.class);
                     intent.putExtra(getString(R.string.intent_user), ProfileList.get(position));
                     startActivity(intent);
-
-
                 }
             });
+
             return convertView;
         }
 
