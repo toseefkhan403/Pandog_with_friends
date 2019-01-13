@@ -296,7 +296,7 @@ public class LoginActivity extends AppCompatActivity {
 //                .child("bitmap")
 //                .setValue();
 
-        UserAccountSettings userAccountSettings = new UserAccountSettings("This is my cool description",
+        UserAccountSettings userAccountSettings = new UserAccountSettings("This is my cool bio",
                 name,
                 image,
                 username);

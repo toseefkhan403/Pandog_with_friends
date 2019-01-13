@@ -41,10 +41,21 @@ public class HomeActivity extends AppCompatActivity {
 
         if (!((InitialSetup)getApplicationContext()).isTaskCompleted)
         {
-            setContentView(R.layout.progress_anim);
-            setupFirebaseAuth();
-        }
-        else {
+            Intent i = getIntent();
+            if (i.hasExtra("ChallengerUser"))
+            {
+                setContentView(R.layout.activity_home);
+                setupFirebaseAuth();
+                initImageLoader();
+                setupBottomNavigationView();
+                setupViewPager();
+                mViewPager.setCurrentItem(1);
+
+            }else{
+                setContentView(R.layout.progress_anim);
+                setupFirebaseAuth();
+            }
+        } else {
             setContentView(R.layout.activity_home);
             setupFirebaseAuth();
             initImageLoader();
