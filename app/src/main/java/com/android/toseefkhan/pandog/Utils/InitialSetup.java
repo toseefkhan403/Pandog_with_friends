@@ -44,6 +44,7 @@ public class InitialSetup extends Application {
     public ArrayList<MarkerOptions> markerOptionsList;
     public Boolean isTaskCompleted = false;
 
+
     private static final String TAG = "InitialSetup";
 
     @Override

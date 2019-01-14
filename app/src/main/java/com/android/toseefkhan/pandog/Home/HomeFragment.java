@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.android.toseefkhan.pandog.R;
 
+import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.models.Photo;
 
 
@@ -22,15 +23,23 @@ public class HomeFragment extends Fragment {
 
     private ArrayList<String> mProfilePhoto= new ArrayList<>();
     private ArrayList<Photo> mPhotoList= new ArrayList<>();
-    private View view;
+    private Like mHeart;
+    private ImageView mHeartWhite, mHeartRed;
+
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        view=inflater.inflate(R.layout.layout_view_post_fragment,container,false);
+        View view = inflater.inflate(R.layout.layout_view_post_fragment, container, false);
 
+        mHeartWhite = view.findViewById(R.id.image_heart_white);
+        mHeartRed = view.findViewById(R.id.image_heart_red);
+
+        mHeartRed.setVisibility(View.GONE);
+        mHeartWhite.setVisibility(View.VISIBLE);
+        mHeart = new Like(mHeartWhite,mHeartRed);
 
     //    mProfilePhoto.add("https://firebasestorage.googleapis.com/v0/b/pandog-with-friends.appspot.com/o/photos%2Fusers%2FWnkWgAskxMfSXxeWgxdcQEkXOWG3%2Fphoto2?alt=media&token=503ddc1f-a0f3-440a-84b1-baa0e9e3d34b");
      //   mProfilePhoto.add("https://i.imgur.com/ZcLLrkY.jpg");
@@ -39,11 +48,28 @@ public class HomeFragment extends Fragment {
        // initRecyclerView();
 //        ImageView redHeart2= view.findViewById(R.id.image_heart_red2);
 //        redHeart2.setVisibility(View.VISIBLE);
-
+        testToggle();
 
         return view;
     }
 
+    private void testToggle() {
+
+        mHeartWhite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHeart.toggleLike();
+            }
+        });
+
+        mHeartRed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHeart.toggleLike();
+            }
+        });
+
+    }
 
 
 //    public void initRecyclerView(){

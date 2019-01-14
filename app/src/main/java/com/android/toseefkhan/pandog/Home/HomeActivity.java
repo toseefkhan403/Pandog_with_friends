@@ -1,5 +1,6 @@
 package com.android.toseefkhan.pandog.Home;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.R;
@@ -90,7 +92,6 @@ public class HomeActivity extends AppCompatActivity {
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
-
     /**
      * BottomNavigationView setup
      */
@@ -104,8 +105,13 @@ public class HomeActivity extends AppCompatActivity {
         menuItem.setChecked(true);
     }
 
+    @Override
+    public void onBackPressed() {
 
-  /*
+    }
+
+
+    /*
     ------------------------------------ Firebase ---------------------------------------------
      */
 
