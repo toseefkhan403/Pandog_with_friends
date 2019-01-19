@@ -78,6 +78,8 @@ public class ShareActivity extends AppCompatActivity {
     private ArrayList<String> directories;
     private String mAppend = "file:/";
     private User mChosenUser;
+    private Intent getIntent;
+    private String mChallengeKey;
 
 
     @Override
@@ -96,6 +98,7 @@ public class ShareActivity extends AppCompatActivity {
         tvNext = findViewById(R.id.tvNext);
 
         Intent i = getIntent();
+        getIntent = getIntent();
         if (i.hasExtra("chosen_user")){
             Log.d(TAG, "onCreate: the user " + i.getExtras());
 
@@ -134,6 +137,11 @@ public class ShareActivity extends AppCompatActivity {
                 if (isRootTask()) {
                     Intent intent = new Intent(mContext, NextActivity.class);
                     intent.putExtra(getString(R.string.selected_image), mSelectedImageUri.toString());
+                    intent.putExtra("challenger_user",mChosenUser);
+                    if (getIntent.hasExtra("post_task")){
+                        Log.d(TAG, "onClick: do you have the challengekey " + getIntent.getStringArrayListExtra("post_task"));
+                        intent.putStringArrayListExtra("post_task",getIntent.getStringArrayListExtra("post_task"));
+                    }
                     startActivity(intent);
                 } else {
                     Intent intent = new Intent(mContext, EditProfileActivity.class);
@@ -408,6 +416,10 @@ public class ShareActivity extends AppCompatActivity {
                             Log.d(TAG, "onActivityResult: received new bitmap from gallery: " + selectedImageUri);
                             Intent intent = new Intent(mContext, NextActivity.class);
                             intent.putExtra(getString(R.string.selected_image), selectedImageUri.toString());
+                            intent.putExtra("challenger_user",mChosenUser);
+                            if (getIntent.hasExtra("post_task")){
+                                intent.putStringArrayListExtra("post_task",getIntent.getStringArrayListExtra("post_task"));
+                            }
                             startActivity(intent);
                         } catch (NullPointerException e) {
                             Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
@@ -439,6 +451,10 @@ public class ShareActivity extends AppCompatActivity {
                         Log.d(TAG, "onActivityResult: received new bitmap from camera: " + capturedImageUri);
                         Intent intent = new Intent(mContext, NextActivity.class);
                         intent.putExtra(getString(R.string.selected_image), capturedImageUri.toString());
+                        intent.putExtra("challenger_user",mChosenUser);
+                        if (getIntent.hasExtra("post_task")){
+                            intent.putStringArrayListExtra("post_task",getIntent.getStringArrayListExtra("post_task"));
+                        }
                         startActivity(intent);
                     } catch (NullPointerException e) {
                         Log.d(TAG, "onActivityResult: NullPointerException: " + e.getMessage());
@@ -462,7 +478,6 @@ public class ShareActivity extends AppCompatActivity {
 
         }
 
-        //handle the image that is received from a camera
     }
 
 

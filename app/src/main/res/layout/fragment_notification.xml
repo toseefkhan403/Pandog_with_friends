@@ -14,5 +14,31 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:id="@+id/noNotifs"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You have not received any notifications yet."
+            android:textSize="20sp"
+            android:id="@+id/t1"
+            android:layout_margin="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Now might be good time to explore the world!"
+            android:layout_below="@+id/t1"
+            android:textColor="@color/black"
+            android:textSize="19sp"
+            android:layout_margin="5dp"/>
+
+    </RelativeLayout>
+
 
 </RelativeLayout>

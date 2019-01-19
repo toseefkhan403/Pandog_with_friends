@@ -70,7 +70,23 @@ public class NextActivity extends AppCompatActivity {
         image = findViewById(R.id.imageShare);
         setupFirebaseAuth();
 
-        setupFriendsList();
+        Intent i =getIntent();
+        if (i.hasExtra("challenger_user")){
+            Bundle b = i.getExtras();
+            if(b!=null){
+               User user = b.getParcelable("challenger_user");
+               Log.d(TAG, "onCreate: user " + user);
+               if (user == null){
+                   setupFriendsList();
+               }else{
+                   mFriendsAdapter = new FriendsAdapter(user,mContext);
+                   friendsListView.setAdapter(mFriendsAdapter);
+               }
+            }
+        }else{
+            setupFriendsList();
+        }
+
         ImageView backArrow = findViewById(R.id.ivBackArrow);
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,7 +133,13 @@ public class NextActivity extends AppCompatActivity {
 
             long timeStamp = System.currentTimeMillis();
             String imageName = "photo" + timeStamp;
-            mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser);
+
+            if (getIntent().hasExtra("post_task")){
+                String challengeKey = getIntent().getStringArrayListExtra("post_task").get(0);
+                mFirebaseMethods.uploadNewPhoto(getString(R.string.post_photo),caption,imageName,null,myUri, selectedUser, challengeKey);
+            }else{
+                mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser);
+            }
         }
     }
 

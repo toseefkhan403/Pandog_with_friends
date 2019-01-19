@@ -22,6 +22,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,6 +45,7 @@ public class InitialSetup extends Application {
     public ArrayList<MarkerOptions> markerOptionsList;
     public Boolean isTaskCompleted = false;
 
+    public boolean wait = true;
 
     private static final String TAG = "InitialSetup";
 
@@ -55,6 +57,8 @@ public class InitialSetup extends Application {
         markerOptionsList = new ArrayList<>();
         MapsInitializer.initialize(getApplicationContext());
         calcUser();
+
+
     }
 
     private ArrayList<User> mUserList2 = new ArrayList<>();
@@ -118,6 +122,8 @@ public class InitialSetup extends Application {
         DatabaseReference myRef;
         myRef= FirebaseDatabase.getInstance().getReference();
 
+        try {
+
         for (int i = 0 ; i< userList1.size(); i++){
 
             User user = userList1.get(i);
@@ -167,6 +173,9 @@ public class InitialSetup extends Application {
                     .child(getString(R.string.db_level))
                     .setValue("GREY");
         }
+        }catch (NullPointerException e){
+            Log.d(TAG, "setLevels: NullPointer " + e.getMessage());
+        }
 
         getUsersFromArea();
     }
@@ -215,6 +224,9 @@ public class InitialSetup extends Application {
         Log.d(TAG, "createMarkers: markerlist that is required " + mUserList);
         MarkerOptions markerOptions;
 
+        try{
+
+
         for (int i=0; i<mUserList.size(); i++){
             LatLng latLng= new LatLng(mUserList.get(i).getLat_lng().getLatitude(), mUserList.get(i).getLat_lng().getLongitude());
             markerOptions=new MarkerOptions().position(latLng).
@@ -222,6 +234,9 @@ public class InitialSetup extends Application {
                     .title(mUserList.get(i).getUsername())
                     .snippet("Points: " + String.valueOf(mUserList.get(i).getPanda_points()));
             markerOptionsList.add(markerOptions);
+        }
+        }catch (NullPointerException e){
+
         }
 
         isTaskCompleted= true;

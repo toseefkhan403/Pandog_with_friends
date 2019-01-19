@@ -197,6 +197,8 @@ public class LoginActivity extends AppCompatActivity {
                             Log.d(TAG, "onComplete: value obtained from facebook profile " + email);
                             Log.d(TAG, "onComplete: value obtained from facebook profile " + image);
 
+                            try{
+
                             DatabaseReference ref= FirebaseDatabase.getInstance().getReference();
                             Query query = ref
                                     .child(getString(R.string.dbname_users));
@@ -207,11 +209,14 @@ public class LoginActivity extends AppCompatActivity {
                                     for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
                                         Log.d(TAG, "onDataChange: found user list: " + singleSnapshot.getValue());  // gives the whole user objects
                                         User user= singleSnapshot.getValue(User.class);
-                                        if (user.getUser_id().equals(uid)){
-                                            Log.d(TAG, "onDataChange: user exists, just log him up " + uid);
-                                            Log.d(TAG, "onDataChange: user exists " + user.getUser_id());
-                                            count++;        //do nothing
-                                        }
+                                        try {
+
+                                            if (user.getUser_id().equals(uid)) {
+                                                Log.d(TAG, "onDataChange: user exists, just log him up " + uid);
+                                                Log.d(TAG, "onDataChange: user exists " + user.getUser_id());
+                                                count++;        //do nothing
+                                            }
+                                        }catch (NullPointerException e) {}
                                     }
                                     if (count == 0){
                                         Log.d(TAG, "onComplete: registering the new user onto the database");
@@ -224,6 +229,10 @@ public class LoginActivity extends AppCompatActivity {
 
                                 }
                             });
+
+                            }catch(NullPointerException e){
+
+                            }
 
                             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                             startActivity(intent);

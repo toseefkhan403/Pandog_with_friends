@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FriendsAdapter extends BaseAdapter {
+
+    private static final String TAG = "FriendsAdapter";
     private String mUserUid;
     private ArrayList<User> friendUserList;
     private Context mContext;
@@ -38,6 +40,13 @@ public class FriendsAdapter extends BaseAdapter {
         this.mContext = context;
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
         getFriendsFromUid();
+    }
+
+    public FriendsAdapter(User user,Context context){
+        Log.d(TAG, "FriendsAdapter: the selected user " + user);
+        this.mContext = context;
+        friendUserList = new ArrayList<>();
+        friendUserList.add(user);
     }
 
     public int getSelectedUserPosition() {
@@ -139,13 +148,19 @@ public class FriendsAdapter extends BaseAdapter {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.profile_item, parent, false);
         }
         User user = (User) getItem(position);
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mSelectedUserPosition = position;
-                notifyDataSetChanged();
-            }
-        });
+
+        if (friendUserList.size() == 1){
+            mSelectedUserPosition = position;
+        }else{
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSelectedUserPosition = position;
+                    notifyDataSetChanged();
+                }
+            });
+        }
+
 
         Log.i("User", user.getUser_id());
         if (position == mSelectedUserPosition) {

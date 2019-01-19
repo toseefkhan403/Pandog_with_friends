@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.Challenge;
@@ -33,6 +34,7 @@ public class NotificationFragment extends Fragment {
     private ProgressBar progressBar;
     private NotificationsAdapter notificationsAdapter;
     private DatabaseReference mDatabaseReference;
+    private RelativeLayout rel;
 
 
     @Nullable
@@ -44,6 +46,7 @@ public class NotificationFragment extends Fragment {
         mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
 
         progressBar = view.findViewById(R.id.NotifProgressBar);
+        rel = view.findViewById(R.id.noNotifs);
         progressBar.setVisibility(View.VISIBLE);
 
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
@@ -133,7 +136,14 @@ public class NotificationFragment extends Fragment {
         mNotificationRecyclerView.setLayoutManager(mLayoutManager);
 
         NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
+        Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
         mNotificationRecyclerView.setAdapter(notificationAdapter);
+        if (challengesList.isEmpty()){
+            progressBar.setVisibility(View.GONE);
+            rel.setVisibility(View.VISIBLE);
+        }else{
+            rel.setVisibility(View.GONE);
+        }
     }
 
 }

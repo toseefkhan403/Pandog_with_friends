@@ -69,6 +69,7 @@ public class HomeActivity extends AppCompatActivity {
                 mViewPager.setCurrentItem(1);
             }
         }
+
     }
 
     private void setupViewPager() {

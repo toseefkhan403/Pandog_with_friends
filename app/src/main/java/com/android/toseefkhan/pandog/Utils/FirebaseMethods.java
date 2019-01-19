@@ -25,6 +25,7 @@ import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.Challenge;
 import com.android.toseefkhan.pandog.models.Photo;
+import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
@@ -236,6 +237,97 @@ public class FirebaseMethods {
         uploadDialog.show();
     }
 
+    public void uploadNewPhoto(final String photoType, final String caption, final String imageName,
+                               final String imgUrl, final Uri imageUri,User selectedUser, final String challengeKey) {
+        Log.d(TAG, "uploadNewPhoto: attempting to upload new photo.");
+        mSelectedUser = selectedUser;
+
+        final Dialog uploadDialog= new Dialog(mContext);
+        uploadDialog.setContentView(R.layout.layout_confirmation_dialog);
+        ImageView cancelDialog = uploadDialog.findViewById(R.id.cancel_dialog);
+        TextView yesDialog= uploadDialog.findViewById(R.id.tvYes);
+        TextView noDialog= uploadDialog.findViewById(R.id.tvNo);
+
+        cancelDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadDialog.dismiss();
+            }
+        });
+        noDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                uploadDialog.dismiss();
+            }
+        });
+
+        yesDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final FilePaths filePaths = new FilePaths();
+
+                if (photoType.equals(mContext.getString(R.string.post_photo))){
+                        Log.d(TAG, "uploadNewPhoto: uploading NEW photo.");
+
+                        final String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        final StorageReference storageReference = mStorageReference
+                                .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/" + imageName);
+
+                        UploadTask uploadTask = storageReference.putFile(imageUri);
+
+                        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                mStorageReference.child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/" + imageName)
+                                        .getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Uri> task) {
+                                        addPhotoToDatabase(caption, task.getResult().toString(), challengeKey);
+                                    }
+                                });
+
+                                Log.d(TAG, "onSuccess: this is the filepath " + filePaths.FIREBASE_IMAGE_STORAGE);
+
+                                ((Activity)mContext).finish();
+
+                                //navigate to the main feed so the user can see their photo
+                                Intent intent = new Intent(mContext, ProfileActivity.class);
+                                Toast.makeText(mContext, "Your post is up for voting!", Toast.LENGTH_SHORT).show();
+                                mContext.startActivity(intent);
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "onFailure: Photo upload failed.");
+                                Toast.makeText(mContext, "Photo upload failed ", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                                double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
+
+                                final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+
+                                builder.setMessage("Photo upload " + (int)progress + "% done ")
+                                        .setCancelable(false)
+                                        .setView(R.layout.layout_progress_dialog);
+                                final AlertDialog alert = builder.create();
+                                alert.show();
+                                if (progress >= 100) {
+                                    alert.dismiss();
+                                }
+                            }
+                        });
+                }
+            }
+        });
+
+        uploadDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        uploadDialog.show();
+    }
+
     private void uploadBitmap(Uri imageUri) {
 
         final FilePaths filePaths = new FilePaths();
@@ -340,7 +432,7 @@ public class FirebaseMethods {
 
         final String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final String selecteduserUid = mSelectedUser.getUser_id();
-        final Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, newPhotoKey, url);
+        final Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, newPhotoKey, url,caption,tags);
         mChallenge.setStatus("NOT_DECIDED");
         final String challengedUserName = mSelectedUser.getUsername();
         myRef.child(mContext.getString(R.string.dbname_users))
@@ -354,6 +446,7 @@ public class FirebaseMethods {
                             mChallenge.setChallengedName(challengedUserName);
                             mChallenge.setChallengerName(challengerUserName);
                             String challengeKey = myRef.child("Challenges").push().getKey();
+                            mChallenge.setChallengeKey(challengeKey);
                             myRef.child("Challenges").child(challengeKey).setValue(mChallenge);
 
                             DatabaseReference challengeReference = myRef.child("User_Challenges");
@@ -370,6 +463,66 @@ public class FirebaseMethods {
                 });
         myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
 
+    }
+
+    //todo IMPORTANT:: THE PHOTOS AND USER_PHOTOS NODES ARE FUTILE. iNSTEAD MOVED EVERYTHING TO CHALLENGE CLASS.
+
+    private void addPhotoToDatabase(final String caption, final String url, String challengeKey) {
+        Log.d(TAG, "addPhotoToDatabase: challenge key " + challengeKey);
+
+        final String tags = StringManipulation.getTags(caption);
+        final String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
+        Photo photo = new Photo();
+        photo.setCaption(caption);
+        photo.setDate_created(getTimestamp());
+        photo.setImage_path(url);
+        photo.setTags(tags);
+        photo.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        photo.setPhoto_id(newPhotoKey);
+
+        //insert into database
+        myRef.child(mContext.getString(R.string.dbname_user_photos))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child(newPhotoKey).setValue(photo);
+
+        final String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final String selecteduserUid = mSelectedUser.getUser_id();
+//        //todo find the challenge the user chose to compete with ----------done
+//        //todo create a post containing that challenge and remove the challenge value from challenges node -----------done
+
+        DatabaseReference dref = FirebaseDatabase.getInstance().getReference();
+        dref.child("Challenges").child(challengeKey)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Challenge c = dataSnapshot.getValue(Challenge.class);
+                Post post = new Post(c.getPhotoUrl(),c.getCaption(),c.getPhotoKey(),c.getChallengerUserUid(),c.getTags()
+                ,url, caption, newPhotoKey, c.getChallengedUserUid(), tags );
+                Log.d(TAG, "onDataChange: post " + post);
+                String postKey = myRef.child("Posts").push().getKey();
+                post.setPostKey(postKey);
+                addPostToDataBase(post, postKey);
+                //delete the challenge as it is accepted successfully
+                myRef.child("Challenges").child(c.getChallengeKey()).removeValue();
+                //todo remove the value from User_Challenges node too.
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        /* String image_url, String caption, String photo_id, String user_id,
+                String tags, int likes, String image_url2, String caption2, String photo_id2,
+                String user_id2, String tags2, int likes2, HashMap<String, String> comments */
+    }
+
+    private void addPostToDataBase(Post post, String postKey){
+
+        myRef.child("Posts").child(postKey).setValue(post);
+        Toast.makeText(mContext, "Your post is up for voting!", Toast.LENGTH_SHORT).show();
     }
 
     public int getImageCount(DataSnapshot dataSnapshot) {
@@ -406,7 +559,6 @@ public class FirebaseMethods {
                     .child(mContext.getString(R.string.field_description))
                     .setValue(description);
         }
-
     }
 
     /**
@@ -487,12 +639,11 @@ public class FirebaseMethods {
      */
     public void addNewUser(String email, String username, String description, String profile_photo){
 
-        User user = new User( userID,  email,  StringManipulation.condenseUsername(username) );
+        User user = new User( null,userID,  email,  StringManipulation.condenseUsername(username),"GREY" );
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userID)
                 .setValue(user);
-
 
         UserAccountSettings settings = new UserAccountSettings(
                 description,
@@ -504,7 +655,6 @@ public class FirebaseMethods {
         myRef.child(mContext.getString(R.string.dbname_user_account_settings))
                 .child(userID)
                 .setValue(settings);
-
     }
 
     /**
@@ -587,6 +737,5 @@ public class FirebaseMethods {
     public void uploadNewPhoto(String photoType, String caption, String imageName, String imgUrl, Uri imageUri, User selectedUser) {
         uploadNewPhoto(photoType, caption, imageName, imgUrl, imageUri);
         mSelectedUser = selectedUser;
-
     }
 }

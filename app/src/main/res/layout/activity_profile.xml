@@ -13,7 +13,6 @@
 
         </RelativeLayout>
 
-
     <ProgressBar
         android:id="@+id/profileProgressBar"
         android:layout_width="150dp"

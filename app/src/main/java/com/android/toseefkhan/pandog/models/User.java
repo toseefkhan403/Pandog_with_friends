@@ -36,6 +36,15 @@ public class User implements Parcelable {
         this.username = username;
     }
 
+    public User(String profile_photo, String user_id, String email, String username,String level) {
+        this.profile_photo = profile_photo;
+        this.user_id = user_id;
+        this.email = email;
+        this.username = username;
+        this.level = level;
+    }
+
+
     public String getLevel() {
         return level;
     }
@@ -71,7 +80,6 @@ public class User implements Parcelable {
         user_id = in.readString();
         email = in.readString();
         username = in.readString();
-        lat_lng = in.readParcelable(LatLng.class.getClassLoader());
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {

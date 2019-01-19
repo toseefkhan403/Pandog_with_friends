@@ -7,7 +7,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -27,14 +30,18 @@ import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
+import com.android.toseefkhan.pandog.Utils.Like;
+import com.android.toseefkhan.pandog.Utils.RecyclerViewAdapter;
 import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,6 +52,9 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -74,7 +84,9 @@ public class ProfileActivity extends AppCompatActivity {
     private RelativeLayout relativeLayout;
     private TextView mMenu;
     private ProgressBar pb;
-    private RelativeLayout profile;
+    private Toolbar profile;
+    private RecyclerView mRVPosts;
+    private ArrayList<Post> mPostList = new ArrayList<>();
 
 
     @Override
@@ -93,9 +105,78 @@ public class ProfileActivity extends AppCompatActivity {
 
         getFollowersCount();
         getFollowingCount();
-   //     getPostsCount();
 
+        getPostsOnProfile();
 
+    }
+
+    private void getPostsOnProfile() {
+        Log.d(TAG, "getPostsOnProfile: getting posts.");
+
+        myRef.child("Posts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onDataChange: .getValue " + dataSnapshot.getValue());
+                        mPostList.clear();
+
+                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren() ) {
+
+                            Post post = new Post();
+                            HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+
+                            post.setImage_url(objectMap.get("image_url").toString());
+                            post.setImage_url2(objectMap.get("image_url2").toString());
+
+                            post.setCaption(objectMap.get("caption").toString());
+                            post.setCaption2(objectMap.get("caption2").toString());
+                            post.setPhoto_id(objectMap.get("photo_id").toString());
+                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
+
+                            post.setTags(objectMap.get("tags").toString());
+                            post.setTags2(objectMap.get("tags2").toString());
+
+                            post.setUser_id(objectMap.get("user_id").toString());
+                            post.setUser_id2(objectMap.get("user_id2").toString());
+
+                            post.setPostKey(objectMap.get("postKey").toString());
+                            /*String image_url, String caption, String photo_id, String user_id, String tags,
+                String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
+
+                            List<Like> likesList = new ArrayList<Like>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("likes").getChildren()){
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                likesList.add(like);
+                            }
+                            List<Like> likesList2 = new ArrayList<Like>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("likes2").getChildren()){
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                likesList2.add(like);
+                            }
+                             mPostList.add(post);
+                            Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
+                        }
+
+                        initRecyclerView();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
+    private void initRecyclerView() {
+
+            mRVPosts.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false));
+            PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
+            mRVPosts.setAdapter(adapter);
     }
 
     private void setBackGroundTint() {
@@ -131,26 +212,32 @@ public class ProfileActivity extends AppCompatActivity {
 
             case "BLACK":
                 profile.setBackgroundColor(getResources().getColor(R.color.black));
+                mUsername.setTextColor(getResources().getColor(R.color.white));
                 break;
 
             case "PURPLE":
                 profile.setBackgroundColor(getResources().getColor(R.color.purple));
+                mUsername.setTextColor(getResources().getColor(R.color.white));
                 break;
 
             case "BLUE":
                 profile.setBackgroundColor(getResources().getColor(R.color.lightblue));
+                mUsername.setTextColor(getResources().getColor(R.color.white));
                 break;
 
             case "GREEN":
                 profile.setBackgroundColor(getResources().getColor(R.color.lightgreen));
+                mUsername.setTextColor(getResources().getColor(R.color.black));
                 break;
 
             case "GREY":
                 profile.setBackgroundColor(getResources().getColor(R.color.grey));
+                mUsername.setTextColor(getResources().getColor(R.color.black));
                 break;
 
              default:
                  profile.setBackgroundColor(getResources().getColor(R.color.white));
+                 mUsername.setTextColor(getResources().getColor(R.color.black));
                  break;
         }
 
@@ -204,7 +291,7 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private void setupActivityWidgets(){
-        profile = findViewById(R.id.rel_profile);
+        profile = findViewById(R.id.profileToolBar);
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProfilePhoto = findViewById(R.id.profile_photo);
         relativeLayout= findViewById(R.id.main_profile);
@@ -238,6 +325,7 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+        mRVPosts = findViewById(R.id.posts_recycler_view_list);
 
     }
 

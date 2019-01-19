@@ -87,16 +87,20 @@
                 android:id="@+id/rel_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:paddingBottom="50dp"
+                android:layout_marginTop="15dp"
+                android:paddingBottom="5dp"
                 android:layout_marginBottom="50dp"
                 android:layout_below="@id/snippet">
 
-                <TextView
+                <android.support.v7.widget.RecyclerView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="show here the posts of this user and cover this
-                    activity in a scroll view"/>
+                    android:id="@+id/posts_recycler_view_list"
+                    android:nestedScrollingEnabled="false"
+                    android:background="@color/beige">
+
+
+                </android.support.v7.widget.RecyclerView>
 
             </RelativeLayout>
 

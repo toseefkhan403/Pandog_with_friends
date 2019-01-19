@@ -160,10 +160,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void setMarkersOnMap(ArrayList<User> mUserList,ArrayList<MarkerOptions> markerOptions){
 
         Marker marker;
+
         for (int i= 0 ; i<mUserList.size() ; i++){
-            marker= mMap.addMarker(markerOptions.get(i));
-            marker.setTag(mUserList.get(i));
-            markerList.add(marker);                  //needs this for the recycler view
+            try {
+                marker = mMap.addMarker(markerOptions.get(i));
+                marker.setTag(mUserList.get(i));
+                markerList.add(marker);    //needs this for the recycler view
+            }catch (Exception e){}
         }
         checkVisibility(markerList);
     }

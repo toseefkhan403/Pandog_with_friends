@@ -17,18 +17,21 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
-import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Challenge;
+import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.koushikdutta.ion.Ion;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
 import java.util.ArrayList;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder> {
@@ -36,6 +39,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     private static final String TAG = "NotificationsAdapter";
     private ArrayList<Challenge> challengesList;
     private Context mContext;
+    private User chosen_user;
 
     public NotificationsAdapter(ArrayList<Challenge> challenges, Context ctx) {
         this.challengesList = challenges;
@@ -83,7 +87,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     i.displayImage(challenge.getPhotoUrl(),preview);
                     pb.setVisibility(View.GONE);
 
-
                     TextView username = dialog.findViewById(R.id.username);
                     username.setText(challenge.getChallengerName() + "?");
 
@@ -91,15 +94,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     respondedYes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            //todo Handle the cases after this
-                            //todo also set status of the challenge to ACCEPTED in the db and add checks at the beginning to set the holder.status of the challenge
-                            Intent intent = new Intent(mContext, ShareActivity.class);
-                            intent.putExtra("photo_url",challenge.getPhotoUrl());
-                            intent.putExtra("challenger_username",challenge.getChallengerName());
-                            mContext.startActivity(intent);
-                            holder.status.setText("You accepted the challenge");
+                            //todo set status of the challenge to ACCEPTED in the db and add checks at the beginning to set the holder.status of the challenge
+                            //todo status can only be not_decided or rejected. if the challenge is accepted, the challenge itself has to be
+                            //todo removed from the db and a new post will be created in the db under user_post and posts node.
+                            getUserFromChallengerUid(challenge.getChallengerUserUid(), challenge.getChallengeKey());
+        //                    holder.status.setText("You accepted the challenge");
                             dialog.dismiss();
-
                         }
                     });
 
@@ -108,9 +108,8 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
-                            //todo set the status of the challenge to REJECTED in the db
+                            //todo set the status of the challenge to REJECTED in the db.
                             holder.status.setText("You rejected the challenge");
-
                         }
                     });
 
@@ -130,6 +129,35 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
         return (challengesList == null) ? 0 : challengesList.size();
     }
+
+    private void getUserFromChallengerUid(final String uid, final String challengeKey){
+
+        final ArrayList<String> arrayList = new ArrayList<>();
+        arrayList.add(challengeKey);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child(mContext.getString(R.string.dbname_users))
+                .child(uid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            chosen_user = dataSnapshot.getValue(User.class);
+                            Log.d(TAG, "onDataChange: are you empty dude " + chosen_user);
+                        if (chosen_user != null){
+                            Intent intent = new Intent(mContext, ShareActivity.class);
+                            intent.putExtra("chosen_user",chosen_user);
+                            intent.putStringArrayListExtra("post_task", arrayList);
+                            mContext.startActivity(intent);
+                        }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(mContext, "An error occurred.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        }
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
 

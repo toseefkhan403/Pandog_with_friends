@@ -8,15 +8,44 @@ public class Challenge {
     private String challengerName;
     private String challengedName;
     private String photoUrl;
+    private String challengeKey;
+    private String caption;
+    private String tags;
 
-    public Challenge(String challengerUserUid, String challengedUserUid, String photoKey, String photoUrl) {
+    public Challenge(String challengerUserUid, String challengedUserUid, String photoKey, String photoUrl,String caption,String tags) {
         this.challengerUserUid = challengerUserUid;
         this.challengedUserUid = challengedUserUid;
         this.photoKey = photoKey;
         this.photoUrl = photoUrl;
+        this.caption = caption;
+        this.tags = tags;
     }
 
     public Challenge() {
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getChallengeKey() {
+        return challengeKey;
+    }
+
+    public void setChallengeKey(String challengeKey) {
+        this.challengeKey = challengeKey;
     }
 
     public String getPhotoUrl() {

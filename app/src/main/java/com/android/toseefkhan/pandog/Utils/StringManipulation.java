@@ -30,7 +30,10 @@ public class StringManipulation {
             }
             String s = sb.toString().replace(" ", "").replace("#", ",#");
             return s.substring(1, s.length());
+        }else if (!string.contains("#")){
+            return " ";
         }
+
         return string;
     }
 }

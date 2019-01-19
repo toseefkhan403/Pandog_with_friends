@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,7 +72,8 @@ public class ViewProfileActivity extends AppCompatActivity {
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0,ppcount=0;
     private TextView mMenu;
     private ProgressBar pb;
-    private RelativeLayout profile;
+    private Toolbar profile;
+    private RelativeLayout profile2;
     private Button mButtonChallenge;
     private RelativeLayout relativeLayout;
 
@@ -83,7 +85,8 @@ public class ViewProfileActivity extends AppCompatActivity {
         mButtonChallenge = findViewById(R.id.challenge_me);
         relativeLayout = findViewById(R.id.reltohide);
         relativeLayout.setVisibility(View.INVISIBLE);
-        profile = findViewById(R.id.rel_profile);
+        profile2 = findViewById(R.id.rel_profile);
+        profile = findViewById(R.id.profileToolBar);
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProgressBar.setVisibility(View.VISIBLE);
         mProfilePhoto = findViewById(R.id.profile_photo);
@@ -114,7 +117,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                     intent.putExtra("chosen_user", mUser);
                     startActivity(intent);
                 }else {
-                    Snackbar.make(profile,"You need to follow this user for a challenge" , Snackbar.LENGTH_SHORT).show();
+                    Snackbar.make(profile2,"You need to follow this user for a challenge" , Snackbar.LENGTH_SHORT).show();
                 }
             }
         });
@@ -218,26 +221,32 @@ public class ViewProfileActivity extends AppCompatActivity {
 
             case "BLACK":
                 profile.setBackgroundColor(getResources().getColor(R.color.black));
+                mUsername.setTextColor(getResources().getColor(R.color.white));
                 break;
 
             case "PURPLE":
                 profile.setBackgroundColor(getResources().getColor(R.color.purple));
+                mUsername.setTextColor(getResources().getColor(R.color.white));
                 break;
 
             case "BLUE":
                 profile.setBackgroundColor(getResources().getColor(R.color.lightblue));
+                mUsername.setTextColor(getResources().getColor(R.color.white));
                 break;
 
             case "GREEN":
                 profile.setBackgroundColor(getResources().getColor(R.color.lightgreen));
+                mUsername.setTextColor(getResources().getColor(R.color.black));
                 break;
 
             case "GREY":
                 profile.setBackgroundColor(getResources().getColor(R.color.grey));
+                mUsername.setTextColor(getResources().getColor(R.color.black));
                 break;
 
             default:
                 profile.setBackgroundColor(getResources().getColor(R.color.white));
+                mUsername.setTextColor(getResources().getColor(R.color.black));
                 break;
         }
 

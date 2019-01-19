@@ -3,8 +3,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@drawable/white_pink_border_bottom"
-        >
+        android:background="@drawable/white_pink_border_bottom">
 
         <android.support.v7.widget.Toolbar
             android:layout_width="match_parent"
@@ -31,7 +30,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="FAQs"
-                    android:textColor="@color/green"
+                    android:textColor="@color/darkGreen"
                     android:textSize="20sp"
                     android:textStyle="normal"
                     android:layout_alignParentRight="true"
