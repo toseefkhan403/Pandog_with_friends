@@ -4,10 +4,13 @@
     android:layout_height="match_parent">
 
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:id="@+id/posts_recycler_view_list"
+        android:nestedScrollingEnabled="false"
+        android:background="@color/beige">
 
-    </ListView>
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>

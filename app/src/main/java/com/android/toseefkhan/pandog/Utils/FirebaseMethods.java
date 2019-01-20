@@ -485,8 +485,6 @@ public class FirebaseMethods {
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child(newPhotoKey).setValue(photo);
 
-        final String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        final String selecteduserUid = mSelectedUser.getUser_id();
 //        //todo find the challenge the user chose to compete with ----------done
 //        //todo create a post containing that challenge and remove the challenge value from challenges node -----------done
 
@@ -502,6 +500,7 @@ public class FirebaseMethods {
                 Log.d(TAG, "onDataChange: post " + post);
                 String postKey = myRef.child("Posts").push().getKey();
                 post.setPostKey(postKey);
+
                 addPostToDataBase(post, postKey);
                 //delete the challenge as it is accepted successfully
                 myRef.child("Challenges").child(c.getChallengeKey()).removeValue();

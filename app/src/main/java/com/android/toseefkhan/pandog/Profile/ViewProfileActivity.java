@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -25,7 +27,10 @@ import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
+import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.Comment;
+import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
@@ -43,6 +48,9 @@ import com.koushikdutta.async.http.filter.DataRemainingException;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -76,6 +84,9 @@ public class ViewProfileActivity extends AppCompatActivity {
     private RelativeLayout profile2;
     private Button mButtonChallenge;
     private RelativeLayout relativeLayout;
+    private RecyclerView mRVPosts;
+    private ArrayList<Post> mPostList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +94,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_activity_profile);
         mButtonChallenge = findViewById(R.id.challenge_me);
+        mRVPosts = findViewById(R.id.posts_recycler_view_list);
         relativeLayout = findViewById(R.id.reltohide);
         relativeLayout.setVisibility(View.INVISIBLE);
         profile2 = findViewById(R.id.rel_profile);
@@ -171,9 +183,7 @@ public class ViewProfileActivity extends AppCompatActivity {
 
 
         setupBottomNavigationView();
-       // setupToolbar();
         setupFirebaseAuth();
-
 
         try{
             mUser = getUserFromBundle();
@@ -189,9 +199,97 @@ public class ViewProfileActivity extends AppCompatActivity {
         isFollowing();
         getFollowingCount();
         getFollowersCount();
-     //   getPostsCount();
-        tempGridSetup();
+
+        getPostsOnProfile();
+
     }
+
+    private void initRecyclerView() {
+
+        Collections.reverse(mPostList);
+        mRVPosts.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false));
+        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
+        mRVPosts.setAdapter(adapter);
+    }
+
+    private void getPostsOnProfile(){
+
+        Log.d(TAG, "getPostsOnProfile: getting posts.");
+
+        //todo currently its retrieving all the posts. get only those which the user is related to
+        myRef.child("Posts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onDataChange: .getValue " + dataSnapshot.getValue());
+                        mPostList.clear();
+
+                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren() ) {
+
+                            Post post = new Post();
+                            HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+
+                            post.setImage_url(objectMap.get("image_url").toString());
+                            post.setImage_url2(objectMap.get("image_url2").toString());
+
+                            post.setCaption(objectMap.get("caption").toString());
+                            post.setCaption2(objectMap.get("caption2").toString());
+                            post.setPhoto_id(objectMap.get("photo_id").toString());
+                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
+
+                            post.setTags(objectMap.get("tags").toString());
+                            post.setTags2(objectMap.get("tags2").toString());
+
+                            post.setUser_id(objectMap.get("user_id").toString());
+                            post.setUser_id2(objectMap.get("user_id2").toString());
+
+                            post.setPostKey(objectMap.get("postKey").toString());
+                            /*String image_url, String caption, String photo_id, String user_id, String tags,
+                String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
+
+                            List<Like> likesList = new ArrayList<Like>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("likes").getChildren()){
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                likesList.add(like);
+                            }
+                            post.setLikes(likesList);
+
+                            List<Like> likesList2 = new ArrayList<Like>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("likes2").getChildren()){
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                likesList2.add(like);
+                            }
+                            post.setLikes2(likesList2);
+
+                            List<Comment> comments = new ArrayList<Comment>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("comments").getChildren()){
+                                Comment comment = new Comment();
+                                comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
+                                comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                                comments.add(comment);
+                            }
+                            post.setComments(comments);
+
+                            mPostList.add(post);
+                            Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
+                        }
+
+                        initRecyclerView();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
 
     private void checkLevel(User user){
 
@@ -448,55 +546,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         relativeLayout.setVisibility(View.VISIBLE);
     }
 
-    private void tempGridSetup(){
-        ArrayList<String> imgURLs = new ArrayList<>();
-        imgURLs.add("https://i.redd.it/9bf67ygj710z.jpg");
-        imgURLs.add("https://c1.staticflickr.com/5/4276/34102458063_7be616b993_o.jpg");
-        imgURLs.add("http://i.imgur.com/EwZRpvQ.jpg");
-        imgURLs.add("http://i.imgur.com/JTb2pXP.jpg");
-        imgURLs.add("https://i.redd.it/59kjlxxf720z.jpg");
-        imgURLs.add("https://i.redd.it/pwduhknig00z.jpg");
-        imgURLs.add("https://i.redd.it/clusqsm4oxzy.jpg");
-        imgURLs.add("https://i.redd.it/svqvn7xs420z.jpg");
-        imgURLs.add("http://i.imgur.com/j4AfH6P.jpg");
-        imgURLs.add("https://i.redd.it/89cjkojkl10z.jpg");
-        imgURLs.add("https://i.redd.it/aw7pv8jq4zzy.jpg");
-
-        setupImageGrid(imgURLs);
-    }
-
-    private void setupImageGrid(ArrayList<String> imgURLs){
-        GridView gridView = (GridView) findViewById(R.id.gridView);
-
-        int gridWidth = getResources().getDisplayMetrics().widthPixels;
-        int imageWidth = gridWidth/NUM_GRID_COLUMNS;
-        gridView.setColumnWidth(imageWidth);
-
-        GridImageAdapter adapter = new GridImageAdapter(mContext, R.layout.layout_grid_image_view, "", imgURLs);
-        gridView.setAdapter(adapter);
-    }
-
-
-
-    /**
-     * Responsible for setting up the profile toolbar
-     */
-//    private void setupToolbar(){
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.profileToolBar);
-//        setSupportActionBar(toolbar);
-//
-//        ImageView profileMenu = (ImageView) findViewById(R.id.profileMenu);
-//        profileMenu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "onClick: navigating to account settings.");
-//                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//    }
-
-    /**
+      /**
      * BottomNavigationView setup
      */
     private void setupBottomNavigationView(){

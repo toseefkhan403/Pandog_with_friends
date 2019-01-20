@@ -1,11 +1,15 @@
 package com.android.toseefkhan.pandog.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.android.toseefkhan.pandog.Utils.Like;
+import com.google.firebase.database.ServerValue;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class Post {
+public class Post implements Parcelable{
 
     private String image_url;
     private String caption;
@@ -20,7 +24,7 @@ public class Post {
     private String user_id2;
     private String tags2;
     private List<Like> likes2;
-    private HashMap<String,String> comments = new HashMap<>();  //<uid,comment>
+    private List<Comment> comments;
 
     private String postKey;
 
@@ -39,6 +43,40 @@ public class Post {
         this.photo_id2 = photo_id2;
         this.user_id2 = user_id2;
         this.tags2 = tags2;
+    }
+
+    protected Post(Parcel in) {
+        image_url = in.readString();
+        caption = in.readString();
+        photo_id = in.readString();
+        user_id = in.readString();
+        tags = in.readString();
+        image_url2 = in.readString();
+        caption2 = in.readString();
+        photo_id2 = in.readString();
+        user_id2 = in.readString();
+        tags2 = in.readString();
+        postKey = in.readString();
+    }
+
+    public static final Creator<Post> CREATOR = new Creator<Post>() {
+        @Override
+        public Post createFromParcel(Parcel in) {
+            return new Post(in);
+        }
+
+        @Override
+        public Post[] newArray(int size) {
+            return new Post[size];
+        }
+    };
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     public String getImage_url() {
@@ -137,14 +175,6 @@ public class Post {
         this.likes2 = likes2;
     }
 
-    public HashMap<String, String> getComments() {
-        return comments;
-    }
-
-    public void setComments(HashMap<String, String> comments) {
-        this.comments = comments;
-    }
-
     public String getPostKey() {
         return postKey;
     }
@@ -171,5 +201,25 @@ public class Post {
                 ", comments=" + comments +
                 ", PostKey='" + postKey + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(image_url);
+        dest.writeString(caption);
+        dest.writeString(photo_id);
+        dest.writeString(user_id);
+        dest.writeString(tags);
+        dest.writeString(image_url2);
+        dest.writeString(caption2);
+        dest.writeString(photo_id2);
+        dest.writeString(user_id2);
+        dest.writeString(tags2);
+        dest.writeString(postKey);
     }
 }

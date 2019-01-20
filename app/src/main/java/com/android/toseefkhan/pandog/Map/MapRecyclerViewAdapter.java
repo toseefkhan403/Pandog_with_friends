@@ -1,47 +1,37 @@
-package com.android.toseefkhan.pandog.Utils;
+package com.android.toseefkhan.pandog.Map;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
+import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
-import com.android.toseefkhan.pandog.Search.SearchActivity;
-import com.android.toseefkhan.pandog.models.Photo;
+import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
+public class MapRecyclerViewAdapter extends RecyclerView.Adapter<MapRecyclerViewAdapter.ViewHolder>{
 
-    private static final String TAG = "RecyclerViewAdapter";
+    private static final String TAG = "MapRecyclerViewAdapter";
     private Context mContext;
     private ArrayList<User> mUserList;
     private String uid;
 
-    public RecyclerViewAdapter(Context mContext, ArrayList<User> mUserList) {
+    public MapRecyclerViewAdapter(Context mContext, ArrayList<User> mUserList) {
         this.mContext = mContext;
         this.mUserList = mUserList;
     }
@@ -72,7 +62,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         else
             holder.userName.setText(mUserList.get(position).getUsername());
 
-        //todo set the local champion title here
+
         holder.email.setText(mUserList.get(position).getEmail());
 
         holder.main.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +72,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 if (!mUserList.get(position).getUser_id().equals(uid)){
                     Intent i= new Intent(mContext, ViewProfileActivity.class);
                     i.putExtra(mContext.getString(R.string.intent_user), mUserList.get(position));
+                    mContext.startActivity(i);
+                }
+                else {
+                    Intent i = new Intent(mContext, ProfileActivity.class);
                     mContext.startActivity(i);
                 }
             }

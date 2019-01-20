@@ -26,6 +26,7 @@
 
     <RelativeLayout
         android:id="@+id/relLayout2"
+        android:focusableInTouchMode="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -33,6 +34,8 @@
             android:id="@+id/profile_photo"
             android:src="@drawable/ic_logo"
             app:civ_border_color="@color/black"
+            android:focusedByDefault="true"
+            android:focusableInTouchMode="true"
             app:civ_border_width="2dp"
             android:layout_width="match_parent"
             android:layout_height="300dp"
@@ -44,7 +47,7 @@
             android:layout_height="100dp"
             android:id="@+id/pb"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="80dp"/>
+            android:layout_marginTop="110dp"/>
 
 
         <TextView
@@ -78,10 +81,7 @@
             android:layout_below="@id/challenge_me"
             android:layout_marginStart="15dp"
             android:layout_marginTop="5dp"
-            android:text="I am gonna build this app for whatever
-reason if i
-could i face whatever
-the"
+            android:text="I am gonna build this app for whatever"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
@@ -98,27 +98,24 @@ the"
 
 
         <RelativeLayout
-                android:id="@+id/rel_profile"
+            android:id="@+id/rel_profile"
+            android:layout_marginBottom="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/snippet"
+            android:paddingBottom="5dp">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/posts_recycler_view_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_below="@+id/snippet"
-                android:layout_marginBottom="50dp">
+                android:background="@color/beige"
+                android:nestedScrollingEnabled="false">
 
-                <GridView
-                    android:id="@+id/gridView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:horizontalSpacing="1dp"
-                    android:numColumns="3"
-                    android:stretchMode="columnWidth"
-                    android:verticalSpacing="1dp">
+            </android.support.v7.widget.RecyclerView>
 
-                </GridView>
-
-
-            </RelativeLayout>
+        </RelativeLayout>
 
     </RelativeLayout>
 

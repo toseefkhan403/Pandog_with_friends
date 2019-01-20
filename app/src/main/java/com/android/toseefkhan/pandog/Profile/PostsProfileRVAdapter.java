@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +20,7 @@ import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -70,9 +72,9 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
-        Post post = mPostList.get(position);
+        final Post post = mPostList.get(position);
 
         Log.d(TAG, "onBindViewHolder: give me the post " + post);
         setTopToolbar(holder, post);
@@ -86,11 +88,14 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         holder.caption1.setText(post.getCaption());
         holder.caption2.setText(post.getCaption2());
 
+        holder.comments_list.setText(String.valueOf(post.getComments().size()) + " comments");
         holder.comments_list.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //takes you to ViewCommentsFragment
-
+                //takes you to ViewCommentsActivity
+                Intent i = new Intent(mContext,ViewCommentsActivity.class);
+                i.putExtra("post_comments",post);
+                mContext.startActivity(i);
             }
         });
 
@@ -291,22 +296,44 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                         UniversalImageLoader.setImage(user.getProfile_photo(),holder.dp1,null,"");
                         holder.username1.setText(user.getUsername());
 
-                        holder.username1.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent i = new Intent(mContext,ViewProfileActivity.class);
-                                i.putExtra(mContext.getString(R.string.intent_user),user);
-                                mContext.startActivity(i);
-                            }
-                        });
-                        holder.dp1.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent i = new Intent(mContext,ViewProfileActivity.class);
-                                i.putExtra(mContext.getString(R.string.intent_user),user);
-                                mContext.startActivity(i);
-                            }
-                        });
+                        if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+
+                            holder.username1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                            holder.dp1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                        }else{
+                            holder.username1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ProfileActivity.class);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                            holder.dp1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ProfileActivity.class);
+                                    mContext.startActivity(i);
+                                }
+                            });
+
+
+                        }
+
+
                     }
 
                     @Override
@@ -324,22 +351,42 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                         UniversalImageLoader.setImage(user.getProfile_photo(),holder.dp2,null,"");
                         holder.username2.setText(user.getUsername());
 
-                        holder.username2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent i = new Intent(mContext,ViewProfileActivity.class);
-                                i.putExtra(mContext.getString(R.string.intent_user),user);
-                                mContext.startActivity(i);
-                            }
-                        });
-                        holder.dp2.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent i = new Intent(mContext,ViewProfileActivity.class);
-                                i.putExtra(mContext.getString(R.string.intent_user),user);
-                                mContext.startActivity(i);
-                            }
-                        });
+                        if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+
+                            holder.username2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                            holder.dp2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
+                                    mContext.startActivity(i);
+                                }
+                            });
+
+                        }else{
+
+                            holder.username2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ProfileActivity.class);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                            holder.dp2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ProfileActivity.class);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                        }
                     }
 
                     @Override
@@ -375,7 +422,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             image2 = itemView.findViewById(R.id.post_image2);
             likesString1 = itemView.findViewById(R.id.image_likes);
             likesString2 = itemView.findViewById(R.id.image_likes2);
-            comments_list = itemView.findViewById(R.id.image_comments_link);
+            comments_list = itemView.findViewById(R.id.comments_link);
             caption1 = itemView.findViewById(R.id.image_caption);
             caption2 = itemView.findViewById(R.id.image_caption2);
             heartWhite = itemView.findViewById(R.id.image_heart_white);

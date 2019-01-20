@@ -27,14 +27,16 @@
     <RelativeLayout
         android:id="@+id/relLayout2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/relLayout1">
+        android:focusableInTouchMode="true"
+        android:layout_height="wrap_content">
 
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_photo"
             android:src="@drawable/ic_logo"
             app:civ_border_color="@color/black"
+            android:focusedByDefault="true"
+            android:focusableInTouchMode="true"
             app:civ_border_width="2dp"
             android:layout_marginTop="10dp"
             android:scaleType="centerCrop"

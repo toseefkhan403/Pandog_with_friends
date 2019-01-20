@@ -5,27 +5,40 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.R;
 
 import com.android.toseefkhan.pandog.Utils.Heart;
+import com.android.toseefkhan.pandog.Utils.Like;
+import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Photo;
+import com.android.toseefkhan.pandog.models.Post;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
 
-    private ArrayList<String> mProfilePhoto= new ArrayList<>();
-    private ArrayList<Photo> mPhotoList= new ArrayList<>();
-    private Heart mHeart;
-    private ImageView mHeartWhite, mHeartRed, mHeartWhite2, mHeartRed2;
+    private RecyclerView mRVPosts;
+    private ArrayList<Post> mPostList = new ArrayList<>();
 
 
 
@@ -33,73 +46,100 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.layout_view_post_fragment, container, false);
-        int time =(int) System.currentTimeMillis()%2;
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        mRVPosts = view.findViewById(R.id.posts_recycler_view_list);
 
-        mHeartWhite = view.findViewById(R.id.image_heart_white);
-        mHeartRed = view.findViewById(R.id.image_heart_red);
-        mHeartWhite2 = view.findViewById(R.id.image_heart_white2);
-        mHeartRed2 = view.findViewById(R.id.image_heart_red2);
 
-        if (time == 1){
-            mHeartWhite.setImageDrawable(getResources().getDrawable(R.drawable.flames_emoji));
-            mHeartRed.setImageDrawable(getResources().getDrawable(R.drawable.fire_emoji_with_color));
-            mHeartRed.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            mHeartWhite2.setImageDrawable(getResources().getDrawable(R.drawable.flames_emoji));
-            mHeartRed2.setImageDrawable(getResources().getDrawable(R.drawable.fire_emoji_with_color));
-            mHeartRed2.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        }
-
-        mHeartRed.setVisibility(View.GONE);
-        mHeartWhite.setVisibility(View.VISIBLE);
-        mHeartRed2.setVisibility(View.GONE);
-        mHeartWhite2.setVisibility(View.VISIBLE);
-
-        mHeart = new Heart(mHeartWhite,mHeartRed,mHeartWhite2,mHeartRed2,view,getContext());
-
-    //    mProfilePhoto.add("https://firebasestorage.googleapis.com/v0/b/pandog-with-friends.appspot.com/o/photos%2Fusers%2FWnkWgAskxMfSXxeWgxdcQEkXOWG3%2Fphoto2?alt=media&token=503ddc1f-a0f3-440a-84b1-baa0e9e3d34b");
-     //   mProfilePhoto.add("https://i.imgur.com/ZcLLrkY.jpg");
-
-        // initRecyclerView();
-//        ImageView redHeart2= view.findViewById(R.id.image_heart_red2);
-//        redHeart2.setVisibility(View.VISIBLE);
-        testToggle();
+        getPostsOnProfile();
 
         return view;
     }
 
-    private void testToggle() {
+    private void getPostsOnProfile() {
+        Log.d(TAG, "getPostsOnProfile: getting posts.");
 
-        mHeartWhite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              //  mHeart.toggleLike();
-            }
-        });
-        mHeartRed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-             //   mHeart.toggleLike();
-            }
-        });
-        mHeartWhite2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-          //      mHeart.toggleLike2();
-            }
-        });
-        mHeartRed2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-              //  mHeart.toggleLike2();
-            }
-        });
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+        //todo currently its retrieving all the posts. get only those which the user is related to
+        myRef.child("Posts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onDataChange: .getValue " + dataSnapshot.getValue());
+                        mPostList.clear();
 
+                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren() ) {
+
+                            Post post = new Post();
+                            HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+
+                            post.setImage_url(objectMap.get("image_url").toString());
+                            post.setImage_url2(objectMap.get("image_url2").toString());
+
+                            post.setCaption(objectMap.get("caption").toString());
+                            post.setCaption2(objectMap.get("caption2").toString());
+                            post.setPhoto_id(objectMap.get("photo_id").toString());
+                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
+
+                            post.setTags(objectMap.get("tags").toString());
+                            post.setTags2(objectMap.get("tags2").toString());
+
+                            post.setUser_id(objectMap.get("user_id").toString());
+                            post.setUser_id2(objectMap.get("user_id2").toString());
+
+                            post.setPostKey(objectMap.get("postKey").toString());
+                            /*String image_url, String caption, String photo_id, String user_id, String tags,
+                String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
+
+                            List<Like> likesList = new ArrayList<Like>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("likes").getChildren()){
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                likesList.add(like);
+                            }
+                            post.setLikes(likesList);
+
+                            List<Like> likesList2 = new ArrayList<Like>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("likes2").getChildren()){
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                likesList2.add(like);
+                            }
+                            post.setLikes2(likesList2);
+
+                            List<Comment> comments = new ArrayList<Comment>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("comments").getChildren()){
+                                Comment comment = new Comment();
+                                comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
+                                comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                                comments.add(comment);
+                            }
+                            post.setComments(comments);
+
+                            mPostList.add(post);
+                            Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
+                        }
+
+                        initRecyclerView();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
 
-//
+    private void initRecyclerView() {
 
+        Collections.reverse(mPostList);
+        mRVPosts.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(getActivity(), mPostList);
+        mRVPosts.setAdapter(adapter);
+    }
 
 
 
