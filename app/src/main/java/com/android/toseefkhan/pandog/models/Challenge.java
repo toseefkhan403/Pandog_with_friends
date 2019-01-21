@@ -8,6 +8,7 @@ public class Challenge {
     private String challengerName;
     private String challengedName;
     private String photoUrl;
+    private String challengeKey;
 
     public Challenge(String challengerUserUid, String challengedUserUid, String photoKey, String photoUrl) {
         this.challengerUserUid = challengerUserUid;
@@ -17,6 +18,14 @@ public class Challenge {
     }
 
     public Challenge() {
+    }
+
+    public String getChallengeKey() {
+        return challengeKey;
+    }
+
+    public void setChallengeKey(String challengeKey) {
+        this.challengeKey = challengeKey;
     }
 
     public String getPhotoUrl() {

@@ -29,7 +29,7 @@ public class NotificationFragment extends Fragment {
     private static final String TAG = "NotificationFragment";
 
     private RecyclerView mNotificationRecyclerView;
-    private ArrayList<Challenge> challengesList= new ArrayList<>();
+    private ArrayList<Challenge> challengesList = new ArrayList<>();
     private ProgressBar progressBar;
     private NotificationsAdapter notificationsAdapter;
     private DatabaseReference mDatabaseReference;
@@ -46,55 +46,54 @@ public class NotificationFragment extends Fragment {
         progressBar = view.findViewById(R.id.NotifProgressBar);
         progressBar.setVisibility(View.VISIBLE);
 
-        notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
+        initUserListRecyclerView();
 
         String userUid = "something";
-        try{
+        try {
             userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Log.d(TAG, "onCreateView: " + e.getMessage());
         }
 
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-            mDatabaseReference.child(getString(R.string.db_user_challenges))
-                    .child(userUid)
-                    .orderByKey()
-                    .addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                            if (dataSnapshot.exists()) {
-                                String ChallengeKey = dataSnapshot.getValue(String.class);
-                                Log.d("String", "ChildAdded" + s);
-                                addChallenge(ChallengeKey);
-                            }
-                        }
+        mDatabaseReference.child(getString(R.string.db_user_challenges))
+                .child(userUid)
+                .orderByKey()
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        String ChallengeKey = dataSnapshot.getValue(String.class);
+                        Log.d("String", "ChildAdded");
+                        addChallenge(ChallengeKey);
+                    }
 
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        }
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        }
+                    }
 
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.d("Db ERROR", databaseError.toString());
-                        }
-                    });
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
         return view;
     }
 
-    private void addChallenge(String challengeKey) {
-
+    private void addChallenge(final String challengeKey) {
         if (isAdded()) {
             Log.d(TAG, "addChallenge: challengekey " + challengeKey);
             mDatabaseReference.child(getString(R.string.db_challenges))
@@ -104,22 +103,26 @@ public class NotificationFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 Challenge challenge = dataSnapshot.getValue(Challenge.class);
-                                challengesList.add(challenge);
-                                notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
-                                if (progressBar != null) {
-                                    if (progressBar.getVisibility() != View.GONE) {
-                                        progressBar.setVisibility(View.GONE);
+                                if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
+                                    int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
+                                    challengesList.set(challlengeIndex,challenge);
+                                    notificationsAdapter.notifyItemChanged(challlengeIndex);
+                                } else{
+                                    challengesList.add(challenge);
+                                    notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
+                                    if (progressBar != null) {
+                                        if (progressBar.getVisibility() != View.GONE) {
+                                            progressBar.setVisibility(View.GONE);
+                                        }
                                     }
                                 }
                             }
-                            Log.d(TAG, "onDataChange: are you empty " + challengesList);
-                            initUserListRecyclerView();
+                            Log.d(TAG, "onDataChange: are you empty " + challengesList.size());
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            Log.d("DatabaseError", databaseError.toString());
                         }
                     });
         }
@@ -132,8 +135,8 @@ public class NotificationFragment extends Fragment {
         ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
         mNotificationRecyclerView.setLayoutManager(mLayoutManager);
 
-        NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
-        mNotificationRecyclerView.setAdapter(notificationAdapter);
+        notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
+        mNotificationRecyclerView.setAdapter(notificationsAdapter);
     }
 
 }

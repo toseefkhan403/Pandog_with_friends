@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,11 +19,9 @@ import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
-import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Challenge;
 import com.google.firebase.auth.FirebaseAuth;
-import com.koushikdutta.ion.Ion;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -40,6 +37,15 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     public NotificationsAdapter(ArrayList<Challenge> challenges, Context ctx) {
         this.challengesList = challenges;
         this.mContext = ctx;
+    }
+
+    public int getIndexOfChallenge(String challengeKey) {
+        for(Challenge challenge:challengesList){
+            if(challenge.getChallengeKey().equals(challengeKey)){
+                return challengesList.indexOf(challenge);
+            }
+        }
+        return -1;
     }
 
     @NonNull
@@ -58,14 +64,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, holder.pb, "");
 
-
-
         Log.d(TAG, "onBindViewHolder: challenge " + challenge.getChallengerName() + challenge.getChallengedName());
 
-        if (challenge.getChallengerUserUid().equals(uid)){
-            holder.notifTextView.setText("You challenged "+challenge.getChallengedName());
+        if (challenge.getChallengerUserUid().equals(uid)) {
+            holder.notifTextView.setText("You challenged " + challenge.getChallengedName());
             holder.status.setText("Awaiting response");
-        }else{
+        } else {
             holder.notifTextView.setText(challenge.getChallengerName() + " challenged you!");
 
             holder.container.setOnClickListener(new View.OnClickListener() {
@@ -78,9 +82,9 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     ProgressBar pb = dialog.findViewById(R.id.pb);
 
                     //setting the image
-                  //UniversalImageLoader.setImage(challenge.getPhotoUrl(),preview,pb,null);
+                    //UniversalImageLoader.setImage(challenge.getPhotoUrl(),preview,pb,null);
                     ImageLoader i = ImageLoader.getInstance();
-                    i.displayImage(challenge.getPhotoUrl(),preview);
+                    i.displayImage(challenge.getPhotoUrl(), preview);
                     pb.setVisibility(View.GONE);
 
 
@@ -94,8 +98,8 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                             //todo Handle the cases after this
                             //todo also set status of the challenge to ACCEPTED in the db and add checks at the beginning to set the holder.status of the challenge
                             Intent intent = new Intent(mContext, ShareActivity.class);
-                            intent.putExtra("photo_url",challenge.getPhotoUrl());
-                            intent.putExtra("challenger_username",challenge.getChallengerName());
+                            intent.putExtra("photo_url", challenge.getPhotoUrl());
+                            intent.putExtra("challenger_username", challenge.getChallengerName());
                             mContext.startActivity(intent);
                             holder.status.setText("You accepted the challenge");
                             dialog.dismiss();
@@ -130,6 +134,16 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
         return (challengesList == null) ? 0 : challengesList.size();
     }
+
+    public boolean doesChallengeExist(String challengeKey) {
+        for (Challenge challenge : challengesList) {
+            if (challenge.getChallengeKey().equals(challengeKey)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
 

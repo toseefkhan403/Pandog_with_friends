@@ -74,6 +74,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 Log.d(TAG, "onMessageReceived: NullPointerException " + exception.getMessage());
             }
         } else if (notificationType.equals("Following")) {
+            Log.d(TAG,"followingMessage Received");
             final String notificationTitle = "You received a new follower";
             final String notificationBody = "";
             String followerUserUid = "";
