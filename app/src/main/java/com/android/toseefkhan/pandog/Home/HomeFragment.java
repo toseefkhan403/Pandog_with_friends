@@ -21,6 +21,7 @@ import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Photo;
 import com.android.toseefkhan.pandog.models.Post;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,7 +51,9 @@ public class HomeFragment extends Fragment {
         mRVPosts = view.findViewById(R.id.posts_recycler_view_list);
 
 
-        getPostsOnProfile();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null){
+            getPostsOnProfile();
+        }
 
         return view;
     }
