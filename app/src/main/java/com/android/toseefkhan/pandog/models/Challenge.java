@@ -24,6 +24,7 @@ public class Challenge {
     public Challenge() {
     }
 
+
     public String getCaption() {
         return caption;
     }

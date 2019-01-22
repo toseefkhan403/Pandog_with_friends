@@ -30,7 +30,7 @@ public class NotificationFragment extends Fragment {
     private static final String TAG = "NotificationFragment";
 
     private RecyclerView mNotificationRecyclerView;
-    private ArrayList<Challenge> challengesList= new ArrayList<>();
+    private ArrayList<Challenge> challengesList = new ArrayList<>();
     private ProgressBar progressBar;
     private NotificationsAdapter notificationsAdapter;
     private DatabaseReference mDatabaseReference;
@@ -49,49 +49,51 @@ public class NotificationFragment extends Fragment {
         rel = view.findViewById(R.id.noNotifs);
         progressBar.setVisibility(View.VISIBLE);
 
+        initUserListRecyclerView();
+
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
 
         String userUid = "something";
-        try{
+        try {
             userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Log.d(TAG, "onCreateView: " + e.getMessage());
         }
 
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-            mDatabaseReference.child(getString(R.string.db_user_challenges))
-                    .child(userUid)
-                    .orderByKey()
-                    .addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                            if (dataSnapshot.exists()) {
-                                String ChallengeKey = dataSnapshot.getValue(String.class);
-                                Log.d("String", "ChildAdded" + s);
-                                addChallenge(ChallengeKey);
-                            }
+        mDatabaseReference.child(getString(R.string.db_user_challenges))
+                .child(userUid)
+                .orderByKey()
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        if (dataSnapshot.exists()) {
+                            String ChallengeKey = dataSnapshot.getValue(String.class);
+                            Log.d("String", "ChildAdded" + s);
+                            addChallenge(ChallengeKey);
                         }
+                    }
 
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        }
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
 
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                        }
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    }
 
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.d("Db ERROR", databaseError.toString());
-                        }
-                    });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.d("Db ERROR", databaseError.toString());
+                    }
+                });
 
         return view;
     }
@@ -108,9 +110,9 @@ public class NotificationFragment extends Fragment {
                                 Challenge challenge = dataSnapshot.getValue(Challenge.class);
                                 if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
                                     int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
-                                    challengesList.set(challlengeIndex,challenge);
+                                    challengesList.set(challlengeIndex, challenge);
                                     notificationsAdapter.notifyItemChanged(challlengeIndex);
-                                } else{
+                                } else {
                                     challengesList.add(challenge);
                                     notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
                                     if (progressBar != null) {
@@ -119,8 +121,15 @@ public class NotificationFragment extends Fragment {
                                         }
                                     }
                                 }
+                                if (challengesList.isEmpty()) {
+                                    progressBar.setVisibility(View.GONE);
+                                    rel.setVisibility(View.VISIBLE);
+                                } else {
+                                    rel.setVisibility(View.GONE);
+                                }
                             }
                             Log.d(TAG, "onDataChange: are you empty " + challengesList.size());
+                            Log.d(TAG, "adapter content" + notificationsAdapter.getItemCount());
                         }
 
                         @Override
@@ -141,12 +150,7 @@ public class NotificationFragment extends Fragment {
         NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
         Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
         mNotificationRecyclerView.setAdapter(notificationAdapter);
-        if (challengesList.isEmpty()){
-            progressBar.setVisibility(View.GONE);
-            rel.setVisibility(View.VISIBLE);
-        }else{
-            rel.setVisibility(View.GONE);
-        }
+
     }
 
 }
