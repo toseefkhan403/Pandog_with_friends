@@ -96,8 +96,7 @@ public class NotificationFragment extends Fragment {
         return view;
     }
 
-    private void addChallenge(String challengeKey) {
-
+    private void addChallenge(final String challengeKey) {
         if (isAdded()) {
             Log.d(TAG, "addChallenge: challengekey " + challengeKey);
             mDatabaseReference.child(getString(R.string.db_challenges))
@@ -107,22 +106,26 @@ public class NotificationFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 Challenge challenge = dataSnapshot.getValue(Challenge.class);
-                                challengesList.add(challenge);
-                                notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
-                                if (progressBar != null) {
-                                    if (progressBar.getVisibility() != View.GONE) {
-                                        progressBar.setVisibility(View.GONE);
+                                if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
+                                    int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
+                                    challengesList.set(challlengeIndex,challenge);
+                                    notificationsAdapter.notifyItemChanged(challlengeIndex);
+                                } else{
+                                    challengesList.add(challenge);
+                                    notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
+                                    if (progressBar != null) {
+                                        if (progressBar.getVisibility() != View.GONE) {
+                                            progressBar.setVisibility(View.GONE);
+                                        }
                                     }
                                 }
                             }
-                            Log.d(TAG, "onDataChange: are you empty " + challengesList);
-                            initUserListRecyclerView();
+                            Log.d(TAG, "onDataChange: are you empty " + challengesList.size());
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            Log.d("DatabaseError", databaseError.toString());
                         }
                     });
         }
