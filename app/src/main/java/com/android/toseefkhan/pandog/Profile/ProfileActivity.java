@@ -6,16 +6,20 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
@@ -26,6 +30,7 @@ import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
+import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -64,14 +69,15 @@ public class ProfileActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
-    private CircleImageView mProfilePhoto;
+    private ImageView mProfilePhoto;
     private TextView mEditProfile,PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
     private RelativeLayout relativeLayout;
     private TextView mMenu;
     private ProgressBar pb;
     private Toolbar profile;
-    private RecyclerView mRVPosts;
+    private Button mViewChallenges;
+ //   private RecyclerView mRVPosts;
     private ArrayList<Post> mPostList = new ArrayList<>();
 
 
@@ -92,7 +98,7 @@ public class ProfileActivity extends AppCompatActivity {
         getFollowersCount();
         getFollowingCount();
 
-        getPostsOnProfile();
+   //     getPostsOnProfile();
 
     }
 
@@ -162,7 +168,7 @@ public class ProfileActivity extends AppCompatActivity {
                             Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
                         }
 
-                        initRecyclerView();
+                        //initRecyclerView();
                     }
 
                     @Override
@@ -172,13 +178,13 @@ public class ProfileActivity extends AppCompatActivity {
                 });
     }
 
-    private void initRecyclerView() {
-
-        Collections.reverse(mPostList);
-        mRVPosts.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false));
-        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
-        mRVPosts.setAdapter(adapter);
-    }
+//    private void initRecyclerView() {
+//
+//        Collections.reverse(mPostList);
+//        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
+//        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
+//        mRVPosts.setAdapter(adapter);
+//    }
 
     private void setBackGroundTint() {
 
@@ -279,6 +285,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
+        mViewChallenges.setText("View all Posts by " + settings.getUsername());
         mDescription.setText(settings.getDescription());
         mProgressBar.setVisibility(View.GONE);
     }
@@ -292,6 +299,14 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setupActivityWidgets(){
         profile = findViewById(R.id.profileToolBar);
+        mViewChallenges = findViewById(R.id.button_view_challenges);
+        mViewChallenges.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(mContext, HomeActivity.class);
+                startActivity(i);
+            }
+        });
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProfilePhoto = findViewById(R.id.profile_photo);
         relativeLayout= findViewById(R.id.main_profile);
@@ -325,7 +340,7 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        mRVPosts = findViewById(R.id.posts_recycler_view_list);
+        //mRVPosts = findViewById(R.id.posts_recycler_view_list);
 
     }
 

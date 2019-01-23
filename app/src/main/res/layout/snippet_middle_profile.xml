@@ -60,14 +60,13 @@
                 android:id="@+id/textFollowers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="104dp"
+                android:layout_marginLeft="134dp"
                 android:layout_marginRight="8dp"
                 android:text="Followers"
                 android:textColor="@color/colorAccent"
                 android:textSize="12sp"
                 app:layout_constraintHorizontal_bias="0.526"
                 app:layout_constraintLeft_toRightOf="@+id/textPosts"
-                app:layout_constraintRight_toLeftOf="@+id/textFollolwing"
                 app:layout_constraintTop_toBottomOf="@+id/tvFollowers" />
 
             <TextView

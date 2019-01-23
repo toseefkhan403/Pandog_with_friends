@@ -58,7 +58,6 @@ public class InitialSetup extends Application {
         MapsInitializer.initialize(getApplicationContext());
         calcUser();
 
-
     }
 
     private ArrayList<User> mUserList2 = new ArrayList<>();
@@ -236,7 +235,7 @@ public class InitialSetup extends Application {
             markerOptionsList.add(markerOptions);
         }
         }catch (NullPointerException e){
-
+            Log.d(TAG, "createMarkers: markerlist that is required " + e.getMessage());
         }
 
         isTaskCompleted= true;

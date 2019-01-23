@@ -1,37 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
     <RelativeLayout
+        android:id="@+id/relLayout1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/relLayout1">
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true">
 
-        <RelativeLayout
+        <com.github.florent37.shapeofview.shapes.DiagonalView
+            android:id="@+id/videoView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/relLayout2">
+            android:layout_height="300dp"
+            android:layout_alignParentTop="true"
+            android:elevation="4dp"
+            app:shape_diagonal_angle="10"
+            app:shape_diagonal_direction="left"
+            app:shape_diagonal_position="bottom">
 
-            <include layout="@layout/snippet_top_activitysettings"/>
-        </RelativeLayout>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/intro1"
+                android:id="@+id/vv"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                android:gravity="start"
+                android:paddingTop="110dp"
+                android:text="FAQs"
+                android:textColor="@color/black"
+                android:textSize="45sp"
+                android:textStyle="italic" />
+
+
+
+        </com.github.florent37.shapeofview.shapes.DiagonalView>
 
         <ExpandableListView
+            android:id="@+id/expandable_lv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="55dp"
+            android:layout_below="@+id/videoView"
             android:layout_marginBottom="60dp"
             android:background="@color/white"
-            android:divider="@color/red"
             android:childDivider="@color/blue"
-            android:dividerHeight="1dp"
-            android:id="@+id/expandable_lv">
+            android:divider="@color/colorAccent"
+            android:dividerHeight="1dp">
 
 
         </ExpandableListView>
 
-        <include layout="@layout/layout_bottom_nav_view"/>
+        <include layout="@layout/layout_bottom_nav_view" />
 
     </RelativeLayout>
 

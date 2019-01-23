@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
@@ -34,13 +35,13 @@ public class Heart {
         private static final AccelerateInterpolator ACCELERATE_INTERPOLATOR = new AccelerateInterpolator();
 
         private ImageView heartWhite, heartRed,heartWhite2, heartRed2;
-        private View view;
+        private LinearLayout view;
         private DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
         private Context mContext;
         private PostsProfileRVAdapter adapter;
         private PostsProfileRVAdapter.ViewHolder mViewHolder;
 
-    public Heart(ImageView heartWhite, ImageView heartRed, ImageView heartWhite2, ImageView heartRed2,View view,Context context) {
+    public Heart(ImageView heartWhite, ImageView heartRed, ImageView heartWhite2, ImageView heartRed2,LinearLayout view,Context context) {
         this.heartWhite = heartWhite;
         this.heartRed = heartRed;
         this.heartWhite2 = heartWhite2;

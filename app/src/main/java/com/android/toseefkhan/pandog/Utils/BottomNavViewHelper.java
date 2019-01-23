@@ -24,10 +24,11 @@ public class BottomNavViewHelper {
     public static void setupBottomNavigationView(BottomNavigationViewEx bottomNavigationViewEx){
         try {
             Log.d(TAG, "setupBottomNavigationView: Setting up BottomNavigationView");
-            bottomNavigationViewEx.enableAnimation(false);
+            bottomNavigationViewEx.enableAnimation(true);
             bottomNavigationViewEx.enableItemShiftingMode(false);
             bottomNavigationViewEx.enableShiftingMode(false);
             bottomNavigationViewEx.setTextVisibility(true);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,7 +65,6 @@ public class BottomNavViewHelper {
                         context.startActivity(intent5);
                         break;
                 }
-
 
                 return false;
             }

@@ -30,17 +30,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <com.github.florent37.shapeofview.shapes.ArcView
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            app:shape_arc_height="30dp"
+            app:shape_arc_position="bottom"
+            app:shape_arc_cropDirection="outside"
+            android:id="@+id/profile_photo_arc">
+
+        <ImageView
             android:id="@+id/profile_photo"
-            android:src="@drawable/ic_logo"
+            android:src="@drawable/intro1"
             app:civ_border_color="@color/black"
             android:focusedByDefault="true"
             android:focusableInTouchMode="true"
             app:civ_border_width="2dp"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
             android:layout_centerHorizontal="true" />
+
+        </com.github.florent37.shapeofview.shapes.ArcView>
 
         <ProgressBar
             android:layout_width="100dp"
@@ -55,8 +65,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Toseef"
-            android:layout_below="@id/profile_photo"
-            android:layout_marginTop="7dp"
+            android:layout_below="@id/profile_photo_arc"
+            android:layout_marginTop="10dp"
             android:textAlignment="center"
             android:textColor="@color/black"
             android:textSize="16sp"
@@ -106,14 +116,15 @@
             android:layout_below="@+id/snippet"
             android:paddingBottom="5dp">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/posts_recycler_view_list"
-                android:layout_width="match_parent"
+            <Button
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/beige"
-                android:nestedScrollingEnabled="false">
-
-            </android.support.v7.widget.RecyclerView>
+                android:layout_centerInParent="true"
+                android:background="@drawable/white_rounded_fb_button"
+                android:text="View Challenges by"
+                android:textColor="@color/white"
+                android:padding="10dp"
+                android:id="@+id/button_view_challenges"/>
 
         </RelativeLayout>
 

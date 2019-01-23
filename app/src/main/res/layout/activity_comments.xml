@@ -16,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/relLayout2"
+        android:background="@color/beige"
         android:layout_below="@+id/relLayout1"
         android:layout_marginBottom="60dp">
 
@@ -23,7 +24,6 @@
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/beige"
             android:id="@+id/comments_rv">
 
 

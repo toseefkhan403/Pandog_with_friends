@@ -4,27 +4,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.R;
-
-import com.android.toseefkhan.pandog.Utils.Heart;
 import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.models.Comment;
-import com.android.toseefkhan.pandog.models.Photo;
 import com.android.toseefkhan.pandog.models.Post;
-import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
-import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
-import com.dingmouren.layoutmanagergroup.slide.SlideLayoutManager;
 import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -33,13 +24,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class HomeLocalFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
 
