@@ -28,6 +28,9 @@ public class Post implements Parcelable{
 
     private String postKey;
 
+    private long timeStamp;
+    private String challenge_id, status;
+
     public Post() {
     }
 
@@ -59,6 +62,9 @@ public class Post implements Parcelable{
         tags2 = in.readString();
         comments = in.createTypedArrayList(Comment.CREATOR);
         postKey = in.readString();
+        timeStamp = in.readLong();
+        challenge_id = in.readString();
+        status = in.readString();
     }
 
     public static final Creator<Post> CREATOR = new Creator<Post>() {
@@ -206,24 +212,51 @@ public class Post implements Parcelable{
     }
 
 
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public String getChallenge_id() {
+        return challenge_id;
+    }
+
+    public void setChallenge_id(String challenge_id) {
+        this.challenge_id = challenge_id;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public int describeContents() {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(image_url);
-        dest.writeString(caption);
-        dest.writeString(photo_id);
-        dest.writeString(user_id);
-        dest.writeString(tags);
-        dest.writeString(image_url2);
-        dest.writeString(caption2);
-        dest.writeString(photo_id2);
-        dest.writeString(user_id2);
-        dest.writeString(tags2);
-        dest.writeTypedList(comments);
-        dest.writeString(postKey);
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(image_url);
+        parcel.writeString(caption);
+        parcel.writeString(photo_id);
+        parcel.writeString(user_id);
+        parcel.writeString(tags);
+        parcel.writeString(image_url2);
+        parcel.writeString(caption2);
+        parcel.writeString(photo_id2);
+        parcel.writeString(user_id2);
+        parcel.writeString(tags2);
+        parcel.writeTypedList(comments);
+        parcel.writeString(postKey);
+        parcel.writeLong(timeStamp);
+        parcel.writeString(challenge_id);
+        parcel.writeString(status);
     }
 }

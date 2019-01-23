@@ -95,6 +95,11 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
         final Post post = mPostList.get(position);
 
+        long timediff = System.currentTimeMillis() - post.getTimeStamp();
+        int time = (int) ((86400000-timediff)/3600000);
+        Log.d(TAG, "onBindViewHolder: the values of the hours " + time + " " + timediff);
+        holder.timeRemaining.setText(String.valueOf(time) + " hr remaining");
+
         int bottomHeight = 60*(mContext.getResources().getDisplayMetrics().densityDpi/ DisplayMetrics.DENSITY_DEFAULT);
 
         holder.theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth*2,screenHeight-bottomHeight));
@@ -461,7 +466,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         ImageView image1,image2;
         TextView likesString1,likesString2;
         TextView comments_list,comments_list2;
-        TextView caption1,caption2;
+        TextView caption1,caption2,timeRemaining;
         ImageView heartWhite,heartWhite2,heartRed,heartRed2;
         HorizontalScrollView horizontalScrollView;
         LinearLayout theWholeView;
@@ -491,6 +496,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             theWholeView = itemView.findViewById(R.id.theWholeView);
             cardView1 = itemView.findViewById(R.id.user1_card_view);
             cardView2 = itemView.findViewById(R.id.user2_card_view);
+            timeRemaining = itemView.findViewById(R.id.timeRemaining);
 
 
             heartRed.setVisibility(View.GONE);

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,9 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
-
 import java.util.ArrayList;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder> {
@@ -63,13 +62,15 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, holder.pb, "");
 
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
 
         Log.d(TAG, "onBindViewHolder: challenge " + challenge.getChallengerName() + challenge.getChallengedName());
 
-        if (challenge.getChallengerUserUid().equals(uid)) {
-            holder.notifTextView.setText("You challenged " + challenge.getChallengedName());
+        if (challenge.getChallengerUserUid().equals(uid)){
+            holder.notifTextView.setText("You challenged "+challenge.getChallengedName());
             holder.status.setText("Awaiting response");
-        } else {
+        }else if (challenge.getStatus().equals("NOT_DECIDED")){
             holder.notifTextView.setText(challenge.getChallengerName() + " challenged you!");
 
             holder.container.setOnClickListener(new View.OnClickListener() {
@@ -81,10 +82,8 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     ImageView preview = dialog.findViewById(R.id.image_preview);
                     ProgressBar pb = dialog.findViewById(R.id.pb);
 
-                    //setting the image
-                    //UniversalImageLoader.setImage(challenge.getPhotoUrl(),preview,pb,null);
                     ImageLoader i = ImageLoader.getInstance();
-                    i.displayImage(challenge.getPhotoUrl(), preview);
+                    i.displayImage(challenge.getPhotoUrl(),preview);
                     pb.setVisibility(View.GONE);
 
                     TextView username = dialog.findViewById(R.id.username);
@@ -98,7 +97,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                             //todo status can only be not_decided or rejected. if the challenge is accepted, the challenge itself has to be
                             //todo removed from the db and a new post will be created in the db under user_post and posts node.
                             getUserFromChallengerUid(challenge.getChallengerUserUid(), challenge.getChallengeKey());
-                            //                    holder.status.setText("You accepted the challenge");
+        //                    holder.status.setText("You accepted the challenge");
                             dialog.dismiss();
                         }
                     });
@@ -109,6 +108,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                         public void onClick(View v) {
                             dialog.dismiss();
                             //todo set the status of the challenge to REJECTED in the db.
+                            ref.child("Challenges").child(challenge.getChallengeKey()).child("status").setValue("REJECTED");
                             holder.status.setText("You rejected the challenge");
                         }
                     });
@@ -124,31 +124,13 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
     }
 
-    public int getIndexOfChallenge(String challengeKey) {
-        for (Challenge challenge : challengesList) {
-            if (challenge.getChallengeKey().equals(challengeKey)) {
-                return challengesList.indexOf(challenge);
-            }
-        }
-        return -1;
-    }
-
-    public boolean doesChallengeExist(String challengeKey) {
-        for (Challenge challenge : challengesList) {
-            if (challenge.getChallengeKey().equals(challengeKey)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public int getItemCount() {
 
         return (challengesList == null) ? 0 : challengesList.size();
     }
 
-    private void getUserFromChallengerUid(final String uid, final String challengeKey) {
+    private void getUserFromChallengerUid(final String uid, final String challengeKey){
 
         final ArrayList<String> arrayList = new ArrayList<>();
         arrayList.add(challengeKey);
@@ -158,15 +140,15 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
+                        if (dataSnapshot.exists()){
                             chosen_user = dataSnapshot.getValue(User.class);
                             Log.d(TAG, "onDataChange: are you empty dude " + chosen_user);
-                            if (chosen_user != null) {
-                                Intent intent = new Intent(mContext, ShareActivity.class);
-                                intent.putExtra("chosen_user", chosen_user);
-                                intent.putStringArrayListExtra("post_task", arrayList);
-                                mContext.startActivity(intent);
-                            }
+                        if (chosen_user != null){
+                            Intent intent = new Intent(mContext, ShareActivity.class);
+                            intent.putExtra("chosen_user",chosen_user);
+                            intent.putStringArrayListExtra("post_task", arrayList);
+                            mContext.startActivity(intent);
+                        }
                         }
                     }
 
@@ -175,7 +157,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                         Toast.makeText(mContext, "An error occurred.", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
+        }
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
 

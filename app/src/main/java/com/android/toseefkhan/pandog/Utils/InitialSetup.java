@@ -29,6 +29,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.instabug.library.Instabug;
+import com.instabug.library.invocation.InstabugInvocationEvent;
 import com.koushikdutta.ion.Ion;
 import com.squareup.leakcanary.LeakCanary;
 
@@ -52,6 +54,10 @@ public class InitialSetup extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        new Instabug.Builder(this, "6b5e492b9aa3d1d98d594ac00dce5085")
+                .setInvocationEvents(InstabugInvocationEvent.SHAKE)
+                .build();
 
         mUserList = new ArrayList<>();
         markerOptionsList = new ArrayList<>();
