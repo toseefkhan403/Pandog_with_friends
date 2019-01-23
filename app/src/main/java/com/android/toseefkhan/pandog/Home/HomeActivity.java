@@ -75,7 +75,8 @@ public class HomeActivity extends AppCompatActivity {
 
         FragmentPagerAdapter adapter=new FragmentPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new HomeFragment()); //index is 0
-        adapter.addFragment(new NotificationFragment());  //index is 1
+        adapter.addFragment(new HomeLocalFragment());  //index is 1
+        adapter.addFragment(new NotificationFragment());  //index is 2
 
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(adapter);
@@ -84,7 +85,8 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_android);
+        tabLayout.getTabAt(2).setIcon(R.drawable.ic_notification);
     }
 
     private void initImageLoader(){

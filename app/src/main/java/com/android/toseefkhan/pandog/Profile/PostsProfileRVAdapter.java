@@ -1,16 +1,24 @@
 package com.android.toseefkhan.pandog.Profile;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
@@ -32,6 +40,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -40,20 +50,26 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     private static final String TAG = "PostsPRVAdapter";
     private Context mContext;
     private ArrayList<Post> mPostList;
-    private View view;
+    private LinearLayout layView;
     private boolean mLikedbyCurrentUser1 = false;
     private boolean mLikedbyCurrentUser2 = false;
     private int likesCount1 = 0;
     private int likesCount2 = 0;
 
+    private int screenWidth;
+    private int screenHeight;
 
     public PostsProfileRVAdapter(Context mContext, ArrayList<Post> mPostList) {
         this.mContext = mContext;
         this.mPostList = mPostList;
+        screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+        screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
     }
 
     public PostsProfileRVAdapter(Context mContext) {
         this.mContext = mContext;
+        screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+        screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
     }
 
     public void setBoolean(ViewHolder viewHolder, Post post){
@@ -63,10 +79,13 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         getLikesString(viewHolder,post);
     }
 
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_mainfeed_listitem, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_mainfeed_listitem, parent, false);
+
+        layView = view.findViewById(R.id.view);
 
         return new ViewHolder(view);
     }
@@ -75,6 +94,30 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
         final Post post = mPostList.get(position);
+
+        int bottomHeight = 60*(mContext.getResources().getDisplayMetrics().densityDpi/ DisplayMetrics.DENSITY_DEFAULT);
+
+        holder.theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth*2,screenHeight-bottomHeight));
+        holder.cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight-bottomHeight));
+        holder.cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight-bottomHeight));
+
+        final ObjectAnimator animator= ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX",screenWidth*2 );
+        final ObjectAnimator animator2= ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX",0 );
+        animator.setDuration(800);
+        animator2.setDuration(800);
+
+        holder.image1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animator.start();
+            }
+        });
+        holder.image2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animator2.start();
+            }
+        });
 
         Log.d(TAG, "onBindViewHolder: give me the post " + post);
         setTopToolbar(holder, post);
@@ -89,7 +132,17 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         holder.caption2.setText(post.getCaption2());
 
         holder.comments_list.setText(String.valueOf(post.getComments().size()) + " comments");
+        holder.comments_list2.setText(String.valueOf(post.getComments().size()) + " comments");
         holder.comments_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //takes you to ViewCommentsActivity
+                Intent i = new Intent(mContext,ViewCommentsActivity.class);
+                i.putExtra("post_comments",post);
+                mContext.startActivity(i);
+            }
+        });
+        holder.comments_list2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //takes you to ViewCommentsActivity
@@ -253,7 +306,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
     private void setLikesIcons(final ViewHolder holder, final Post post) {
 
-        final Heart mHeart = new Heart(holder.heartWhite,holder.heartRed,holder.heartWhite2,holder.heartRed2,view,mContext);
+        final Heart mHeart = new Heart(holder.heartWhite,holder.heartRed,holder.heartWhite2,holder.heartRed2,layView,mContext);
         holder.heartWhite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -405,11 +458,15 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
         CircleImageView dp1,dp2;
         TextView username1,username2;
-        SquareImageView image1,image2;
+        ImageView image1,image2;
         TextView likesString1,likesString2;
-        TextView comments_list;
+        TextView comments_list,comments_list2;
         TextView caption1,caption2;
         ImageView heartWhite,heartWhite2,heartRed,heartRed2;
+        HorizontalScrollView horizontalScrollView;
+        LinearLayout theWholeView;
+        CardView cardView1;
+        CardView cardView2;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -423,12 +480,18 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             likesString1 = itemView.findViewById(R.id.image_likes);
             likesString2 = itemView.findViewById(R.id.image_likes2);
             comments_list = itemView.findViewById(R.id.comments_link);
+            comments_list2 = itemView.findViewById(R.id.comments_link2);
             caption1 = itemView.findViewById(R.id.image_caption);
             caption2 = itemView.findViewById(R.id.image_caption2);
             heartWhite = itemView.findViewById(R.id.image_heart_white);
             heartWhite2 = itemView.findViewById(R.id.image_heart_white2);
             heartRed = itemView.findViewById(R.id.image_heart_red);
             heartRed2 = itemView.findViewById(R.id.image_heart_red2);
+            horizontalScrollView = itemView.findViewById(R.id.horizontal_scroll_view);
+            theWholeView = itemView.findViewById(R.id.theWholeView);
+            cardView1 = itemView.findViewById(R.id.user1_card_view);
+            cardView2 = itemView.findViewById(R.id.user2_card_view);
+
 
             heartRed.setVisibility(View.GONE);
             heartRed2.setVisibility(View.GONE);

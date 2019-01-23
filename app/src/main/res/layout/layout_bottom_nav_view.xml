@@ -4,17 +4,34 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="#02ffffff">
+
 
         <com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/bottomNavViewBar"
-            android:background="@drawable/white_pink_border_top"
+            app:itemTextColor="@color/black"
+            app:elevation="25dp"
+            android:background="#02ffffff"
+            app:itemBackground="@color/white"
             app:menu="@menu/bottom_nav_view_menu">
 
+            <com.github.florent37.shapeofview.shapes.RoundRectView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:elevation="2dp"
+                app:shape_roundRect_bottomLeftRadius="15dp"
+                app:shape_roundRect_bottomRightRadius="15dp"
+                app:shape_roundRect_topLeftRadius="15dp"
+                app:shape_roundRect_topRightRadius="15dp"
+                app:shape_roundRect_borderColor="@color/colorAccent"
+                app:shape_roundRect_borderWidth="2.2dp"/>
 
         </com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx>
+
+
 
     </RelativeLayout>
 

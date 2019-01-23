@@ -1,19 +1,331 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:paddingBottom="7dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/beige">
+    android:id="@+id/view"
+    android:background="@color/black">
 
             <HorizontalScrollView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingBottom="15dp"
-                android:scrollbarSize="0.5dp"
+                android:scrollbarSize="0.2dp"
+                android:id="@+id/horizontal_scroll_view"
                 android:nestedScrollingEnabled="true">
 
+                <LinearLayout
+                    android:layout_width="800dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:id="@+id/theWholeView">
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="400dp"
+                    android:layout_height="400dp"
+                    app:cardElevation="8dp"
+                    android:id="@+id/user1_card_view"
+                    app:cardMaxElevation="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="10">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="7">
+
+                            <ImageView
+                                android:id="@+id/post_image"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/intro2"/>
+
+                            <TextView
+                                android:id="@+id/image_caption"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="6dp"
+                                android:text="This is another description
+                             #description"
+                                android:textSize="16sp"
+                                android:textColor="@color/black"
+                                android:layout_alignParentBottom="true"/>
+
+                        </RelativeLayout>
+
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="3">
+
+                            <RelativeLayout
+                                android:id="@+id/heartLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="47dp"
+                                android:background="@color/white">
+
+                                <ImageView
+                                    android:id="@+id/image_heart_red"
+                                    android:layout_width="45dp"
+                                    android:layout_height="45dp"
+                                    android:layout_centerInParent="true"
+                                    android:src="@drawable/heart_red"
+                                    android:visibility="invisible" />
+
+                                <ImageView
+                                    android:id="@+id/image_heart_white"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:layout_centerInParent="true"
+                                    android:src="@drawable/ic_heart"
+                                    android:visibility="visible" />
+
+                            </RelativeLayout>
+
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1.2dp"
+                                android:background="@color/grey"
+                                android:layout_below="@id/heartLayout"
+                                android:layout_centerInParent="true"
+                                android:layout_marginStart="100dp"/>
+
+                            <TextView
+                                android:id="@+id/image_likes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="22 Likes"
+                                android:layout_below="@+id/heartLayout"
+                                android:layout_toStartOf="@+id/vieww"
+                                android:textColor="@color/darkgrey"
+                                android:layout_marginEnd="14dp"
+                                android:layout_centerInParent="true"
+                                android:layout_centerHorizontal="true"
+                                android:textSize="18sp" />
+
+                            <View
+                                android:layout_width="1.2dp"
+                                android:layout_height="22dp"
+                                android:background="@color/grey"
+                                android:layout_below="@id/heartLayout"
+                                android:layout_centerInParent="true"
+                                android:id="@+id/vieww"/>
+
+                            <TextView
+                                android:id="@+id/comments_link"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="3 comments"
+                                android:layout_below="@+id/heartLayout"
+                                android:layout_marginStart="14dp"
+                                android:layout_toEndOf="@+id/vieww"
+                                android:textColor="@color/darkgrey"
+                                android:textSize="18sp" />
+
+
+                            <RelativeLayout
+                                android:id="@+id/relLayoutToolbar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="35dp"
+                                android:layout_centerInParent="true"
+                                android:layout_below="@+id/comments_link">
+
+                                <de.hdodenhof.circleimageview.CircleImageView
+                                    android:id="@+id/profile_photo"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    app:civ_border_color="@color/black"
+                                    app:civ_border_width="0.5dp" />
+
+                                <TextView
+                                    android:id="@+id/username"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="10dp"
+                                    android:layout_marginTop="0dp"
+                                    android:layout_toRightOf="@+id/profile_photo"
+                                    android:text="toseef.khan"
+                                    android:textColor="@color/black"
+                                    android:textSize="20sp" />
+
+                            </RelativeLayout>
+
+                        </RelativeLayout>
+
+
+
+
+
+                    </LinearLayout>
+
+
+                </android.support.v7.widget.CardView>
+
+
+
+                    <android.support.v7.widget.CardView
+                        android:layout_width="400dp"
+                        android:layout_height="400dp"
+                        app:cardElevation="8dp"
+                        android:id="@+id/user2_card_view"
+                        app:cardMaxElevation="20dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:weightSum="10">
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="7">
+
+                                <ImageView
+                                    android:id="@+id/post_image2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/intro1"/>
+
+                                <TextView
+                                    android:id="@+id/image_caption2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="6dp"
+                                    android:text="This is another description
+                             #description"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/black"
+                                    android:layout_alignParentBottom="true"/>
+
+                            </RelativeLayout>
+
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="3">
+
+                                <RelativeLayout
+                                    android:id="@+id/heartLayout2"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="47dp"
+                                    android:background="@color/white">
+
+                                    <ImageView
+                                        android:id="@+id/image_heart_red2"
+                                        android:layout_width="45dp"
+                                        android:layout_height="45dp"
+                                        android:layout_centerInParent="true"
+                                        android:src="@drawable/heart_red"
+                                        android:visibility="invisible" />
+
+                                    <ImageView
+                                        android:id="@+id/image_heart_white2"
+                                        android:layout_width="40dp"
+                                        android:layout_height="40dp"
+                                        android:layout_centerInParent="true"
+                                        android:src="@drawable/ic_heart"
+                                        android:visibility="visible" />
+
+                                </RelativeLayout>
+
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="1.2dp"
+                                    android:background="@color/grey"
+                                    android:layout_below="@id/heartLayout2"
+                                    android:layout_centerInParent="true"
+                                    android:layout_marginStart="100dp"/>
+
+                                <TextView
+                                    android:id="@+id/image_likes2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="22 Likes"
+                                    android:layout_below="@+id/heartLayout2"
+                                    android:layout_toStartOf="@+id/vieww2"
+                                    android:textColor="@color/darkgrey"
+                                    android:layout_marginEnd="14dp"
+                                    android:layout_centerInParent="true"
+                                    android:layout_centerHorizontal="true"
+                                    android:textSize="18sp" />
+
+                                <View
+                                    android:layout_width="1.2dp"
+                                    android:layout_height="22dp"
+                                    android:background="@color/grey"
+                                    android:layout_below="@id/heartLayout2"
+                                    android:layout_centerInParent="true"
+                                    android:id="@+id/vieww2"/>
+
+                                <TextView
+                                    android:id="@+id/comments_link2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="3 comments"
+                                    android:layout_below="@+id/heartLayout2"
+                                    android:layout_marginStart="14dp"
+                                    android:layout_toEndOf="@+id/vieww2"
+                                    android:textColor="@color/darkgrey"
+                                    android:textSize="18sp" />
+
+
+                                <RelativeLayout
+                                    android:id="@+id/relLayoutToolbar2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="35dp"
+                                    android:layout_centerInParent="true"
+                                    android:layout_below="@+id/comments_link2">
+
+                                    <de.hdodenhof.circleimageview.CircleImageView
+                                        android:id="@+id/profile_photo2"
+                                        android:layout_width="30dp"
+                                        android:layout_height="30dp"
+                                        app:civ_border_color="@color/black"
+                                        app:civ_border_width="0.5dp" />
+
+                                    <TextView
+                                        android:id="@+id/username2"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="10dp"
+                                        android:layout_toRightOf="@+id/profile_photo2"
+                                        android:text="toseef.khan"
+                                        android:textColor="@color/black"
+                                        android:textSize="20sp" />
+
+                                </RelativeLayout>
+
+                            </RelativeLayout>
+
+
+
+
+
+                        </LinearLayout>
+
+
+                    </android.support.v7.widget.CardView>
+
+
+
+
+                </LinearLayout>
+
+
+
+                <!--
                 <android.support.v7.widget.CardView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -21,46 +333,14 @@
                     app:cardElevation="8dp"
                     app:cardMaxElevation="10dp">
 
-                <RelativeLayout
-                    android:layout_width="800dp"
-                    android:layout_height="match_parent"
-                    android:id="@+id/theWholeView">
+
 
                     <LinearLayout
                         android:layout_width="800dp"
                         android:layout_height="35dp"
                         android:orientation="horizontal">
 
-                        <RelativeLayout
-                            android:id="@+id/relLayoutToolbar"
-                            android:layout_width="398dp"
-                            android:layout_height="35dp"
-                            android:layout_marginEnd="2dp"
-                            android:background="@drawable/white_pink_border_bottom">
 
-                            <de.hdodenhof.circleimageview.CircleImageView
-                                android:id="@+id/profile_photo"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_centerVertical="true"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginTop="0dp"
-                                app:civ_border_color="@color/black"
-                                app:civ_border_width="0.5dp" />
-
-
-                            <TextView
-                                android:id="@+id/username"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_marginLeft="10dp"
-                                android:layout_toRightOf="@+id/profile_photo"
-                                android:text="toseef.khan"
-                                android:textColor="@color/black"
-                                android:textSize="20sp" />
-
-                        </RelativeLayout>
 
                         <RelativeLayout
                             android:id="@+id/relLayoutToolbar2"
@@ -102,17 +382,11 @@
                         android:layout_marginTop="35dp"
                         android:id="@+id/images">
 
-                        <com.android.toseefkhan.pandog.Utils.SquareImageView
-                            android:id="@+id/post_image"
-                            android:layout_width="398dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="2dp"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/intro2" />
+
 
                         <com.android.toseefkhan.pandog.Utils.SquareImageView
                             android:id="@+id/post_image2"
-                            android:layout_width="398dp"
+                            android:layout_width="390dp"
                             android:layout_height="wrap_content"
                             android:layout_toRightOf="@id/post_image"
                             android:scaleType="centerCrop"
@@ -128,57 +402,8 @@
                         android:layout_marginTop="2dp"
                         android:background="@color/white">
 
-                            <RelativeLayout
-                                android:id="@+id/heartLayout"
-                                android:layout_width="60dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/white">
 
-                                <ImageView
-                                    android:id="@+id/image_heart_red"
-                                    android:layout_width="45dp"
-                                    android:layout_height="45dp"
-                                    android:layout_centerInParent="true"
-                                    android:layout_marginLeft="20dp"
-                                    android:src="@drawable/heart_red"
-                                    android:visibility="invisible" />
 
-                                <ImageView
-                                    android:id="@+id/image_heart_white"
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:layout_centerInParent="true"
-                                    android:layout_marginLeft="20dp"
-                                    android:src="@drawable/ic_heart"
-                                    android:visibility="visible" />
-
-                            </RelativeLayout>
-
-                            <TextView
-                                android:id="@+id/image_likes"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="22 Likes"
-                                android:layout_centerVertical="true"
-                                android:layout_marginTop="1.5dp"
-                                android:layout_toEndOf="@id/heartLayout"
-                                android:layout_alignParentBottom="true"
-                                android:layout_marginBottom="12dp"
-                                android:layout_marginStart="5dp"
-                                android:textColor="@color/black"
-                                android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/comments_link"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="2dp"
-                            android:layout_alignParentEnd="true"
-                            android:text="3 comments"
-                            android:gravity="bottom"
-                            android:layout_centerVertical="true"
-                            android:textColor="@color/grey"
-                            android:textSize="18sp" />
 
                     </RelativeLayout>
 
@@ -268,6 +493,7 @@ adrenaline"
                 </RelativeLayout>
 
                 </android.support.v7.widget.CardView>
+-->
 
             </HorizontalScrollView>
 

@@ -36,6 +36,8 @@ public class NotificationFragment extends Fragment {
     private DatabaseReference mDatabaseReference;
     private RelativeLayout rel;
 
+    private RecyclerView.LayoutManager mLayoutManager;
+
 
     @Nullable
     @Override
@@ -44,6 +46,10 @@ public class NotificationFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: called");
         mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
+
+        mLayoutManager = new LinearLayoutManager(getContext());
+        ((LinearLayoutManager) mLayoutManager).setReverseLayout(true);
+        ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
 
         progressBar = view.findViewById(R.id.NotifProgressBar);
         rel = view.findViewById(R.id.noNotifs);
@@ -130,14 +136,13 @@ public class NotificationFragment extends Fragment {
 
     private void initUserListRecyclerView() {
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-        ((LinearLayoutManager) mLayoutManager).setReverseLayout(true);
-        ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
+
         mNotificationRecyclerView.setLayoutManager(mLayoutManager);
 
-        NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
+       // NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
         Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
-        mNotificationRecyclerView.setAdapter(notificationAdapter);
+        mNotificationRecyclerView.setAdapter(notificationsAdapter);
+
         if (challengesList.isEmpty()){
             progressBar.setVisibility(View.GONE);
             rel.setVisibility(View.VISIBLE);

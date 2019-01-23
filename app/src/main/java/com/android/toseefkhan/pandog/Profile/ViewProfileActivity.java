@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
@@ -34,6 +36,7 @@ import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserSettings;
+import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -75,7 +78,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private GridView gridView;
     private BottomNavigationViewEx bottomNavigationView;
-    private CircleImageView mProfilePhoto;
+    private ImageView mProfilePhoto;
     private TextView mFollow, mUnfollow, PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0,ppcount=0;
     private TextView mMenu;
@@ -84,7 +87,9 @@ public class ViewProfileActivity extends AppCompatActivity {
     private RelativeLayout profile2;
     private Button mButtonChallenge;
     private RelativeLayout relativeLayout;
-    private RecyclerView mRVPosts;
+    private Button mViewChallenges;
+
+ //   private RecyclerView mRVPosts;
     private ArrayList<Post> mPostList = new ArrayList<>();
 
 
@@ -94,7 +99,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_activity_profile);
         mButtonChallenge = findViewById(R.id.challenge_me);
-        mRVPosts = findViewById(R.id.posts_recycler_view_list);
+  //      mRVPosts = findViewById(R.id.posts_recycler_view_list);
         relativeLayout = findViewById(R.id.reltohide);
         relativeLayout.setVisibility(View.INVISIBLE);
         profile2 = findViewById(R.id.rel_profile);
@@ -116,6 +121,17 @@ public class ViewProfileActivity extends AppCompatActivity {
         mFirebaseMethods = new FirebaseMethods(mContext);
         mFollow= findViewById(R.id.textFollow);
         mUnfollow= findViewById(R.id.textUnFollow);
+        mViewChallenges = findViewById(R.id.button_view_challenges);
+        mViewChallenges.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //should take you to a fragment or activity where the posts by the user can be seen
+                //currently it takes you to homeActivity
+                Intent i = new Intent(mContext, HomeActivity.class);
+                startActivity(i);
+            }
+        });
+
         pb = findViewById(R.id.pb);
 
         mButtonChallenge.setOnClickListener(new View.OnClickListener() {
@@ -196,21 +212,23 @@ public class ViewProfileActivity extends AppCompatActivity {
             getFragmentManager().popBackStack();
         }
 
+        mViewChallenges.setText("View Posts By " + mUser.getUsername());
+
         isFollowing();
         getFollowingCount();
         getFollowersCount();
 
-        getPostsOnProfile();
+     //   getPostsOnProfile();
 
     }
 
-    private void initRecyclerView() {
-
-        Collections.reverse(mPostList);
-        mRVPosts.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false));
-        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
-        mRVPosts.setAdapter(adapter);
-    }
+//    private void initRecyclerView() {
+//
+//        Collections.reverse(mPostList);
+//        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
+//        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
+//        mRVPosts.setAdapter(adapter);
+//    }
 
     private void getPostsOnProfile(){
 
@@ -279,7 +297,7 @@ public class ViewProfileActivity extends AppCompatActivity {
                             Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
                         }
 
-                        initRecyclerView();
+                        //initRecyclerView();
                     }
 
                     @Override

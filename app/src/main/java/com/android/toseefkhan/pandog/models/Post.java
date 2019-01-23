@@ -45,6 +45,7 @@ public class Post implements Parcelable{
         this.tags2 = tags2;
     }
 
+
     protected Post(Parcel in) {
         image_url = in.readString();
         caption = in.readString();
@@ -56,6 +57,7 @@ public class Post implements Parcelable{
         photo_id2 = in.readString();
         user_id2 = in.readString();
         tags2 = in.readString();
+        comments = in.createTypedArrayList(Comment.CREATOR);
         postKey = in.readString();
     }
 
@@ -203,6 +205,7 @@ public class Post implements Parcelable{
                 '}';
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -220,6 +223,7 @@ public class Post implements Parcelable{
         dest.writeString(photo_id2);
         dest.writeString(user_id2);
         dest.writeString(tags2);
+        dest.writeTypedList(comments);
         dest.writeString(postKey);
     }
 }
