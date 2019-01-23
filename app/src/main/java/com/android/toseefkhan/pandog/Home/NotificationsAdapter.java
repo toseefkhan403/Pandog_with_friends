@@ -62,6 +62,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, holder.pb, "");
 
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
 
         Log.d(TAG, "onBindViewHolder: challenge " + challenge.getChallengerName() + challenge.getChallengedName());
@@ -69,7 +70,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         if (challenge.getChallengerUserUid().equals(uid)){
             holder.notifTextView.setText("You challenged "+challenge.getChallengedName());
             holder.status.setText("Awaiting response");
-        }else{
+        }else if (challenge.getStatus().equals("NOT_DECIDED")){
             holder.notifTextView.setText(challenge.getChallengerName() + " challenged you!");
 
             holder.container.setOnClickListener(new View.OnClickListener() {
@@ -81,8 +82,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     ImageView preview = dialog.findViewById(R.id.image_preview);
                     ProgressBar pb = dialog.findViewById(R.id.pb);
 
-                    //setting the image
-                  //UniversalImageLoader.setImage(challenge.getPhotoUrl(),preview,pb,null);
                     ImageLoader i = ImageLoader.getInstance();
                     i.displayImage(challenge.getPhotoUrl(),preview);
                     pb.setVisibility(View.GONE);
@@ -109,6 +108,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                         public void onClick(View v) {
                             dialog.dismiss();
                             //todo set the status of the challenge to REJECTED in the db.
+                            ref.child("Challenges").child(challenge.getChallengeKey()).child("status").setValue("REJECTED");
                             holder.status.setText("You rejected the challenge");
                         }
                     });

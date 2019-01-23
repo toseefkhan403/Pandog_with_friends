@@ -83,6 +83,11 @@ public class HomeLocalFragment extends Fragment {
                             post.setUser_id2(objectMap.get("user_id2").toString());
 
                             post.setPostKey(objectMap.get("postKey").toString());
+
+                            post.setChallenge_id(objectMap.get("challenge_id").toString());
+                            post.setStatus(objectMap.get("status").toString());
+                            post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
+
                             /*String image_url, String caption, String photo_id, String user_id, String tags,
                 String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
 

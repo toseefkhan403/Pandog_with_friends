@@ -467,7 +467,7 @@ public class FirebaseMethods {
 
     //todo IMPORTANT:: THE PHOTOS AND USER_PHOTOS NODES ARE FUTILE. iNSTEAD MOVED EVERYTHING TO CHALLENGE CLASS.
 
-    private void addPhotoToDatabase(final String caption, final String url, String challengeKey) {
+    private void addPhotoToDatabase(final String caption, final String url, final String challengeKey) {
         Log.d(TAG, "addPhotoToDatabase: challenge key " + challengeKey);
 
         final String tags = StringManipulation.getTags(caption);
@@ -500,10 +500,13 @@ public class FirebaseMethods {
                 Log.d(TAG, "onDataChange: post " + post);
                 String postKey = myRef.child("Posts").push().getKey();
                 post.setPostKey(postKey);
+                post.setStatus("ACTIVE");
+                post.setTimeStamp(System.currentTimeMillis());
+                post.setChallenge_id(challengeKey);
 
                 addPostToDataBase(post, postKey);
                 //delete the challenge as it is accepted successfully
-                myRef.child("Challenges").child(c.getChallengeKey()).removeValue();
+                myRef.child("Challenges").child(c.getChallengeKey()).child("status").setValue("ACCEPTED");
                 //todo remove the value from User_Challenges node too.
             }
 
