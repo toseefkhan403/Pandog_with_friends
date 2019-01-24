@@ -148,8 +148,6 @@ public class NotificationFragment extends Fragment {
     private void initUserListRecyclerView() {
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-        ((LinearLayoutManager) mLayoutManager).setReverseLayout(true);
-        ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
         mNotificationRecyclerView.setLayoutManager(mLayoutManager);
 
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());

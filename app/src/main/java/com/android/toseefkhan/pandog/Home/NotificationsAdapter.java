@@ -32,6 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -181,6 +182,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     public void changeList(ArrayList<Challenge> challengesList) {
         this.challengesList = challengesList;
         Log.d(TAG, "listChanged");
+        Collections.reverse(this.challengesList);
         notifyDataSetChanged();
     }
 
