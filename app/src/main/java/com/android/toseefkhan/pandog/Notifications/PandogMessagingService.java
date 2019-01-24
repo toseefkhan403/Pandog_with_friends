@@ -152,9 +152,12 @@ public class PandogMessagingService extends FirebaseMessagingService {
 
         Intent pendingIntent = null;
         if (remoteMessage.getData().get("type").equals("Challenge")) {
-            pendingIntent = new Intent(this, HomeActivity.class);
-            pendingIntent.putExtra("ChallengerUser", user);
-            if (remoteMessage.getData().get("status").equals("ACCEPTED")) {
+            if (remoteMessage.getData().get("status").equals("NOT_DECIDED")) {
+                pendingIntent = new Intent(this, HomeActivity.class);
+                pendingIntent.putExtra("ChallengerUser", user);
+            } else if (remoteMessage.getData().get("status").equals("ACCEPTED")) {
+                pendingIntent = new Intent(this, HomeActivity.class);
+                pendingIntent.putExtra("ChallengerUser", user);
                 String postKey = remoteMessage.getData().get("postKey");
                 pendingIntent.putExtra("postKey", postKey);
             }
@@ -165,7 +168,8 @@ public class PandogMessagingService extends FirebaseMessagingService {
         pendingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
 
-        PendingIntent notificationPendingIntent = PendingIntent.getActivity(
+        PendingIntent notificationPendingIntent = null;
+        notificationPendingIntent = PendingIntent.getActivity(
                 this,
                 0,
                 pendingIntent,

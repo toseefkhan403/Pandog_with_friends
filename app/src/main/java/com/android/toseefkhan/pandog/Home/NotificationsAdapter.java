@@ -178,6 +178,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                 });
     }
 
+    public void changeList(ArrayList<Challenge> challengesList) {
+        this.challengesList = challengesList;
+        Log.d(TAG, "listChanged");
+        notifyDataSetChanged();
+    }
+
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
 
         TextView notifTextView, status;

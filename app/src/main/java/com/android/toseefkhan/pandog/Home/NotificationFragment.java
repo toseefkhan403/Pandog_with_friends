@@ -36,20 +36,9 @@ public class NotificationFragment extends Fragment {
     private DatabaseReference mDatabaseReference;
     private RelativeLayout rel;
 
-
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_notification, container, false);
-
-        Log.d(TAG, "onCreateView: called");
-        mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
-
-        progressBar = view.findViewById(R.id.NotifProgressBar);
-        rel = view.findViewById(R.id.noNotifs);
-        progressBar.setVisibility(View.VISIBLE);
-
-        initUserListRecyclerView();
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
 
@@ -95,6 +84,22 @@ public class NotificationFragment extends Fragment {
                     }
                 });
 
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_notification, container, false);
+
+        Log.d(TAG, "onCreateView: called");
+        mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
+
+        progressBar = view.findViewById(R.id.NotifProgressBar);
+        rel = view.findViewById(R.id.noNotifs);
+        progressBar.setVisibility(View.VISIBLE);
+
+        initUserListRecyclerView();
+
         return view;
     }
 
@@ -111,10 +116,10 @@ public class NotificationFragment extends Fragment {
                                 if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
                                     int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
                                     challengesList.set(challlengeIndex, challenge);
-                                    notificationsAdapter.notifyItemChanged(challlengeIndex);
+                                    notificationsAdapter.changeList(challengesList);
                                 } else {
                                     challengesList.add(challenge);
-                                    notificationsAdapter.notifyItemInserted(challengesList.indexOf(challenge));
+                                    notificationsAdapter.changeList(challengesList);
                                     if (progressBar != null) {
                                         if (progressBar.getVisibility() != View.GONE) {
                                             progressBar.setVisibility(View.GONE);
@@ -147,9 +152,9 @@ public class NotificationFragment extends Fragment {
         ((LinearLayoutManager) mLayoutManager).setStackFromEnd(true);
         mNotificationRecyclerView.setLayoutManager(mLayoutManager);
 
-        NotificationsAdapter notificationAdapter = new NotificationsAdapter(challengesList, getContext());
+        notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
         Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
-        mNotificationRecyclerView.setAdapter(notificationAdapter);
+        mNotificationRecyclerView.setAdapter(notificationsAdapter);
 
     }
 
