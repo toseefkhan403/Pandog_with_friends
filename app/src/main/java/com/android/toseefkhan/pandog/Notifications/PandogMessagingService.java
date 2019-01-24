@@ -47,6 +47,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
             try {
                 status = remoteMessage.getData().get("status");
                 if (status.equals("NOT_DECIDED")) {
+                    Log.d(TAG, "not decided notif");
                     final String notificationBody = "challenged you!";
                     challengerUserUid = remoteMessage.getData().get("challengerUserUid");
                     FirebaseDatabase.getInstance().getReference()
@@ -69,6 +70,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                                 }
                             });
                 } else if (status.equals("ACCEPTED")) {
+                    Log.d(TAG, "accepted notif");
                     final String notificationBody = "accepted your challenge";
                     String challengedUserUid = remoteMessage.getData().get("challengedUserUid");
                     FirebaseDatabase.getInstance().getReference()
@@ -91,6 +93,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                                 }
                             });
                 } else if (status.equals("REJECTED")) {
+                    Log.d(TAG, "rejected notif");
                     final String notificationBody = "rejected your challenge";
                     String challengedUserUid = remoteMessage.getData().get("challengedUserUid");
                     FirebaseDatabase.getInstance().getReference()
@@ -117,6 +120,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 Log.d(TAG, "onMessageReceived: NullPointerException " + exception.getMessage());
             }
         } else if (notificationType.equals("Following")) {
+            Log.d(TAG, "following notif");
             final String notificationTitle = "You received a new follower";
             final String notificationBody = "";
             String followerUserUid = "";
@@ -157,7 +161,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 pendingIntent.putExtra("ChallengerUser", user);
             } else if (remoteMessage.getData().get("status").equals("ACCEPTED")) {
                 pendingIntent = new Intent(this, HomeActivity.class);
-                pendingIntent.putExtra("ChallengerUser", user);
+                pendingIntent.putExtra("ChallengedUser", user);
                 String postKey = remoteMessage.getData().get("postKey");
                 pendingIntent.putExtra("postKey", postKey);
             }
