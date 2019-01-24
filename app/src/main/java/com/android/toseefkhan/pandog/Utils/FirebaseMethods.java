@@ -504,10 +504,14 @@ public class FirebaseMethods {
                 post.setTimeStamp(System.currentTimeMillis());
                 post.setChallenge_id(challengeKey);
 
+                long timeStamp = System.currentTimeMillis();
+                post.setTimeStamp(timeStamp);
+
                 addPostToDataBase(post, postKey);
+                c.setPostKey(postKey);
+                c.setStatus("ACCEPTED");
                 //delete the challenge as it is accepted successfully
-                myRef.child("Challenges").child(c.getChallengeKey()).child("status").setValue("ACCEPTED");
-                //todo remove the value from User_Challenges node too.
+                myRef.child("Challenges").child(c.getChallengeKey()).setValue(c);
             }
 
             @Override

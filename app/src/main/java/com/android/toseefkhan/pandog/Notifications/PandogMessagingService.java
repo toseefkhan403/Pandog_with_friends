@@ -41,14 +41,13 @@ public class PandogMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "onMessageReceived: remoteMessage " + remoteMessage);
         String notificationType = remoteMessage.getData().get("type");
         if (notificationType.equals("Challenge")) {
-            final String notificationTitle = "";
-            final String notificationBody = "wants to Challenge you";
             String challengerUserUid = "";
             String status = "";
-
+            final String notificationTitle = "";
             try {
                 status = remoteMessage.getData().get("status");
                 if (status.equals("NOT_DECIDED")) {
+                    final String notificationBody = "challenged you!";
                     challengerUserUid = remoteMessage.getData().get("challengerUserUid");
                     FirebaseDatabase.getInstance().getReference()
                             .child(getApplicationContext().getString(R.string.dbname_users))
@@ -61,6 +60,50 @@ public class PandogMessagingService extends FirebaseMessagingService {
                                         String userName = challengerUser.getUsername();
                                         buildNotification(remoteMessage, notificationTitle + userName, notificationBody,
                                                 challengerUser);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.d("Db Error", databaseError.getMessage());
+                                }
+                            });
+                } else if (status.equals("ACCEPTED")) {
+                    final String notificationBody = "accepted your challenge";
+                    String challengedUserUid = remoteMessage.getData().get("challengedUserUid");
+                    FirebaseDatabase.getInstance().getReference()
+                            .child(getApplicationContext().getString(R.string.dbname_users))
+                            .child(challengedUserUid)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        User challengedUser = dataSnapshot.getValue(User.class);
+                                        String username = challengedUser.getUsername();
+                                        buildNotification(remoteMessage, notificationTitle + username,
+                                                notificationBody, challengedUser);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Log.d("Db Error", databaseError.getMessage());
+                                }
+                            });
+                } else if (status.equals("REJECTED")) {
+                    final String notificationBody = "rejected your challenge";
+                    String challengedUserUid = remoteMessage.getData().get("challengedUserUid");
+                    FirebaseDatabase.getInstance().getReference()
+                            .child(getApplicationContext().getString(R.string.dbname_users))
+                            .child(challengedUserUid)
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        User challengedUser = dataSnapshot.getValue(User.class);
+                                        String username = challengedUser.getUsername();
+                                        buildNotification(remoteMessage, notificationTitle + username,
+                                                notificationBody, challengedUser);
                                     }
                                 }
 
@@ -111,6 +154,10 @@ public class PandogMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().get("type").equals("Challenge")) {
             pendingIntent = new Intent(this, HomeActivity.class);
             pendingIntent.putExtra("ChallengerUser", user);
+            if (remoteMessage.getData().get("status").equals("ACCEPTED")) {
+                String postKey = remoteMessage.getData().get("postKey");
+                pendingIntent.putExtra("postKey", postKey);
+            }
         } else if (remoteMessage.getData().get("type").equals("Following")) {
             pendingIntent = new Intent(this, ViewProfileActivity.class);
             pendingIntent.putExtra(getResources().getString(R.string.intent_user), user);

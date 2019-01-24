@@ -4,6 +4,7 @@ public class Challenge {
     private String challengerUserUid;
     private String challengedUserUid;
     private String photoKey;
+    private String postKey;
     private String status;
     private String challengerName;
     private String challengedName;
@@ -12,7 +13,7 @@ public class Challenge {
     private String caption;
     private String tags;
 
-    public Challenge(String challengerUserUid, String challengedUserUid, String photoKey, String photoUrl,String caption,String tags) {
+    public Challenge(String challengerUserUid, String challengedUserUid, String photoKey, String photoUrl, String caption, String tags) {
         this.challengerUserUid = challengerUserUid;
         this.challengedUserUid = challengedUserUid;
         this.photoKey = photoKey;
@@ -20,10 +21,16 @@ public class Challenge {
         this.caption = caption;
         this.tags = tags;
     }
-
     public Challenge() {
     }
 
+    public String getPostKey() {
+        return postKey;
+    }
+
+    public void setPostKey(String postKey) {
+        this.postKey = postKey;
+    }
 
     public String getCaption() {
         return caption;

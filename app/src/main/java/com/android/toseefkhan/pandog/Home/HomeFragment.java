@@ -4,27 +4,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.R;
-
-import com.android.toseefkhan.pandog.Utils.Heart;
 import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.models.Comment;
-import com.android.toseefkhan.pandog.models.Photo;
 import com.android.toseefkhan.pandog.models.Post;
-import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
-import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
-import com.dingmouren.layoutmanagergroup.slide.SlideLayoutManager;
 import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,7 +23,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +44,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mRVPosts = view.findViewById(R.id.posts_recycler_view_list);
 
-        if (FirebaseAuth.getInstance().getCurrentUser() != null){
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             getPostsOnProfile();
         }
 
@@ -73,7 +63,7 @@ public class HomeFragment extends Fragment {
                         Log.d(TAG, "onDataChange: .getValue " + dataSnapshot.getValue());
                         mPostList.clear();
 
-                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren() ) {
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
 
                             Post post = new Post();
                             HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
@@ -102,7 +92,7 @@ public class HomeFragment extends Fragment {
 
                             List<Like> likesList = new ArrayList<Like>();
                             for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes").getChildren()){
+                                    .child("likes").getChildren()) {
                                 Like like = new Like();
                                 like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
                                 likesList.add(like);
@@ -111,7 +101,7 @@ public class HomeFragment extends Fragment {
 
                             List<Like> likesList2 = new ArrayList<Like>();
                             for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes2").getChildren()){
+                                    .child("likes2").getChildren()) {
                                 Like like = new Like();
                                 like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
                                 likesList2.add(like);
@@ -120,7 +110,7 @@ public class HomeFragment extends Fragment {
 
                             List<Comment> comments = new ArrayList<Comment>();
                             for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("comments").getChildren()){
+                                    .child("comments").getChildren()) {
                                 Comment comment = new Comment();
                                 comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
                                 comment.setComment(dSnapshot.getValue(Comment.class).getComment());
@@ -148,9 +138,6 @@ public class HomeFragment extends Fragment {
         mRVPosts.setLayoutManager(new ViewPagerLayoutManager(getActivity(), OrientationHelper.VERTICAL));
         PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(getActivity(), mPostList);
         mRVPosts.setAdapter(adapter);
-
     }
-
-
 
 }

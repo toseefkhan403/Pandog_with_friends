@@ -4,7 +4,7 @@ const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
 exports.sendChallengeMessage = functions.database.ref('/Challenges/{challengeId}').onCreate((snapshot, context) => {
-    console.log("sendChallengeMessage function invoked");
+    console.log("sendChallengeMessage function invoked"+snapshot.val());
     const challenge = snapshot.val();
     var challengerUserUid = challenge.challengerUserUid;
     var challengedUserUid = challenge.challengedUserUid;
