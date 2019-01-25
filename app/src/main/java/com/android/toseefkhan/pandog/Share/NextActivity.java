@@ -50,7 +50,6 @@ public class NextActivity extends AppCompatActivity {
     private ListView friendsListView;
 
     //vars
-    private String mAppend = "file:/";
     private int imageCount = 0;
     private String imgUrl;
     private Intent intent;

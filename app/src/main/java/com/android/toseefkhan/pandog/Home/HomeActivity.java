@@ -62,13 +62,11 @@ public class HomeActivity extends AppCompatActivity {
                 SquareDrawable indicator = new BallDrawable(new int[]{getResources().getColor(R.color.deep_purple_400), getResources().getColor(R.color.light_green_400)
                         , getResources().getColor(R.color.deep_orange_400), getResources().getColor(R.color.pink_400)});
                 indicator.setPadding(40);
-                ViewGroup root = findViewById(R.id.progress_root);
                 View child;
-                child = root.getChildAt(0);
+                child = findViewById(R.id.progress_child);
                 child.setBackground(indicator);
                 final Animatable animatable = (Animatable) indicator;
                 animatable.start();
-
 
                 setupFirebaseAuth();
             }

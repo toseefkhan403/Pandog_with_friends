@@ -80,7 +80,22 @@
 
         </RelativeLayout>
 
+        <LinearLayout
+            android:layout_width="170dp"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="140dp"
+            android:id="@+id/progress_root"
+            android:layout_height="170dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </LinearLayout>
+
 
     </RelativeLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

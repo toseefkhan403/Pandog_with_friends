@@ -6,16 +6,19 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,6 +74,7 @@ public class FirebaseMethods {
     private User mSelectedUser;
     //vars
     private Context mContext;
+    private Resources r;
 
     public FirebaseMethods(Context context) {
         mAuth = FirebaseAuth.getInstance();
@@ -78,7 +82,7 @@ public class FirebaseMethods {
         mStorageReference= FirebaseStorage.getInstance().getReference();
         myRef = mFirebaseDatabase.getReference();
         mContext = context;
-
+        r = mContext.getResources();
         if(mAuth.getCurrentUser() != null){
             userID = mAuth.getCurrentUser().getUid();
         }
@@ -155,16 +159,16 @@ public class FirebaseMethods {
                             double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                             Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
 
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                            uploadDialog.dismiss();
+                            Toast.makeText(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT).show();
 
-                                builder.setMessage("Photo upload " + (int)progress + "% done ")
-                                        .setCancelable(false)
-                                        .setView(R.layout.layout_progress_dialog);
-                                final AlertDialog alert = builder.create();
-                                alert.show();
-                                if (progress >= 100) {
-                                    alert.dismiss();
-                                }
+                            SquareDrawable indicator = new TriangleDrawable(new int[]{r.getColor(R.color.teal_400), r.getColor(R.color.brown_400)
+                                    , r.getColor(R.color.light_blue_400)});
+                            indicator.setPadding(20);
+                            View child = ((Activity)mContext).findViewById(R.id.progress_root);;
+                            child.setBackground(indicator);
+                            final Animatable animatable = (Animatable) indicator;
+                            animatable.start();
 
                         }
 
@@ -218,15 +222,17 @@ public class FirebaseMethods {
                             double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                             Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
 
-                                final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                                builder.setMessage("Photo upload " + (int)progress + "% done")
-                                        .setCancelable(false)
-                                        .setView(R.layout.layout_progress_dialog);
-                                final AlertDialog alert = builder.create();
-                                alert.show();
-                                if (progress >= 100) {
-                                    alert.dismiss();
-                                }
+                            uploadDialog.dismiss();
+                            Toast.makeText(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT).show();
+
+
+                            SquareDrawable indicator = new SquareSpinDrawable(new int[]{r.getColor(R.color.amber_400), r.getColor(R.color.blue_400)
+                                    , r.getColor(R.color.deep_orange_400), r.getColor(R.color.lime_400)});
+                            indicator.setPadding(20);
+                            View child = ((Activity)mContext).findViewById(R.id.progress_root);
+                            child.setBackground(indicator);
+                            final Animatable animatable = (Animatable) indicator;
+                            animatable.start();
                         }
                     });
                 }
@@ -307,17 +313,17 @@ public class FirebaseMethods {
                             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
                                 double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                                 Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
+                                uploadDialog.dismiss();
+                                Toast.makeText(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT).show();
 
-                                final AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                                SquareDrawable indicator = new SquareSpinDrawable(new int[]{r.getColor(R.color.deep_purple_400), r.getColor(R.color.brown_400)
+                                        , r.getColor(R.color.deep_orange_400), r.getColor(R.color.lime_400)});
+                                indicator.setPadding(20);
+                                View child = ((Activity)mContext).findViewById(R.id.progress_root);;
+                                child.setBackground(indicator);
+                                final Animatable animatable = (Animatable) indicator;
+                                animatable.start();
 
-                                builder.setMessage("Photo upload " + (int)progress + "% done ")
-                                        .setCancelable(false)
-                                        .setView(R.layout.layout_progress_dialog);
-                                final AlertDialog alert = builder.create();
-                                alert.show();
-                                if (progress >= 100) {
-                                    alert.dismiss();
-                                }
                             }
                         });
                 }
