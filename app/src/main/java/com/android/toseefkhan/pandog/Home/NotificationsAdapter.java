@@ -13,11 +13,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.toseefkhan.pandog.Profile.ProfileActivity;
+import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
@@ -75,72 +78,123 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         return false;
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull final NotificationViewHolder holder, int position) {
 
         final Challenge challenge = challengesList.get(position);
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.mCircleImageView, holder.pb, "");
-
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
+        //setting the constant widgets
+        UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.notif_image_preview, null, "");
 
-        Log.d(TAG, "onBindViewHolder: challenge " + challenge.getChallengerName() + challenge.getChallengedName());
+        //todo note: this list is meant for pending posts only. as soon as the user accepts or rejects the challenge, that challenge should go away from the list
+        if (challenge.getStatus().equals("NOT_DECIDED")) {
+            if (challenge.getChallengerUserUid().equals(uid)) {
+                setPpChallenger(holder,challenge.getChallengedUserUid());
+                holder.challenged_who.setText("You challenged this user");
+                holder.button_holder.setVisibility(View.GONE);
 
-        if (challenge.getChallengerUserUid().equals(uid)) {
-            holder.notifTextView.setText("You challenged " + challenge.getChallengedName());
-            holder.status.setText("Awaiting response");
-        } else if (challenge.getStatus().equals("NOT_DECIDED")) {
-            holder.notifTextView.setText(challenge.getChallengerName() + " challenged you!");
-
-            holder.container.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    final Dialog dialog = new Dialog(mContext);
-                    dialog.setContentView(R.layout.layout_response_dialog);
-                    ImageView preview = dialog.findViewById(R.id.image_preview);
-                    ProgressBar pb = dialog.findViewById(R.id.pb);
-
-                    ImageLoader i = ImageLoader.getInstance();
-                    i.displayImage(challenge.getPhotoUrl(), preview);
-                    pb.setVisibility(View.GONE);
-
-                    TextView username = dialog.findViewById(R.id.username);
-                    username.setText(challenge.getChallengerName() + "?");
-
-                    Button respondedYes = dialog.findViewById(R.id.respondedYes);
-                    respondedYes.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            //todo set status of the challenge to ACCEPTED in the db and add checks at the beginning to set the holder.status of the challenge
-                            //todo status can only be not_decided or rejected. if the challenge is accepted, the challenge itself has to be
-                            //todo removed from the db and a new post will be created in the db under user_post and posts node.
-                            getUserFromChallengerUid(challenge.getChallengerUserUid(), challenge.getChallengeKey());
-                            //                    holder.status.setText("You accepted the challenge");
-                            dialog.dismiss();
-                        }
-                    });
-
-                    Button respondedNo = dialog.findViewById(R.id.respondedNo);
-                    respondedNo.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                            //todo set the status of the challenge to REJECTED in the db.
-                            ref.child("Challenges").child(challenge.getChallengeKey()).child("status").setValue("REJECTED");
-                            holder.status.setText("You rejected the challenge");
-                        }
-                    });
-
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-                    if (!(holder.status.getText().equals("You rejected the challenge") || holder.status.getText().equals("You accepted the challenge")))
-                        dialog.show();
+                switch (challenge.getStatus()) {
+                    case "NOT_DECIDED":
+                        holder.status.setText("Awaiting response");
+                        break;
+                    case "ACCEPTED":
+                        holder.status.setText("Your post is up for voting!");
+                        //todo this case should not be in the list.
+                        break;
+                    case "REJECTED":
+                        holder.status.setText("Your challenge was rejected");
+                        //todo this case should be deleted as well - it should be not in the list.
+                        break;
                 }
-            });
 
+            } else if (!challenge.getChallengerUserUid().equals(uid)) {
+                setPpChallenger(holder,challenge.getChallengerUserUid());
+                holder.challenged_who.setText("Challenged you");
+                holder.button_holder.setVisibility(View.VISIBLE);
+                holder.status.setVisibility(View.GONE);
+                //todo as soon as the user accepts or rejects the challenge, it should go away. Immediately in the case of rejection,
+                //todo and only when the user fully accepts the challenge by uploading the second photo.
+                holder.respondedYes.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        getUserFromChallengerUid(challenge.getChallengerUserUid(), challenge.getChallengeKey());
+                    }
+                });
+                holder.respondedNo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ref.child("Challenges").child(challenge.getChallengeKey()).child("status").setValue("REJECTED");
+                        Intent i = new Intent(mContext,HomeActivity.class);
+                        mContext.startActivity(i);
+                    }
+                });
+            }
         }
+
+        //tod
+    }
+
+    private void setPpChallenger(final NotificationViewHolder holder, String challengerUserUid) {
+
+        Log.d(TAG, "setPpChallenger: setting the pp of the challenger");
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child(mContext.getString(R.string.dbname_users))
+                .child(challengerUserUid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        final User user = dataSnapshot.getValue(User.class);
+                        Log.d(TAG, "onDataChange: user " + user);
+                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.pp,null,"");
+                        holder.username.setText(user.getUsername());
+
+                        if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            holder.pp.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
+                                    mContext.startActivity(i);
+                                }
+                            });
+
+                            holder.username.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                        }else if (user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
+                            holder.pp.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent i = new Intent(mContext, ProfileActivity.class);
+                                    mContext.startActivity(i);
+                                }
+                            });
+
+                            holder.username.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    Intent i = new Intent(mContext, ProfileActivity.class);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
     }
 
@@ -188,18 +242,24 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
 
-        TextView notifTextView, status;
-        CircleImageView mCircleImageView;
-        ProgressBar pb;
-        RelativeLayout container;
+        CircleImageView pp;
+        TextView username, challenged_who;
+        LinearLayout button_holder;
+        Button respondedYes, respondedNo;
+        TextView status;
+        ImageView notif_image_preview;
+
 
         public NotificationViewHolder(View itemView) {
             super(itemView);
-            notifTextView = itemView.findViewById(R.id.NotifTextView);
-            mCircleImageView = itemView.findViewById(R.id.NotifImageView);
-            pb = itemView.findViewById(R.id.pb);
+            pp = itemView.findViewById(R.id.userppNotif);
+            username = itemView.findViewById(R.id.usernameNotif);
+            challenged_who = itemView.findViewById(R.id.challenged_who);
+            button_holder = itemView.findViewById(R.id.button_holder);
+            respondedYes = itemView.findViewById(R.id.respondedYes);
+            respondedNo = itemView.findViewById(R.id.respondedNo);
             status = itemView.findViewById(R.id.status);
-            container = itemView.findViewById(R.id.container);
+            notif_image_preview = itemView.findViewById(R.id.NotifImagePreView);
         }
     }
 }

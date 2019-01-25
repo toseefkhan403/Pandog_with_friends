@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +15,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.EchelonLM;
 import com.android.toseefkhan.pandog.models.Challenge;
+import com.dingmouren.layoutmanagergroup.banner.BannerLayoutManager;
+import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
+import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -96,7 +101,7 @@ public class NotificationFragment extends Fragment {
 
         progressBar = view.findViewById(R.id.NotifProgressBar);
         rel = view.findViewById(R.id.noNotifs);
-        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
 
         initUserListRecyclerView();
 
@@ -113,28 +118,29 @@ public class NotificationFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 Challenge challenge = dataSnapshot.getValue(Challenge.class);
-                                if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
-                                    int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
-                                    challengesList.set(challlengeIndex, challenge);
-                                    notificationsAdapter.changeList(challengesList);
-                                } else {
-                                    challengesList.add(challenge);
-                                    notificationsAdapter.changeList(challengesList);
-                                    if (progressBar != null) {
-                                        if (progressBar.getVisibility() != View.GONE) {
-                                            progressBar.setVisibility(View.GONE);
+                                if (challenge.getStatus().equals("NOT_DECIDED")) {
+
+                                    if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
+                                        int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
+                                        challengesList.set(challlengeIndex, challenge);
+                                        notificationsAdapter.changeList(challengesList);
+                                    } else {
+                                        challengesList.add(challenge);
+                                        notificationsAdapter.changeList(challengesList);
+                                        if (progressBar != null) {
+                                            if (progressBar.getVisibility() != View.GONE) {
+                                                progressBar.setVisibility(View.GONE);
+                                            }
                                         }
                                     }
-                                }
-                                if (challengesList.isEmpty()) {
-                                    progressBar.setVisibility(View.GONE);
-                                    rel.setVisibility(View.VISIBLE);
-                                } else {
-                                    rel.setVisibility(View.GONE);
+                                    if (challengesList.isEmpty()) {
+                                        progressBar.setVisibility(View.GONE);
+                                        rel.setVisibility(View.VISIBLE);
+                                    } else {
+                                        rel.setVisibility(View.GONE);
+                                    }
                                 }
                             }
-                            Log.d(TAG, "onDataChange: are you empty " + challengesList.size());
-                            Log.d(TAG, "adapter content" + notificationsAdapter.getItemCount());
                         }
 
                         @Override
@@ -147,12 +153,16 @@ public class NotificationFragment extends Fragment {
 
     private void initUserListRecyclerView() {
 
+        Log.d(TAG, "initUserListRecyclerView: ");
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        EchelonLayoutManager e = new EchelonLayoutManager(getContext());
+        //todo fix the echelon Layout Manager. EchelonLM
         mNotificationRecyclerView.setLayoutManager(mLayoutManager);
 
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
         Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
         mNotificationRecyclerView.setAdapter(notificationsAdapter);
+        mNotificationRecyclerView.smoothScrollToPosition(0);
 
     }
 

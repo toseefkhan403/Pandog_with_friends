@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Animatable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -12,13 +13,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.BallDrawable;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
+import com.android.toseefkhan.pandog.Utils.SquareDrawable;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -52,9 +57,19 @@ public class HomeActivity extends AppCompatActivity {
                 setupBottomNavigationView();
                 setupViewPager();
                 mViewPager.setCurrentItem(1);
-
             }else{
                 setContentView(R.layout.progress_anim);
+                SquareDrawable indicator = new BallDrawable(new int[]{getResources().getColor(R.color.deep_purple_400), getResources().getColor(R.color.light_green_400)
+                        , getResources().getColor(R.color.deep_orange_400), getResources().getColor(R.color.pink_400)});
+                indicator.setPadding(40);
+                ViewGroup root = findViewById(R.id.progress_root);
+                View child;
+                child = root.getChildAt(0);
+                child.setBackground(indicator);
+                final Animatable animatable = (Animatable) indicator;
+                animatable.start();
+
+
                 setupFirebaseAuth();
             }
         } else {
@@ -75,8 +90,7 @@ public class HomeActivity extends AppCompatActivity {
 
         FragmentPagerAdapter adapter=new FragmentPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new HomeFragment()); //index is 0
-        adapter.addFragment(new HomeLocalFragment());  //index is 1
-        adapter.addFragment(new NotificationFragment());  //index is 2
+        adapter.addFragment(new NotificationFragment());  //index is 1
 
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(adapter);
@@ -85,8 +99,7 @@ public class HomeActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_android);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_notification);
+        tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
     }
 
     private void initImageLoader(){
