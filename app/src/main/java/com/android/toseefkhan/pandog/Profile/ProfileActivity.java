@@ -57,7 +57,6 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String TAG = "ProfileActivity";
     private Context mContext=ProfileActivity.this;
     private static final int ACTIVITY_NUM = 4;
-    private static final int NUM_GRID_COLUMNS =3;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -65,7 +64,6 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods mFirebaseMethods;
-
 
     //widgets
     private TextView  mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
@@ -79,8 +77,8 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView mMenu;
     private ProgressBar pb;
     private Toolbar profile;
-    private Button mViewChallenges;
- //   private RecyclerView mRVPosts;
+    // private RecyclerView mRVPosts;
+    private Button mViewChallengeButton;
     private ArrayList<Post> mPostList = new ArrayList<>();
 
 
@@ -293,7 +291,6 @@ public class ProfileActivity extends AppCompatActivity {
 
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
-        mViewChallenges.setText("View all Posts by " + settings.getUsername());
         mDescription.setText(settings.getDescription());
         mProgressBar.setVisibility(View.GONE);
     }
@@ -307,11 +304,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setupActivityWidgets(){
         profile = findViewById(R.id.profileToolBar);
-        mViewChallenges = findViewById(R.id.button_view_challenges);
-        mViewChallenges.setOnClickListener(new View.OnClickListener() {
+        mViewChallengeButton = findViewById(R.id.button_view_challenges);
+        mViewChallengeButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent i = new Intent(mContext, HomeActivity.class);
+            public void onClick(View view) {
+                Intent i = new Intent(mContext,HomeActivity.class);
                 startActivity(i);
             }
         });

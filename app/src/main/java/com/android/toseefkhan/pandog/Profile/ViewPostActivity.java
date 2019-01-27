@@ -27,6 +27,7 @@ import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.PacmanDrawable;
 import com.android.toseefkhan.pandog.Utils.SquareDrawable;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,7 +37,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.koushikdutta.async.http.filter.DataRemainingException;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -87,20 +92,98 @@ public class ViewPostActivity extends AppCompatActivity {
         if (post != null) {
             showPost(post);
         }else if (post == null){
-            setContentView(R.layout.no_post_found);
-            SquareDrawable indicator = new PacmanDrawable(new int[]{getResources().getColor(R.color.deep_orange_400), getResources().getColor(R.color.amber_400)
-                    , getResources().getColor(R.color.lime_400), getResources().getColor(R.color.cyan_400)});
-            indicator.setPadding(10);
-            View child;
-            child = findViewById(R.id.progress_child);
-            child.setBackground(indicator);
-            Animatable animatable = (Animatable) indicator;
-            animatable.start();
+
+            if (getIntent().hasExtra("intent_post_key")){
+                String postKey = getIntent().getExtras().getString("intent_post_key");
+                getPostFromPostKey(postKey);
+            }else {
+                setContentView(R.layout.no_post_found);
+                SquareDrawable indicator = new PacmanDrawable(new int[]{getResources().getColor(R.color.deep_orange_400), getResources().getColor(R.color.amber_400)
+                        , getResources().getColor(R.color.lime_400), getResources().getColor(R.color.cyan_400)});
+                indicator.setPadding(10);
+                View child;
+                child = findViewById(R.id.progress_child);
+                child.setBackground(indicator);
+                Animatable animatable = (Animatable) indicator;
+                animatable.start();
+            }
         }
 
         if (!InternetStatus.getInstance(this).isOnline()) {
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    private void getPostFromPostKey(String postKey) {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("Posts")
+                .child(postKey)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Post post = new Post();
+
+                        HashMap<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+
+                        post.setImage_url(objectMap.get("image_url").toString());
+                        post.setImage_url2(objectMap.get("image_url2").toString());
+
+                        post.setCaption(objectMap.get("caption").toString());
+                        post.setCaption2(objectMap.get("caption2").toString());
+                        post.setPhoto_id(objectMap.get("photo_id").toString());
+                        post.setPhoto_id2(objectMap.get("photo_id2").toString());
+
+                        post.setTags(objectMap.get("tags").toString());
+                        post.setTags2(objectMap.get("tags2").toString());
+
+                        post.setUser_id(objectMap.get("user_id").toString());
+                        post.setUser_id2(objectMap.get("user_id2").toString());
+
+                        post.setChallenge_id(objectMap.get("challenge_id").toString());
+                        post.setStatus(objectMap.get("status").toString());
+                        post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
+
+                        post.setPostKey(objectMap.get("postKey").toString());
+                            /*String image_url, String caption, String photo_id, String user_id, String tags,
+                String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
+
+                        List<Like> likesList = new ArrayList<Like>();
+                        for (DataSnapshot dSnapshot : dataSnapshot
+                                .child("likes").getChildren()) {
+                            Like like = new Like();
+                            like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                            likesList.add(like);
+                        }
+                        post.setLikes(likesList);
+
+                        List<Like> likesList2 = new ArrayList<Like>();
+                        for (DataSnapshot dSnapshot : dataSnapshot
+                                .child("likes2").getChildren()) {
+                            Like like = new Like();
+                            like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                            likesList2.add(like);
+                        }
+                        post.setLikes2(likesList2);
+
+                        List<Comment> comments = new ArrayList<Comment>();
+                        for (DataSnapshot dSnapshot : dataSnapshot
+                                .child("comments").getChildren()) {
+                            Comment comment = new Comment();
+                            comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
+                            comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                            comments.add(comment);
+                        }
+                        post.setComments(comments);
+
+                        showPost(post);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void setupWidgets() {
@@ -291,7 +374,6 @@ public class ViewPostActivity extends AppCompatActivity {
             }
         });
     }
-
 
     public void setBoolean(Post post){
         ((InitialSetup)getApplicationContext()).wait = false;

@@ -101,7 +101,7 @@ public class HomeActivity extends AppCompatActivity {
 
         if (!InternetStatus.getInstance(this).isOnline()) {
 
-            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_INDEFINITE).show();
         }
 
     }
