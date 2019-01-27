@@ -38,6 +38,7 @@ import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
+import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.Utils.Permissions;
 import com.android.toseefkhan.pandog.models.User;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -48,6 +49,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -213,6 +215,11 @@ public class ShareActivity extends AppCompatActivity {
 
         } catch (Exception e) {
             Log.d(TAG, "onCreate: caught a exception" + e.getMessage());
+        }
+
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
     }
 

@@ -1,7 +1,9 @@
 package com.android.toseefkhan.pandog.Utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Animatable;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -22,14 +24,15 @@ public class UniversalImageLoader {
     private static final int defaultImage = R.drawable.ic_logo;
 
     private Context mContext;
+    private static Resources r;
 
     public UniversalImageLoader(Context context) {
         mContext = context;
+        r = mContext.getResources();
     }
 
     public ImageLoaderConfiguration getConfig() {
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .showImageOnLoading(defaultImage)
                 .showImageForEmptyUri(defaultImage)
                 .showImageOnFail(defaultImage)
                 .considerExifParams(true)
@@ -56,12 +59,22 @@ public class UniversalImageLoader {
      * @param mProgressBar
      * @param append
      */
-    public static void setImage(String imgURL, ImageView image, final ProgressBar mProgressBar, String append) {
+    public static void setImage(String imgURL, ImageView image, final ProgressBar mProgressBar, String append,View child) {
 
         ImageLoader imageLoader = ImageLoader.getInstance();
+        int padding = r.getDimensionPixelSize(R.dimen.progress_padding);
+        SquareDrawable indicator = new ClockDrawable(padding,r.getColor(R.color.blue_400), r.getColor(R.color.light_green_400)
+                , r.getColor(R.color.deep_orange_400));
+        indicator.setPadding(padding);
+        Animatable animatable = (Animatable) indicator;
+
         imageLoader.displayImage(append + imgURL, image, new ImageLoadingListener() {
             @Override
             public void onLoadingStarted(String imageUri, View view) {
+                if (child != null){
+                    child.setBackground(indicator);
+                    animatable.start();
+                }
                 if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.VISIBLE);
                 }
@@ -69,6 +82,10 @@ public class UniversalImageLoader {
 
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                if (child != null){
+                    child.setVisibility(View.GONE);
+                    animatable.stop();
+                }
                 if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.GONE);
                 }
@@ -76,6 +93,10 @@ public class UniversalImageLoader {
 
             @Override
             public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                if (child != null){
+                    child.setVisibility(View.GONE);
+                    animatable.stop();
+                }
                 if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.GONE);
                 }
@@ -83,6 +104,10 @@ public class UniversalImageLoader {
 
             @Override
             public void onLoadingCancelled(String imageUri, View view) {
+                if (child != null){
+                    child.setVisibility(View.GONE);
+                    animatable.stop();
+                }
                 if (mProgressBar != null) {
                     mProgressBar.setVisibility(View.GONE);
                 }

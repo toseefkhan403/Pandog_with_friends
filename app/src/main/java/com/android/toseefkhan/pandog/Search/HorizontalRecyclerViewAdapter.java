@@ -8,9 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.toseefkhan.pandog.Profile.ViewPostActivity;
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.SquareImageView;
@@ -18,6 +20,11 @@ import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -51,18 +58,18 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        Log.d(TAG, "onBindViewHolder: received user: " + mUserList.get(position));
-
+        Post post = mPostList.get(position);
         //todo a query to get the post from hash tags
         //for testing
-
-        UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),  holder.first_photo, null, "");
-        UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),  holder.second_photo, null, "");
+        UniversalImageLoader.setImage(post.getImage_url(),holder.first_photo,null,"",holder.child);
 
         holder.first_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //todo navigate to that particular post
+               Intent i = new Intent(mContext, ViewPostActivity.class);
+               i.putExtra(mContext.getString(R.string.intent_post),post);
+               mContext.startActivity(i);
             }
         });
 
@@ -70,18 +77,19 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
 
     @Override
     public int getItemCount() {
-        return mUserList.size();
+        return mPostList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        SquareImageView first_photo,second_photo;
+        ImageView first_photo;
+        View child;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             first_photo = itemView.findViewById(R.id.first_image);
-            second_photo= itemView.findViewById(R.id.second_image);
+            child = itemView.findViewById(R.id.progress_child);
         }
     }
 }

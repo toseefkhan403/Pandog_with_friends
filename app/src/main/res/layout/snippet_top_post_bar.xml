@@ -21,7 +21,7 @@
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_centerVertical="true"
-                    android:id="@+id/backArrow"
+                    android:id="@+id/back"
                     android:src="@drawable/ic_backarrow"/>
 
 
@@ -31,7 +31,7 @@
                     android:layout_centerVertical="true"
                     android:textSize="20sp"
                     android:layout_toRightOf="@+id/backArrow"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginLeft="50dp"
                     android:text="Post"
                     android:textColor="@color/black"
                     android:id="@+id/tvBackLabel"/>

@@ -178,7 +178,8 @@ public class FriendsAdapter extends BaseAdapter {
 
         CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
         ProgressBar pb = convertView.findViewById(R.id.pb);
-        UniversalImageLoader.setImage(PhotoUrl, photoView, pb, "");
+        View child = convertView.findViewById(R.id.progress_child);
+        UniversalImageLoader.setImage(PhotoUrl, photoView, null, "",child);
 
         return convertView;
     }

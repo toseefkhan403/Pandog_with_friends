@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -23,10 +25,15 @@ import android.widget.TextView;
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
+import com.android.toseefkhan.pandog.Utils.InternetStatus;
+import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.StringManipulation;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.Comment;
+import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
+import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +45,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -47,47 +57,85 @@ public class SearchActivity extends AppCompatActivity {
     private static final int ACTIVITY_NUM = 3;
     private Context mContext = SearchActivity.this;
     private ListView profilesListView;
-    private ArrayList<User> userList = new ArrayList<>();
+    private ArrayList<Post> mPostList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-
         final RecyclerView vertical = findViewById(R.id.holder_vertical);
-        vertical.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(mContext);
-        vertical.setLayoutManager(llm);
+        vertical.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference
-                .child(getString(R.string.dbname_users));
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found user list: " + singleSnapshot.getValue());  // gives the whole user objects
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("Posts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                                Post post = new Post();
+                                HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
 
-                    try{
-                        User user= singleSnapshot.getValue(User.class);
-                        userList.add(user);
-                    }catch (Exception e){
-                        Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
-                    }
-                }
+                                post.setImage_url(objectMap.get("image_url").toString());
+                                post.setImage_url2(objectMap.get("image_url2").toString());
 
-                VerticalRecyclerViewAdapter adapter = new VerticalRecyclerViewAdapter(userList, mContext);
-                vertical.setAdapter(adapter);
+                                post.setCaption(objectMap.get("caption").toString());
+                                post.setCaption2(objectMap.get("caption2").toString());
+                                post.setPhoto_id(objectMap.get("photo_id").toString());
+                                post.setPhoto_id2(objectMap.get("photo_id2").toString());
 
-            }
+                                post.setTags(objectMap.get("tags").toString());
+                                post.setTags2(objectMap.get("tags2").toString());
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                                post.setUser_id(objectMap.get("user_id").toString());
+                                post.setUser_id2(objectMap.get("user_id2").toString());
 
-            }
-        });
+                                post.setChallenge_id(objectMap.get("challenge_id").toString());
+                                post.setStatus(objectMap.get("status").toString());
+                                post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
 
+                                post.setPostKey(objectMap.get("postKey").toString());
+
+                                List<Like> likesList = new ArrayList<Like>();
+                                for (DataSnapshot dSnapshot : singleSnapshot
+                                        .child("likes").getChildren()) {
+                                    Like like = new Like();
+                                    like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                    likesList.add(like);
+                                }
+                                post.setLikes(likesList);
+
+                                List<Like> likesList2 = new ArrayList<Like>();
+                                for (DataSnapshot dSnapshot : singleSnapshot
+                                        .child("likes2").getChildren()) {
+                                    Like like = new Like();
+                                    like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                    likesList2.add(like);
+                                }
+                                post.setLikes2(likesList2);
+
+                                List<Comment> comments = new ArrayList<Comment>();
+                                for (DataSnapshot dSnapshot : singleSnapshot
+                                        .child("comments").getChildren()) {
+                                    Comment comment = new Comment();
+                                    comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
+                                    comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                                    comments.add(comment);
+                                }
+                                post.setComments(comments);
+
+                                mPostList.add(post);
+                                Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
+                            }
+                        VerticalRecyclerViewAdapter adapter = new VerticalRecyclerViewAdapter(mContext, mPostList);
+                        vertical.setAdapter(adapter);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
 
         SearchView profileSearchView = findViewById(R.id.searchProfiles);
 
@@ -117,6 +165,11 @@ public class SearchActivity extends AppCompatActivity {
 
 
         setupBottomNavigationView();
+
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -191,7 +244,9 @@ public class SearchActivity extends AppCompatActivity {
             String PhotoUrl = user.getProfile_photo();
 
             CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
-            UniversalImageLoader.setImage(PhotoUrl, photoView, pb, "");
+            View child = convertView.findViewById(R.id.progress_child);
+
+            UniversalImageLoader.setImage(PhotoUrl, photoView, null, "", child);
 
             profilesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override

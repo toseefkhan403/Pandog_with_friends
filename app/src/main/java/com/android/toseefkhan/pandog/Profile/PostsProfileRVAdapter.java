@@ -3,11 +3,8 @@ package com.android.toseefkhan.pandog.Profile;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.os.CountDownTimer;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -18,17 +15,13 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
-import com.android.toseefkhan.pandog.Search.HorizontalRecyclerViewAdapter;
 import com.android.toseefkhan.pandog.Utils.Heart;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.Like;
-import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
-import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,8 +33,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -50,7 +41,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     private static final String TAG = "PostsPRVAdapter";
     private Context mContext;
     private ArrayList<Post> mPostList;
-    private LinearLayout layView;
     private boolean mLikedbyCurrentUser1 = false;
     private boolean mLikedbyCurrentUser2 = false;
     private int likesCount1 = 0;
@@ -84,8 +74,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_mainfeed_listitem, parent, false);
-
-        layView = view.findViewById(R.id.view);
 
         return new ViewHolder(view);
     }
@@ -127,8 +115,8 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         Log.d(TAG, "onBindViewHolder: give me the post " + post);
         setTopToolbar(holder, post);
 
-        UniversalImageLoader.setImage(post.getImage_url(),holder.image1,null,"");
-        UniversalImageLoader.setImage(post.getImage_url2(),holder.image2,null,"");
+        UniversalImageLoader.setImage(post.getImage_url(),holder.image1,null,"",holder.child);
+        UniversalImageLoader.setImage(post.getImage_url2(),holder.image2,null,"",holder.child2);
 
         setLikesIcons(holder,post);
         initLikesString(holder,post);
@@ -142,7 +130,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             @Override
             public void onClick(View v) {
                 //takes you to ViewCommentsActivity
-                Intent i = new Intent(mContext,ViewCommentsActivity.class);
+                Intent i = new Intent(mContext, ViewCommentsActivity.class);
                 i.putExtra("post_comments",post);
                 mContext.startActivity(i);
             }
@@ -311,7 +299,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
     private void setLikesIcons(final ViewHolder holder, final Post post) {
 
-        final Heart mHeart = new Heart(holder.heartWhite,holder.heartRed,holder.heartWhite2,holder.heartRed2,layView,mContext);
+        final Heart mHeart = new Heart(holder.heartWhite,holder.heartRed,holder.heartWhite2,holder.heartRed2,holder.theWholeView,mContext,null);
         holder.heartWhite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -351,7 +339,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         final User user = dataSnapshot.getValue(User.class);
-                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.dp1,null,"");
+                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.dp1,null,"",null);
                         holder.username1.setText(user.getUsername());
 
                         if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
@@ -406,7 +394,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         final User user = dataSnapshot.getValue(User.class);
-                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.dp2,null,"");
+                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.dp2,null,"",null);
                         holder.username2.setText(user.getUsername());
 
                         if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
@@ -472,6 +460,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         LinearLayout theWholeView;
         CardView cardView1;
         CardView cardView2;
+        View child,child2;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -497,6 +486,8 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             cardView1 = itemView.findViewById(R.id.user1_card_view);
             cardView2 = itemView.findViewById(R.id.user2_card_view);
             timeRemaining = itemView.findViewById(R.id.timeRemaining);
+            child = itemView.findViewById(R.id.progress_child);
+            child2 = itemView.findViewById(R.id.progress_child2);
 
 
             heartRed.setVisibility(View.GONE);

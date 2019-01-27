@@ -4,6 +4,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -14,11 +15,13 @@ import android.widget.VideoView;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.ExpandableListViewAdapter;
+import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 
 public class FAQs extends AppCompatActivity{
@@ -99,6 +102,11 @@ public class FAQs extends AppCompatActivity{
 
         ExpandableListViewAdapter adapter = new ExpandableListViewAdapter(questions,hashMap,this);
         expandableListView.setAdapter(adapter);
+
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
+        }
     }
 
 

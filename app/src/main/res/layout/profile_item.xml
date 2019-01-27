@@ -18,14 +18,28 @@
             android:id="@+id/UserProfilePictureView"
             android:layout_marginLeft="20dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_logo"
             />
+
+        <LinearLayout
+            android:layout_width="65dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/progress_child"
+            android:layout_marginLeft="25dp"
+            android:layout_height="65dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </LinearLayout>
 
         <ProgressBar
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerVertical="true"
             android:id="@+id/pb"
+            android:visibility="gone"
             android:layout_marginStart="38dp"/>
 
         <RelativeLayout

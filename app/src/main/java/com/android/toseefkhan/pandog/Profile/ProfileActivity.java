@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -23,6 +24,7 @@ import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
+import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Comment;
@@ -46,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -100,6 +103,10 @@ public class ProfileActivity extends AppCompatActivity {
 
    //     getPostsOnProfile();
 
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void getPostsOnProfile() {
@@ -277,11 +284,12 @@ public class ProfileActivity extends AppCompatActivity {
         Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.toString());
         Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.getSettings().getUsername());
 
+        View child = findViewById(R.id.progress_child);
 
         //User user = userSettings.getUser();
         UserAccountSettings settings = userSettings.getSettings();
 
-        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, pb, "");
+        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "", child);
 
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());

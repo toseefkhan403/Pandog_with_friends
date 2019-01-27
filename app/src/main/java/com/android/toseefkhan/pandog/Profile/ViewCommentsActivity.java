@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.CommentsRVAdapter;
+import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
@@ -65,7 +66,9 @@ public class ViewCommentsActivity extends AppCompatActivity{
                 View view = getCurrentFocus();
                 if(view != null){
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.showSoftInput(view, 0);
+                    if (imm != null) {
+                        imm.showSoftInput(view, 0);
+                    }
                 }
             }
         });
@@ -90,6 +93,10 @@ public class ViewCommentsActivity extends AppCompatActivity{
         mPost = getPostFromBundle();
         getCommentsFromPost();
 
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void getCommentsFromPost() {

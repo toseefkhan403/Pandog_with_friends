@@ -38,6 +38,19 @@
                             android:layout_height="0dp"
                             android:layout_weight="7">
 
+                            <LinearLayout
+                                android:layout_width="250dp"
+                                android:id="@+id/progress_child"
+                                android:layout_centerInParent="true"
+                                android:layout_height="250dp">
+
+                                <View
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    />
+
+                            </LinearLayout>
+
                             <ImageView
                                 android:id="@+id/post_image"
                                 android:layout_width="match_parent"
@@ -198,6 +211,19 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="0dp"
                                 android:layout_weight="7">
+
+                                <LinearLayout
+                                    android:layout_width="250dp"
+                                    android:id="@+id/progress_child2"
+                                    android:layout_centerInParent="true"
+                                    android:layout_height="250dp">
+
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent"
+                                        />
+
+                                </LinearLayout>
 
                                 <ImageView
                                     android:id="@+id/post_image2"

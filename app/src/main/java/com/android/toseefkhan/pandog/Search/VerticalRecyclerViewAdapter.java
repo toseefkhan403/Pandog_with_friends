@@ -11,12 +11,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.SquareImageView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
+import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -24,9 +34,10 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
 
     private static final String TAG = "VerticalRecyclerViewAda";
     private Context mContext;
-    private ArrayList<Post> mPostList;
+    private ArrayList<Post> mPostList = new ArrayList<>();
     private ArrayList<User> mUserList;
     private RecyclerView mHorizontalRecyclerView;
+    private SkidRightLayoutManager mSkidLM;
 
 
     public VerticalRecyclerViewAdapter(Context mContext, ArrayList<Post> mPostList) {
@@ -49,28 +60,18 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        Log.d(TAG, "onBindViewHolder: received user: " + mUserList.get(position));
-
-        //todo a query to get different hash tags
-
-
+        Post post = mPostList.get(position);
         //for testing
-        int time =(int) System.currentTimeMillis()%2;
+        holder.for_style.setImageDrawable(mContext.getResources().getDrawable(R.drawable.heart_red));
+        holder.hashtag_title.setText("Featured posts");
 
-        if (time ==1){
-            holder.for_style.setImageDrawable(mContext.getResources().getDrawable(R.drawable.heart_red));
-            holder.hashtag_title.setText("Featured posts");
-        }
-        else{
-            holder.for_style.setImageDrawable(mContext.getResources().getDrawable(R.drawable.fire_emoji_with_color));
-            holder.hashtag_title.setText("Trending hashtags");
-        }
-
+        holder.horizontalRecyclerViewAdapter = new HorizontalRecyclerViewAdapter(mContext, mPostList);
+        mHorizontalRecyclerView.setAdapter(holder.horizontalRecyclerViewAdapter);
     }
 
     @Override
     public int getItemCount() {
-        return mUserList.size();
+        return mPostList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -88,9 +89,9 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
             hashtag_title= itemView.findViewById(R.id.hashtag_title);
             mHorizontalRecyclerView = itemView.findViewById(R.id.horizontal_list);
             mHorizontalRecyclerView.setHasFixedSize(true);
-            mHorizontalRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-            horizontalRecyclerViewAdapter = new HorizontalRecyclerViewAdapter(mUserList,mContext);
-            mHorizontalRecyclerView.setAdapter(horizontalRecyclerViewAdapter);
+            mSkidLM = new SkidRightLayoutManager(1.5f,0.85f);
+            mHorizontalRecyclerView.setLayoutManager(mSkidLM);
+
         }
     }
 }

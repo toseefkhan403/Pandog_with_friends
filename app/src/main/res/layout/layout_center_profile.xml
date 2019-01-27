@@ -59,7 +59,22 @@
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="120dp"
+            android:visibility="gone"
             android:id="@+id/pb"/>
+
+        <LinearLayout
+            android:layout_width="250dp"
+            android:id="@+id/progress_child"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:layout_height="250dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </LinearLayout>
 
         <TextView
             android:id="@+id/display_name"

@@ -237,7 +237,7 @@ public class InitialSetup extends Application {
             markerOptions=new MarkerOptions().position(latLng).
                     icon(BitmapDescriptorFactory.fromBitmap(createMarker(mUserList.get(i))))
                     .title(mUserList.get(i).getUsername())
-                    .snippet("Points: " + String.valueOf(mUserList.get(i).getPanda_points()));
+                    .snippet(" : " + String.valueOf(mUserList.get(i).getPanda_points()));
             markerOptionsList.add(markerOptions);
         }
         }catch (NullPointerException e){

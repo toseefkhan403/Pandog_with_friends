@@ -50,7 +50,7 @@ public class MapRecyclerViewAdapter extends RecyclerView.Adapter<MapRecyclerView
 
         //for pp
 
-        UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),holder.pp,holder.pb,"");
+        UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),holder.pp,null,"",holder.child);
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -93,6 +93,7 @@ public class MapRecyclerViewAdapter extends RecyclerView.Adapter<MapRecyclerView
         CircleImageView pp,bestTag;
         TextView userName, email;
         ProgressBar pb;
+        View child;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -101,9 +102,10 @@ public class MapRecyclerViewAdapter extends RecyclerView.Adapter<MapRecyclerView
             userName= itemView.findViewById(R.id.UserNameView);
             email= itemView.findViewById(R.id.UserEmailView);
             pb = itemView.findViewById(R.id.pb);
-            pb.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.GONE);
             bestTag = itemView.findViewById(R.id.bestTag);
             main = itemView.findViewById(R.id.main);
+            child = itemView.findViewById(R.id.progress_child);
         }
     }
 }

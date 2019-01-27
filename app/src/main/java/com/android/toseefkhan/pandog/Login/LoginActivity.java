@@ -28,6 +28,7 @@ import com.android.toseefkhan.pandog.BuildConfig;
 import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.Intro.Holder;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.Utils.StringManipulation;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
@@ -58,6 +59,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Objects;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -157,6 +159,11 @@ public class LoginActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = mPrefs.edit();
             editor.putBoolean(welcomeScreenShownPref, true);
             editor.apply(); // Very important to save the preference
+        }
+
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
     }
 

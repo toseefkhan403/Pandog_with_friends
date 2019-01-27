@@ -87,7 +87,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
         //setting the constant widgets
-        UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.notif_image_preview, null, "");
+        UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.notif_image_preview,null, "", holder.child);
 
         //todo note: this list is meant for pending posts only. as soon as the user accepts or rejects the challenge, that challenge should go away from the list
         if (challenge.getStatus().equals("NOT_DECIDED")) {
@@ -149,7 +149,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         final User user = dataSnapshot.getValue(User.class);
                         Log.d(TAG, "onDataChange: user " + user);
-                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.pp,null,"");
+                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.pp,null,"",null);
                         holder.username.setText(user.getUsername());
 
                         if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
@@ -248,6 +248,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         Button respondedYes, respondedNo;
         TextView status;
         ImageView notif_image_preview;
+        View child;
 
 
         public NotificationViewHolder(View itemView) {
@@ -260,6 +261,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             respondedNo = itemView.findViewById(R.id.respondedNo);
             status = itemView.findViewById(R.id.status);
             notif_image_preview = itemView.findViewById(R.id.NotifImagePreView);
+            child = itemView.findViewById(R.id.progress_child);
         }
     }
 }

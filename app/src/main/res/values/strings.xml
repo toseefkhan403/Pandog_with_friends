@@ -35,6 +35,7 @@
     <string name="selected_image">selected_image</string>
     <string name="return_to_fragment">return_to_fragment</string>
     <string name="intent_user">intent_user</string>
+    <string name="intent_post">intent_post</string>
 
     <!-- activity names -->
     <string name="profile_activity">Profile Activity</string>

@@ -35,6 +35,7 @@ import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
+import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.Utils.ViewWeightAnimationWrapper;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.android.gms.common.ConnectionResult;
@@ -64,6 +65,7 @@ import com.koushikdutta.ion.Ion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -135,6 +137,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             } else {
                 getLocationPermission();
             }
+        }
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
     }
 

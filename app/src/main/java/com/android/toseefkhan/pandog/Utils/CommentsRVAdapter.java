@@ -80,7 +80,7 @@ public class CommentsRVAdapter extends RecyclerView.Adapter<CommentsRVAdapter.Vi
                                 Log.d(TAG, "onDataChange: found the user " + user);
 
                                 viewHolder.comment_username.setText(user.getUsername());
-                                UniversalImageLoader.setImage(user.getProfile_photo(), viewHolder.profile_image,null,"");
+                                UniversalImageLoader.setImage(user.getProfile_photo(), viewHolder.profile_image,null,"",null);
 
                                 if (!uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
                                     viewHolder.comment_username.setOnClickListener(new View.OnClickListener() {

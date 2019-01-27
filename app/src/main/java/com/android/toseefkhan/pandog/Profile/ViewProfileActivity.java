@@ -29,6 +29,7 @@ import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
+import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Comment;
@@ -54,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -105,7 +107,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         profile2 = findViewById(R.id.rel_profile);
         profile = findViewById(R.id.profileToolBar);
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
-        mProgressBar.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.GONE);
         mProfilePhoto = findViewById(R.id.profile_photo);
         mDisplayName = (TextView) findViewById(R.id.display_name);
         mUsername = (TextView) findViewById(R.id.username);
@@ -219,6 +221,11 @@ public class ViewProfileActivity extends AppCompatActivity {
         getFollowersCount();
 
      //   getPostsOnProfile();
+
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
+        }
 
     }
 
@@ -551,11 +558,12 @@ public class ViewProfileActivity extends AppCompatActivity {
         Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.toString());
         Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.getSettings().getUsername());
 
+        View child = findViewById(R.id.progress_child);
 
         //User user = userSettings.getUser();
         UserAccountSettings settings = userSettings.getSettings();
 
-        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, pb, "");
+        UniversalImageLoader.setImage(settings.getProfile_photo(), mProfilePhoto, null, "", child);
 
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
