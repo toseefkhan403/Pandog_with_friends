@@ -16,9 +16,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -32,7 +29,6 @@ import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
-import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
 import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,14 +36,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -56,7 +50,7 @@ public class SearchActivity extends AppCompatActivity {
     private static final String TAG = "SearchActivity";
     private static final int ACTIVITY_NUM = 3;
     private Context mContext = SearchActivity.this;
-    private ListView profilesListView;
+    private RecyclerView profilesListView;
     private ArrayList<Post> mPostList = new ArrayList<>();
 
     @Override
@@ -72,70 +66,70 @@ public class SearchActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                                Post post = new Post();
-                                HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                            Post post = new Post();
+                            HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
 
-                                post.setImage_url(objectMap.get("image_url").toString());
-                                post.setImage_url2(objectMap.get("image_url2").toString());
+                            post.setImage_url(objectMap.get("image_url").toString());
+                            post.setImage_url2(objectMap.get("image_url2").toString());
 
-                                post.setCaption(objectMap.get("caption").toString());
-                                post.setCaption2(objectMap.get("caption2").toString());
-                                post.setPhoto_id(objectMap.get("photo_id").toString());
-                                post.setPhoto_id2(objectMap.get("photo_id2").toString());
+                            post.setCaption(objectMap.get("caption").toString());
+                            post.setCaption2(objectMap.get("caption2").toString());
+                            post.setPhoto_id(objectMap.get("photo_id").toString());
+                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
 
-                                post.setTags(objectMap.get("tags").toString());
-                                post.setTags2(objectMap.get("tags2").toString());
+                            post.setTags(objectMap.get("tags").toString());
+                            post.setTags2(objectMap.get("tags2").toString());
 
-                                post.setUser_id(objectMap.get("user_id").toString());
-                                post.setUser_id2(objectMap.get("user_id2").toString());
+                            post.setUser_id(objectMap.get("user_id").toString());
+                            post.setUser_id2(objectMap.get("user_id2").toString());
 
-                                post.setChallenge_id(objectMap.get("challenge_id").toString());
-                                post.setStatus(objectMap.get("status").toString());
-                                post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
+                            post.setChallenge_id(objectMap.get("challenge_id").toString());
+                            post.setStatus(objectMap.get("status").toString());
+                            post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
 
-                                post.setPostKey(objectMap.get("postKey").toString());
+                            post.setPostKey(objectMap.get("postKey").toString());
 
-                                List<Like> likesList = new ArrayList<Like>();
-                                for (DataSnapshot dSnapshot : singleSnapshot
-                                        .child("likes").getChildren()) {
-                                    Like like = new Like();
-                                    like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                    likesList.add(like);
-                                }
-                                post.setLikes(likesList);
-
-                                List<Like> likesList2 = new ArrayList<Like>();
-                                for (DataSnapshot dSnapshot : singleSnapshot
-                                        .child("likes2").getChildren()) {
-                                    Like like = new Like();
-                                    like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                    likesList2.add(like);
-                                }
-                                post.setLikes2(likesList2);
-
-                                List<Comment> comments = new ArrayList<Comment>();
-                                for (DataSnapshot dSnapshot : singleSnapshot
-                                        .child("comments").getChildren()) {
-                                    Comment comment = new Comment();
-                                    comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                                    comment.setComment(dSnapshot.getValue(Comment.class).getComment());
-                                    comments.add(comment);
-                                }
-                                post.setComments(comments);
-
-                                mPostList.add(post);
-                                Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
+                            List<Like> likesList = new ArrayList<Like>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("likes").getChildren()) {
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                likesList.add(like);
                             }
+                            post.setLikes(likesList);
+
+                            List<Like> likesList2 = new ArrayList<Like>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("likes2").getChildren()) {
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                likesList2.add(like);
+                            }
+                            post.setLikes2(likesList2);
+
+                            List<Comment> comments = new ArrayList<Comment>();
+                            for (DataSnapshot dSnapshot : singleSnapshot
+                                    .child("comments").getChildren()) {
+                                Comment comment = new Comment();
+                                comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
+                                comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                                comments.add(comment);
+                            }
+                            post.setComments(comments);
+
+                            mPostList.add(post);
+                            Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
+                        }
                         VerticalRecyclerViewAdapter adapter = new VerticalRecyclerViewAdapter(mContext, mPostList);
                         vertical.setAdapter(adapter);
-                        }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
+                    }
+                });
 
         SearchView profileSearchView = findViewById(R.id.searchProfiles);
 
@@ -144,6 +138,7 @@ public class SearchActivity extends AppCompatActivity {
         final SearchAdapter adapter = new SearchAdapter(mContext, user.getUid());
         profilesListView.setAdapter(adapter);
 
+        profilesListView.setLayoutManager(new LinearLayoutManager(mContext));
 
         profileSearchView.setActivated(true);
         profileSearchView.onActionViewExpanded();
@@ -168,7 +163,7 @@ public class SearchActivity extends AppCompatActivity {
 
         if (!InternetStatus.getInstance(this).isOnline()) {
 
-            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getWindow().getDecorView().getRootView(), "You are not online!", Snackbar.LENGTH_LONG).show();
         }
     }
 
@@ -186,7 +181,8 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
-    public class SearchAdapter extends BaseAdapter {
+    public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchItemViewHolder> {
+
         String userUID;
         private ProfileFilter filter;
         private Context mContext;
@@ -202,22 +198,33 @@ public class SearchActivity extends AppCompatActivity {
             this.userUID = uid;
         }
 
-        public ArrayList<User> ProfileList() {
-            return ProfileList;
+        @NonNull
+        @Override
+        public SearchItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View itemView = LayoutInflater.from(mContext).inflate(R.layout.profile_item, viewGroup, false);
+            return new SearchItemViewHolder(itemView);
         }
 
         @Override
-        public int getCount() {
-            if (ProfileList == null) {
-                return 0;
-            } else {
-                return ProfileList.size();
-            }
+        public void onBindViewHolder(@NonNull SearchItemViewHolder searchItemViewHolder, int i) {
+
+            User user = getItem(i);
+            searchItemViewHolder.userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
+            searchItemViewHolder.userEmailView.setText(user.getEmail());
+            String PhotoUrl = user.getProfile_photo();
+            UniversalImageLoader.setImage(PhotoUrl, searchItemViewHolder.photoView, null, "",
+                    searchItemViewHolder.child);
+
+            searchItemViewHolder.mView.setOnClickListener(view -> {
+                //navigate to view profile activity
+                Intent intent = new Intent(SearchActivity.this, ViewProfileActivity.class);
+                intent.putExtra(getString(R.string.intent_user), ProfileList.get(i));
+                startActivity(intent);
+            });
         }
 
-        @Override
-        public Object getItem(int position) {
-            return ProfileList.get(position);
+        private User getItem(int i) {
+            return ProfileList.get(i);
         }
 
         @Override
@@ -226,49 +233,35 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(R.layout.profile_item, parent, false);
-            }
-
-            User user = (User) getItem(position);
-
-            TextView userNameView = convertView.findViewById(R.id.UserNameView);
-            userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
-
-            TextView userEmailView = convertView.findViewById(R.id.UserEmailView);
-            userEmailView.setText(user.getEmail());
-
-            ProgressBar pb = convertView.findViewById(R.id.pb);
-
-            String PhotoUrl = user.getProfile_photo();
-
-            CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
-            View child = convertView.findViewById(R.id.progress_child);
-
-            UniversalImageLoader.setImage(PhotoUrl, photoView, null, "", child);
-
-            profilesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Log.d(TAG, "onItemClick: selected user " + ProfileList.get(position));
-
-                    //navigate to view profile activity
-                    Intent intent = new Intent(SearchActivity.this, ViewProfileActivity.class);
-                    intent.putExtra(getString(R.string.intent_user), ProfileList.get(position));
-                    startActivity(intent);
-                }
-            });
-
-            return convertView;
+        public int getItemCount() {
+            return ProfileList != null ? ProfileList.size() : 0;
         }
-
 
         public void filter(CharSequence constraint) {
             if (filter == null) {
                 filter = new ProfileFilter();
             }
             filter.filter(constraint);
+        }
+
+        public class SearchItemViewHolder extends RecyclerView.ViewHolder {
+
+            View mView;
+            TextView userNameView;
+            TextView userEmailView;
+            ProgressBar pb;
+            CircleImageView photoView;
+            View child;
+
+            public SearchItemViewHolder(@NonNull View itemView) {
+                super(itemView);
+                this.mView = itemView;
+                userNameView = itemView.findViewById(R.id.UserNameView);
+                userEmailView = itemView.findViewById(R.id.UserEmailView);
+                pb = itemView.findViewById(R.id.pb);
+                photoView = itemView.findViewById(R.id.UserProfilePictureView);
+                child = itemView.findViewById(R.id.progress_child);
+            }
         }
 
         private class ProfileFilter {
