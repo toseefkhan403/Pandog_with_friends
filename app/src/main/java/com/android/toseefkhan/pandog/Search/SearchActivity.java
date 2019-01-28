@@ -274,7 +274,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 if (constraint != null && constraint.length() > 0) {
                     final ArrayList<User> users = new ArrayList<>();
-                    databaseReference.child("users").addValueEventListener(new ValueEventListener() {
+                    databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.hasChildren()) {
