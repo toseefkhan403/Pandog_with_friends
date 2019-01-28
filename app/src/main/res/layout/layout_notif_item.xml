@@ -2,9 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
     android:background="@android:color/transparent">
 
 
@@ -51,37 +51,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_marginTop="7dp"
+            android:layout_marginRight="16dp"
             android:gravity="center"
             android:text="Challenged You/ You challenged this user"
             android:textColor="#A8A8A8"
             android:textSize="18sp" />
 
         <LinearLayout
+            android:id="@+id/button_holder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:id="@+id/button_holder"
+            android:layout_gravity="center"
             android:layout_marginTop="10dp"
-            android:layout_gravity="center">
+            android:orientation="horizontal">
 
             <Button
+                android:id="@+id/respondedYes"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="accept"
-                android:id="@+id/respondedYes"
-                android:gravity="left"
                 android:layout_marginRight="20dp"
                 android:background="@drawable/white_rounded_small_button"
-                android:padding="15dp"/>
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="accept" />
 
             <Button
                 android:id="@+id/respondedNo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="15dp"
                 android:background="@drawable/white_rounded_small_button"
+                android:padding="15dp"
                 android:text="Reject" />
 
 
@@ -92,10 +92,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_marginTop="10dp"
+            android:layout_marginRight="16dp"
             android:gravity="center"
-            android:text="Awaiting response/"
+            tools:text="Awaiting response/"
             android:textColor="@android:color/darker_gray"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -111,17 +111,16 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="250dp"
         android:id="@+id/progress_child"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="157dp"
-        android:layout_height="250dp">
+        android:layout_marginBottom="157dp">
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
@@ -131,9 +130,9 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_centerHorizontal="true"
-        app:civ_border_overlay="true"
-        app:civ_border_width="2dp"
+        android:src="@drawable/ic_logo"
         app:civ_border_color="@color/white"
-        android:src="@drawable/ic_logo" />
+        app:civ_border_overlay="true"
+        app:civ_border_width="2dp" />
 
 </RelativeLayout>

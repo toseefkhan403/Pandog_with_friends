@@ -15,6 +15,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
+import com.android.toseefkhan.pandog.Profile.ViewPostActivity;
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.User;
@@ -154,31 +155,33 @@ public class PandogMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
                 getString(R.string.default_notification_channel_id));
 
-        Intent pendingIntent = null;
+        Intent notifIntent = null;
         if (remoteMessage.getData().get("type").equals("Challenge")) {
             if (remoteMessage.getData().get("status").equals("NOT_DECIDED")) {
-                pendingIntent = new Intent(this, HomeActivity.class);
-                pendingIntent.putExtra("ChallengerUser", user);
+                notifIntent = new Intent(this, HomeActivity.class);
+                notifIntent.putExtra("ChallengerUser", user);
             } else if (remoteMessage.getData().get("status").equals("ACCEPTED")) {
-                pendingIntent = new Intent(this, HomeActivity.class);
-                pendingIntent.putExtra("ChallengedUser", user);
+                notifIntent = new Intent(this, ViewPostActivity.class);
+                notifIntent.putExtra("ChallengedUser", user);
                 String postKey = remoteMessage.getData().get("postKey");
-                pendingIntent.putExtra("postKey", postKey);
+                notifIntent.putExtra("intent_postKey", postKey);
+            } else if (remoteMessage.getData().get("status").equals("REJECTED")) {
+                notifIntent = new Intent(this, HomeActivity.class);
             }
         } else if (remoteMessage.getData().get("type").equals("Following")) {
-            pendingIntent = new Intent(this, ViewProfileActivity.class);
-            pendingIntent.putExtra(getResources().getString(R.string.intent_user), user);
+            notifIntent = new Intent(this, ViewProfileActivity.class);
+            notifIntent.putExtra(getResources().getString(R.string.intent_user), user);
         }
-        pendingIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
+        notifIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         PendingIntent notificationPendingIntent = null;
         notificationPendingIntent = PendingIntent.getActivity(
                 this,
                 0,
-                pendingIntent,
+                notifIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
+
         builder.setSmallIcon(R.drawable.ic_logo)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentTitle(notificationTitle)

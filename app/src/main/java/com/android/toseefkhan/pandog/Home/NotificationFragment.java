@@ -123,10 +123,10 @@ public class NotificationFragment extends Fragment {
                                     if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
                                         int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
                                         challengesList.set(challlengeIndex, challenge);
-                                        notificationsAdapter.changeList(challengesList);
+                                        notificationsAdapter.updateList(challengesList,challenge);
                                     } else {
                                         challengesList.add(challenge);
-                                        notificationsAdapter.changeList(challengesList);
+                                        notificationsAdapter.changeList(challengesList,challenge);
                                         if (progressBar != null) {
                                             if (progressBar.getVisibility() != View.GONE) {
                                                 progressBar.setVisibility(View.GONE);

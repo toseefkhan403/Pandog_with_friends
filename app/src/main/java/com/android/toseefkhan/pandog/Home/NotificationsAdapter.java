@@ -61,7 +61,9 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     }
 
     public int getIndexOfChallenge(String challengeKey) {
-        for (Challenge challenge : challengesList) {
+        ArrayList<Challenge> cList= this.challengesList;
+        Collections.reverse(cList);
+        for (Challenge challenge : cList) {
             if (challenge.getChallengeKey().equals(challengeKey)) {
                 return challengesList.indexOf(challenge);
             }
@@ -233,11 +235,16 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                 });
     }
 
-    public void changeList(ArrayList<Challenge> challengesList) {
+    public void updateList(ArrayList<Challenge> challengesList, Challenge challenge) {
         this.challengesList = challengesList;
-        Log.d(TAG, "listChanged");
         Collections.reverse(this.challengesList);
-        notifyDataSetChanged();
+        notifyItemChanged(  this.challengesList.indexOf(challenge));
+    }
+
+    public void changeList(ArrayList<Challenge> challengesList, Challenge challenge) {
+        this.challengesList = challengesList;
+        Collections.reverse(this.challengesList);
+        notifyItemInserted(this.challengesList.indexOf(challenge));
     }
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
