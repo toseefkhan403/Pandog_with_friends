@@ -3,9 +3,9 @@ package com.android.toseefkhan.pandog.Profile;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
@@ -85,8 +86,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
         long timediff = System.currentTimeMillis() - post.getTimeStamp();
         int time = (int) ((86400000-timediff)/3600000);
-        Log.d(TAG, "onBindViewHolder: the values of the hours " + time + " " + timediff);
-        holder.timeRemaining.setText(String.valueOf(time) + " hr remaining");
 
         int bottomHeight = 60*(mContext.getResources().getDisplayMetrics().densityDpi/ DisplayMetrics.DENSITY_DEFAULT);
 
@@ -118,7 +117,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         UniversalImageLoader.setImage(post.getImage_url(),holder.image1,null,"",holder.child);
         UniversalImageLoader.setImage(post.getImage_url2(),holder.image2,null,"",holder.child2);
 
-        setLikesIcons(holder,post);
         initLikesString(holder,post);
 
         holder.caption1.setText(post.getCaption());
@@ -144,6 +142,22 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                 mContext.startActivity(i);
             }
         });
+
+        holder.timeRemaining.setText(String.valueOf(time) + " hr remaining");
+
+        if (time <= 0){
+
+            holder.timeRemaining.setText("Awaiting result");
+            DatabaseReference ref= FirebaseDatabase.getInstance().getReference();
+            ref.child("Posts")
+                    .child(post.getPostKey())
+                    .child("status")
+                    .setValue("AWAITING_RESULT");
+            holder.heartHolder.setVisibility(View.GONE);
+            holder.heartHolder2.setVisibility(View.GONE);
+        }else{
+            setLikesIcons(holder,post);
+        }
 
     }
 
@@ -461,6 +475,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         CardView cardView1;
         CardView cardView2;
         View child,child2;
+        RelativeLayout heartHolder, heartHolder2;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -494,6 +509,8 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             heartRed2.setVisibility(View.GONE);
             heartWhite.setVisibility(View.VISIBLE);
             heartWhite2.setVisibility(View.VISIBLE);
+            heartHolder = itemView.findViewById(R.id.heart_holder);
+            heartHolder2 = itemView.findViewById(R.id.heart_holder2);
         }
     }
 }

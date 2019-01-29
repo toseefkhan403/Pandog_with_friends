@@ -1,12 +1,9 @@
 package com.android.toseefkhan.pandog.Utils;
 
-import android.app.Activity;
 import android.app.Application;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 
-import com.squareup.leakcanary.LeakCanary;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MyLeakCanaryActivity extends Application {
 

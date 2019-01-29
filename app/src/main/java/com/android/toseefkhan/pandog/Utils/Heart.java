@@ -3,7 +3,7 @@ package com.android.toseefkhan.pandog.Utils;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.support.design.widget.Snackbar;
+import com.google.android.material.snackbar.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;

@@ -5,21 +5,21 @@
         android:layout_height="55dp"
         android:layout_alignParentTop="true">
 
-        <android.support.design.widget.AppBarLayout
+        <com.google.android.material.appbar.AppBarLayout
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <android.support.design.widget.TabLayout
+            <com.google.android.material.tabs.TabLayout
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:id="@+id/tabs"
                 android:background="@drawable/white_blue_border_bottom">
 
 
-            </android.support.design.widget.TabLayout>
+            </com.google.android.material.tabs.TabLayout>
 
-        </android.support.design.widget.AppBarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
     </RelativeLayout>
 </merge>

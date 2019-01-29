@@ -5,18 +5,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Animatable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
-import android.util.DisplayMetrics;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
@@ -37,7 +38,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.koushikdutta.async.http.filter.DataRemainingException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,6 +68,7 @@ public class ViewPostActivity extends AppCompatActivity {
     private View child,child2;
     private int screenWidth,screenHeight;
     private LinearLayout view;
+    private RelativeLayout heartHolder, heartHolder2;
 
     private Context mContext = ViewPostActivity.this;
 
@@ -211,6 +212,8 @@ public class ViewPostActivity extends AppCompatActivity {
         timeRemaining = findViewById(R.id.timeRemaining);
         child = findViewById(R.id.progress_child);
         child2 = findViewById(R.id.progress_child2);
+        heartHolder = findViewById(R.id.heart_holder);
+        heartHolder2 = findViewById(R.id.heart_holder2);
 
         heartRed.setVisibility(View.GONE);
         heartRed2.setVisibility(View.GONE);
@@ -233,7 +236,6 @@ public class ViewPostActivity extends AppCompatActivity {
         long timediff = System.currentTimeMillis() - post.getTimeStamp();
         int time = (int) ((86400000-timediff)/3600000);
         Log.d(TAG, "onBindViewHolder: the values of the hours " + time + " " + timediff);
-        timeRemaining.setText(String.valueOf(time) + " hr remaining");
 
         theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth*2,screenHeight));
         cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight));
@@ -257,13 +259,11 @@ public class ViewPostActivity extends AppCompatActivity {
             }
         });
 
-        Log.d(TAG, "onBindViewHolder: give me the post " + post);
         setTopToolbar(post);
 
         UniversalImageLoader.setImage(post.getImage_url(),image1,null,"",child);
         UniversalImageLoader.setImage(post.getImage_url2(),image2,null,"",child2);
 
-        setLikesIcons(post);
         initLikesString(post);
 
         caption1.setText(post.getCaption());
@@ -289,6 +289,35 @@ public class ViewPostActivity extends AppCompatActivity {
                 mContext.startActivity(i);
             }
         });
+
+        timeRemaining.setText(String.valueOf(time) + " hr remaining");
+
+        if (!post.getStatus().equals("INACTIVE")) {
+
+            if (post.getStatus().equals("ACTIVE") || post.getStatus().equals("AWAITING_RESULT")) {
+                if (time <= 0) {
+                    timeRemaining.setText("Awaiting result");
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                    ref.child("Posts")
+                            .child(post.getPostKey())
+                            .child("status")
+                            .setValue("AWAITING_RESULT");
+
+                    heartHolder.setVisibility(View.GONE);
+                    heartHolder2.setVisibility(View.GONE);
+                } else {
+                    setLikesIcons(post);
+                }
+            }
+        }else if (post.getStatus().equals("INACTIVE")){
+
+            heartHolder.setVisibility(View.GONE);
+            heartHolder2.setVisibility(View.GONE);
+
+            //todo set watermarks on the images of winner and loser
+
+        }
+
     }
 
     private void initLikesString(Post post) {

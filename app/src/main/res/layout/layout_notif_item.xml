@@ -5,6 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginBottom="20dp"
     android:background="@android:color/transparent">
 
 
@@ -116,7 +117,7 @@
         android:layout_height="250dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="157dp">
+        android:layout_marginBottom="110dp">
 
         <View
             android:layout_width="match_parent"

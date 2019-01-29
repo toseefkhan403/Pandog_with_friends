@@ -3,19 +3,22 @@ package com.android.toseefkhan.pandog.Search;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import androidx.annotation.NonNull;
+
+import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -44,6 +47,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -136,9 +141,12 @@ public class SearchActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         profilesListView = findViewById(R.id.ProfileList);
         final SearchAdapter adapter = new SearchAdapter(mContext, user.getUid());
-        profilesListView.setAdapter(adapter);
+        AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(adapter);
+        a.setDuration(800);
+        profilesListView.setAdapter(a);
+        profilesListView.setItemAnimator(new SlideInUpAnimator());
 
-        profilesListView.setLayoutManager(new LinearLayoutManager(mContext));
+        profilesListView.setLayoutManager(new EchelonLayoutManager(mContext));
 
         profileSearchView.setActivated(true);
         profileSearchView.onActionViewExpanded();
@@ -174,7 +182,7 @@ public class SearchActivity extends AppCompatActivity {
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
         BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
         BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx, SearchActivity.this);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
@@ -201,7 +209,7 @@ public class SearchActivity extends AppCompatActivity {
         @NonNull
         @Override
         public SearchItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            View itemView = LayoutInflater.from(mContext).inflate(R.layout.profile_item, viewGroup, false);
+            View itemView = LayoutInflater.from(mContext).inflate(R.layout.search_profile_item, viewGroup, false);
             return new SearchItemViewHolder(itemView);
         }
 
@@ -214,11 +222,14 @@ public class SearchActivity extends AppCompatActivity {
             String PhotoUrl = user.getProfile_photo();
             UniversalImageLoader.setImage(PhotoUrl, searchItemViewHolder.photoView, null, "",
                     searchItemViewHolder.child);
+            UniversalImageLoader.setImage(PhotoUrl, searchItemViewHolder.userppSearch, null, "",
+                    null);
 
             searchItemViewHolder.mView.setOnClickListener(view -> {
                 //navigate to view profile activity
                 Intent intent = new Intent(SearchActivity.this, ViewProfileActivity.class);
                 intent.putExtra(getString(R.string.intent_user), ProfileList.get(i));
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 startActivity(intent);
             });
         }
@@ -249,8 +260,8 @@ public class SearchActivity extends AppCompatActivity {
             View mView;
             TextView userNameView;
             TextView userEmailView;
-            ProgressBar pb;
-            CircleImageView photoView;
+            ImageView photoView;
+            CircleImageView userppSearch;
             View child;
 
             public SearchItemViewHolder(@NonNull View itemView) {
@@ -258,9 +269,9 @@ public class SearchActivity extends AppCompatActivity {
                 this.mView = itemView;
                 userNameView = itemView.findViewById(R.id.UserNameView);
                 userEmailView = itemView.findViewById(R.id.UserEmailView);
-                pb = itemView.findViewById(R.id.pb);
                 photoView = itemView.findViewById(R.id.UserProfilePictureView);
                 child = itemView.findViewById(R.id.progress_child);
+                userppSearch = itemView.findViewById(R.id.userppSearch);
             }
         }
 
@@ -288,7 +299,6 @@ public class SearchActivity extends AppCompatActivity {
                                 }
                                 ProfileList = users;
                                 notifyDataSetChanged();
-
                             }
                         }
 

@@ -20,7 +20,7 @@
                     android:orientation="horizontal"
                     android:id="@+id/theWholeView">
 
-                <android.support.v7.widget.CardView
+                <androidx.cardview.widget.CardView
                     android:layout_width="400dp"
                     android:layout_height="400dp"
                     app:cardElevation="8dp"
@@ -84,6 +84,13 @@
                                 android:layout_height="47dp"
                                 android:background="@color/white">
 
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:id="@+id/heart_holder">
+
+
                                 <ImageView
                                     android:id="@+id/image_heart_red"
                                     android:layout_width="45dp"
@@ -100,6 +107,7 @@
                                     android:src="@drawable/ic_heart"
                                     android:visibility="visible" />
 
+                                </RelativeLayout>
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -190,11 +198,11 @@
                     </LinearLayout>
 
 
-                </android.support.v7.widget.CardView>
+                </androidx.cardview.widget.CardView>
 
 
 
-                    <android.support.v7.widget.CardView
+                    <androidx.cardview.widget.CardView
                         android:layout_width="400dp"
                         android:layout_height="400dp"
                         app:cardElevation="8dp"
@@ -257,6 +265,12 @@
                                     android:layout_height="47dp"
                                     android:background="@color/white">
 
+                                    <RelativeLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_centerInParent="true"
+                                        android:id="@+id/heart_holder2">
+
                                     <ImageView
                                         android:id="@+id/image_heart_red2"
                                         android:layout_width="45dp"
@@ -272,6 +286,8 @@
                                         android:layout_centerInParent="true"
                                         android:src="@drawable/ic_heart"
                                         android:visibility="visible" />
+
+                                    </RelativeLayout>
 
                                 </RelativeLayout>
 
@@ -352,7 +368,7 @@
                         </LinearLayout>
 
 
-                    </android.support.v7.widget.CardView>
+                    </androidx.cardview.widget.CardView>
 
 
 

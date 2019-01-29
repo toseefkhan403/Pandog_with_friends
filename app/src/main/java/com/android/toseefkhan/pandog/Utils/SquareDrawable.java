@@ -5,8 +5,8 @@ import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public abstract class SquareDrawable extends Drawable {
 
@@ -14,7 +14,6 @@ public abstract class SquareDrawable extends Drawable {
     protected abstract void onSideCalculated(int side);
 
     protected abstract void onDraw(@NonNull Canvas canvas);
-
 
     private float left;
 

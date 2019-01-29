@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="19dp"
+        android:background="@drawable/echelon_bg"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp">
+
+            <TextView
+                android:id="@+id/UserNameView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white_grey_border_bottom"
+                android:layout_centerHorizontal="true"
+                android:text="username"
+                android:textColor="@color/black"
+                android:textSize="24sp" />
+
+            <TextView
+                android:id="@+id/UserEmailView"
+                android:layout_width="wrap_content"
+                android:layout_below="@+id/UserNameView"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:text="email"
+                android:textColor="#A8A8A8"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+
+        <com.github.florent37.shapeofview.shapes.RoundRectView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            app:shape_roundRect_bottomLeftRadius="34dp"
+            app:shape_roundRect_bottomRightRadius="34dp"
+            app:shape_roundRect_topLeftRadius="34dp"
+            app:shape_roundRect_topRightRadius="34dp"
+            app:shape_roundRect_borderWidth=".8dp"
+            app:shape_roundRect_borderColor="@color/black"
+            >
+
+        <ImageView
+            android:id="@+id/UserProfilePictureView"
+            android:layout_width="460dp"
+            android:layout_height="460dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/intro1" />
+
+        </com.github.florent37.shapeofview.shapes.RoundRectView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/progress_child"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/userppSearch"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_logo"
+        app:civ_border_color="@color/white"
+        app:civ_border_overlay="true"
+        app:civ_border_width="2dp" />
+
+</RelativeLayout>

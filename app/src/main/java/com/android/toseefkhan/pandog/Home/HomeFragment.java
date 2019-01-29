@@ -1,11 +1,11 @@
 package com.android.toseefkhan.pandog.Home;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.OrientationHelper;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.OrientationHelper;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,7 +118,8 @@ public class HomeFragment extends Fragment {
                             }
                             post.setComments(comments);
 
-                            mPostList.add(post);
+                            if (!post.getStatus().equals("INACTIVE"))
+                                mPostList.add(post);
                             Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
                         }
 

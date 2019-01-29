@@ -12,18 +12,23 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.transition.Fade;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -65,9 +70,11 @@ import com.koushikdutta.ion.Ion;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import de.hdodenhof.circleimageview.CircleImageView;
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.SlideInRightAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
@@ -493,7 +500,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mProgressbar.setVisibility(View.GONE);
         dialogProgressbar.setVisibility(View.GONE);
         mUserRecyclerAdapter = new MapRecyclerViewAdapter(mContext , users);
-        mUserListRecyclerView.setAdapter(mUserRecyclerAdapter);
+        AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(mUserRecyclerAdapter);
+        a.setDuration(1750);
+        a.setInterpolator(new OvershootInterpolator());
+        mUserListRecyclerView.setAdapter(a);
         mUserListRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
     }
 
@@ -712,7 +722,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private void setupBottomNavigationView(){
         BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx);
+        BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx,MapActivity.this);
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

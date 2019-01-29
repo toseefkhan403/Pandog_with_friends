@@ -1,12 +1,12 @@
 package com.android.toseefkhan.pandog.Utils;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {
+public class FragmentPagerAdapter extends androidx.fragment.app.FragmentPagerAdapter {
 
 
     private final List<Fragment> mFragmentList=new ArrayList<>();
