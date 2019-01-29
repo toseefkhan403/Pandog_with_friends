@@ -160,7 +160,6 @@ public class ViewProfileActivity extends AppCompatActivity {
                         .setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
                 setFollowing();
                 getFollowersCount();
-                getPandaPointsCount();
             }
         });
 
@@ -183,7 +182,6 @@ public class ViewProfileActivity extends AppCompatActivity {
                         .removeValue();
                 setUnfollowing();
                 getFollowersCount();
-                getPandaPointsCount();
             }
         });
 
@@ -207,6 +205,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         isFollowing();
         getFollowingCount();
         getFollowersCount();
+        getPandaPointsCount();
 
      //   getPostsOnProfile();
 
@@ -365,18 +364,22 @@ public class ViewProfileActivity extends AppCompatActivity {
 
 
     private void getPandaPointsCount() {
-        ppcount=0;
-        Log.d(TAG, "getPandaPointsCount: getting the count ");
 
-        // todo later
-      //  ppcount= mFollowersCount+ mPostsCount;
-        ppcount= mFollowersCount;
-        PandaPoints.setText(String.valueOf(ppcount));
-
-        myRef.child(mContext.getString(R.string.dbname_users))
+        myRef.child(getString(R.string.dbname_users))
                 .child(mUser.getUser_id())
-                .child(mContext.getString(R.string.db_panda_points))
-                .setValue(ppcount);
+                .child("panda_points")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Long l = dataSnapshot.getValue(Long.class);
+                        PandaPoints.setText(String.valueOf(l));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void init() {
@@ -456,7 +459,6 @@ public class ViewProfileActivity extends AppCompatActivity {
                     mFollowersCount++;
                 }
                 mFollowers.setText(String.valueOf(mFollowersCount));
-                getPandaPointsCount();
             }
 
             @Override

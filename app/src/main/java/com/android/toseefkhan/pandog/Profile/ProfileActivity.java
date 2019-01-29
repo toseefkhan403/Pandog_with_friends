@@ -90,6 +90,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         getFollowersCount();
         getFollowingCount();
+        getPandaPointsCount();
 
    //     getPostsOnProfile();
 
@@ -249,16 +250,22 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void getPandaPointsCount() {
         Log.d(TAG, "getPandaPointsCount: getting the count ");
-        //todo fix later
-        int points = mFollowersCount;
-        PandaPoints.setText(String.valueOf(points));
 
-        myRef= FirebaseDatabase.getInstance().getReference();
-
-        myRef.child(mContext.getString(R.string.dbname_users))
+        myRef.child(getString(R.string.dbname_users))
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child(mContext.getString(R.string.db_panda_points))
-                .setValue(points);
+                .child("panda_points")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Long pandaPoints = dataSnapshot.getValue(Long.class);
+                        PandaPoints.setText(String.valueOf(pandaPoints));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void hideWidgets() {
@@ -355,7 +362,6 @@ public class ProfileActivity extends AppCompatActivity {
                     mFollowersCount++;
                 }
                 mFollowers.setText(String.valueOf(mFollowersCount));
-                getPandaPointsCount();
             }
 
             @Override

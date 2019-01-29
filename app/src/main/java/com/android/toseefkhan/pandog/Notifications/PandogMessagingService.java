@@ -146,6 +146,84 @@ public class PandogMessagingService extends FirebaseMessagingService {
                             Log.d("Db Error", databaseError.getMessage());
                         }
                     });
+        } else if (notificationType.equals("RESULTS")) {
+            String notificationTitle;
+            String notificationBody;
+            String status = remoteMessage.getData().get("status");
+            if (status.equals("win")) {
+                notificationTitle = "Congratulations";
+                notificationBody = "You won your challenge with ";
+                String loserUid = remoteMessage.getData().get("loser");
+                FirebaseDatabase.getInstance().getReference()
+                        .child(getApplicationContext().getString(R.string.dbname_users))
+                        .child(loserUid)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    User user = dataSnapshot.getValue(User.class);
+                                    String username = user.getUsername();
+                                    buildNotification(
+                                            remoteMessage, notificationTitle,
+                                            notificationBody + username, user
+                                    );
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.d("DB ERROR", databaseError.toString());
+                            }
+                        });
+            } else if (status.equals("lose")) {
+                notificationTitle = "Better luck next Time";
+                notificationBody = "You lost your challenge with ";
+                String winnerUid = remoteMessage.getData().get("winner");
+                FirebaseDatabase.getInstance().getReference()
+                        .child(getApplicationContext().getString(R.string.dbname_users))
+                        .child(winnerUid)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    User user = dataSnapshot.getValue(User.class);
+                                    String username = user.getUsername();
+                                    buildNotification(
+                                            remoteMessage, notificationTitle,
+                                            notificationBody + username, user
+                                    );
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.d("DB ERROR", databaseError.toString());
+                            }
+                        });
+            } else if (status.equals("draw")) {
+                notificationTitle = "It's a draw";
+                notificationBody = "Your challenge with # ended in a draw";
+                String userUid = remoteMessage.getData().get("user2");
+                FirebaseDatabase.getInstance().getReference()
+                        .child(getApplicationContext().getString(R.string.dbname_users))
+                        .child(userUid)
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    User user = dataSnapshot.getValue(User.class);
+                                    String username = user.getUsername();
+                                    buildNotification(remoteMessage, notificationTitle
+                                            , notificationBody.replace("#", username), user);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.d("DB ERROR", databaseError.toString());
+                            }
+                        });
+            }
         }
 
     }
@@ -166,17 +244,22 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 notifIntent = new Intent(this, ViewPostActivity.class);
                 notifIntent.putExtra("ChallengedUser", user);
                 String postKey = remoteMessage.getData().get("postKey");
-                notifIntent.putExtra("intent_postKey", postKey);
+                notifIntent.putExtra("intent_post_key", postKey);
             } else if (remoteMessage.getData().get("status").equals("REJECTED")) {
                 notifIntent = new Intent(this, HomeActivity.class);
             }
         } else if (remoteMessage.getData().get("type").equals("Following")) {
             notifIntent = new Intent(this, ViewProfileActivity.class);
             notifIntent.putExtra(getResources().getString(R.string.intent_user), user);
+        } else if (remoteMessage.getData().get("type").equals("RESULTS")) {
+            notifIntent = new Intent(this, ViewPostActivity.class);
+            String postKey = remoteMessage.getData().get("postKey");
+            notifIntent.putExtra("intent_post_key",postKey);
+
         }
         notifIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-        PendingIntent notificationPendingIntent = null;
+        PendingIntent notificationPendingIntent;
         notificationPendingIntent = PendingIntent.getActivity(
                 this,
                 0,
