@@ -8,6 +8,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,6 +156,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                     .setValue("AWAITING_RESULT");
             holder.heartHolder.setVisibility(View.GONE);
             holder.heartHolder2.setVisibility(View.GONE);
+
         }else{
             setLikesIcons(holder,post);
         }

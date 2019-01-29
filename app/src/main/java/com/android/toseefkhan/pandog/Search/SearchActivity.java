@@ -166,7 +166,6 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-
         setupBottomNavigationView();
 
         if (!InternetStatus.getInstance(this).isOnline()) {

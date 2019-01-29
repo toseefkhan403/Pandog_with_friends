@@ -10,8 +10,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
@@ -25,6 +23,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+
 
 public class PandogMessagingService extends FirebaseMessagingService {
 

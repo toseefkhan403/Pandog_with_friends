@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -315,6 +316,7 @@ public class ViewPostActivity extends AppCompatActivity {
             heartHolder2.setVisibility(View.GONE);
 
             //todo set watermarks on the images of winner and loser
+            timeRemaining.setText("THis guy won");
 
         }
 
