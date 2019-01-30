@@ -1,7 +1,5 @@
 package com.android.toseefkhan.pandog.models;
 
-import com.google.android.gms.maps.model.LatLng;
-
 public class LatLong {
 
     private Double latitude;

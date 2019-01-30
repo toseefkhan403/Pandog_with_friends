@@ -4,9 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.android.toseefkhan.pandog.Utils.Like;
-import com.google.firebase.database.ServerValue;
 
-import java.util.HashMap;
 import java.util.List;
 
 public class Post implements Parcelable{

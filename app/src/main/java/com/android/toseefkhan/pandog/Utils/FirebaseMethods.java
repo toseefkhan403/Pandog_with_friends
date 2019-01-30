@@ -14,8 +14,6 @@ import android.graphics.Matrix;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -54,6 +52,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import androidx.annotation.NonNull;
 
 
 public class FirebaseMethods {
@@ -167,6 +167,7 @@ public class FirebaseMethods {
                             View child = ((Activity)mContext).findViewById(R.id.progress_root);;
                             child.setBackground(indicator);
                             final Animatable animatable = (Animatable) indicator;
+                            animatable.start();
                             animatable.start();
 
                         }
@@ -513,6 +514,7 @@ public class FirebaseMethods {
                 post.setTimeStamp(timeStamp);
 
                 addPostToDataBase(post, postKey);
+                addPostToUserNode(postKey);
                 c.setPostKey(postKey);
                 c.setStatus("ACCEPTED");
                 //delete the challenge as it is accepted successfully
@@ -528,6 +530,11 @@ public class FirebaseMethods {
         /* String image_url, String caption, String photo_id, String user_id,
                 String tags, int likes, String image_url2, String caption2, String photo_id2,
                 String user_id2, String tags2, int likes2, HashMap<String, String> comments */
+    }
+
+    private void addPostToUserNode(String postKey) {
+        String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        myRef.child("user_posts").child(userUid).push().setValue(postKey);
     }
 
     private void addPostToDataBase(Post post, String postKey){
