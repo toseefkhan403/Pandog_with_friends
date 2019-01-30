@@ -13,6 +13,7 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
         const userUid1 = post.user_id;
         const userUid2 = post.user_id2;
         const postKey = post.postKey;
+        const challengeKey = post.challengeKey;
         const likes1 = post.likes;
         const likes2 = post.likes2;
         var count1, count2;
@@ -27,7 +28,7 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
         } else {
             count2 = Object.keys(likes2).length;
         }
-        
+
         console.log("likes1" + count1, userUid1);
         console.log("likes2" + count2, userUid2);
 
@@ -124,7 +125,10 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
                 var Pr = [];
                 var pr1 = postSnapshot.ref.update({ winner: winner });
                 var pr2 = postSnapshot.ref.update({ status: "INACTIVE" });
-                Pr.push(pr1, pr2);
+                var pr3 = admin.database().ref("/Challenges/" + challengeKey).remove();
+                var pr4 = admin.database().ref("/User_Challenges/" + userUid1).child(challengeKey).remove();
+                var pr5 = admin.database().ref("/User_Challenges/" + userUid2).child(challengeKey).remove();
+                Pr.push(pr1, pr2, pr3, pr4, pr5);
                 return Promise.all(Pr);
             });
     } else {
@@ -140,7 +144,7 @@ exports.sendMessage = functions.database.ref('/Challenges/{challengeId}').onUpda
     const status = challenge.status;
     const challengedUserUid = challenge.challengedUserUid;
     const challengerUserUid = challenge.challengerUserUid;
-    
+
     return admin.database().ref("/token/" + challengerUserUid).once('value').then((snap) => {
         const fcmToken = snap.val();
         if (fcmToken == null) {
@@ -148,6 +152,8 @@ exports.sendMessage = functions.database.ref('/Challenges/{challengeId}').onUpda
         }
         console.log("Token", fcmToken);
         var payload;
+        var p = [];
+        var promise;
         if (status == "ACCEPTED") {
             const postKey = challenge.postKey;
             payload = {
@@ -157,7 +163,9 @@ exports.sendMessage = functions.database.ref('/Challenges/{challengeId}').onUpda
                     postKey: postKey,
                     type: "Challenge"
                 }
-            }
+            };
+
+
         } else if (status == "REJECTED") {
             payload = {
                 data: {
@@ -165,13 +173,17 @@ exports.sendMessage = functions.database.ref('/Challenges/{challengeId}').onUpda
                     status: status,
                     type: "Challenge"
                 }
-            }
+            };
+            promise = datasnapshot.ref.remove();
+            p.push(promise);
         }
-        return admin.messaging.sendToDevice(fcmToken, payload).then((response) => {
+        promise = admin.messaging.sendToDevice(fcmToken, payload).then((response) => {
             console.log("Successfully sent", response);
         }).catch((error) => {
             console.log("error occured", error);
         });
+        p.push(promise);
+        return Promise.all(p);
     });
 });
 
@@ -208,7 +220,7 @@ exports.sendChallengeMessage = functions.database.ref('/Challenges/{challengeId}
 });
 
 exports.unfollowed = functions.database.ref('followers/{userUid}/{followingUserUid}')
-    .onDelete((_snap,context) => {
+    .onDelete((_snap, context) => {
         console.log("unfollow triggered");
         const followedUserUid = context.params.userUid;
         return admin.database().ref("/users/" + followedUserUid).once('value').then((userSnap) => {
@@ -253,6 +265,6 @@ exports.sendFollowingMessage = functions.database.ref('/followers/{userUid}/{fol
                         console.log("Following Message tokenLevel Error", error);
                     });
             });
-            
+
         });
     });

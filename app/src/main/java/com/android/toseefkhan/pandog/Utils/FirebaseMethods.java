@@ -456,8 +456,8 @@ public class FirebaseMethods {
                             myRef.child("Challenges").child(challengeKey).setValue(mChallenge);
 
                             DatabaseReference challengeReference = myRef.child("User_Challenges");
-                            challengeReference.child(currentUserUid).push().setValue(challengeKey);
-                            challengeReference.child(selecteduserUid).push().setValue(challengeKey);
+                            challengeReference.child(currentUserUid).child(challengeKey).setValue(challengeKey);
+                            challengeReference.child(selecteduserUid).child(challengeKey).setValue(challengeKey);
 
                         }
                     }
