@@ -534,7 +534,7 @@ public class FirebaseMethods {
 
     private void addPostToUserNode(String postKey) {
         String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        myRef.child("user_posts").child(userUid).push().setValue(postKey);
+        myRef.child("user_posts").child(userUid).child(postKey).setValue(postKey);
     }
 
     private void addPostToDataBase(Post post, String postKey){
