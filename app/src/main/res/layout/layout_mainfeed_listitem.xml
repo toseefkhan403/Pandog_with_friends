@@ -58,6 +58,30 @@
                                 android:scaleType="centerCrop"
                                 android:src="@drawable/intro2"/>
 
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:rotation="-20"
+                                android:id="@+id/tvWinner"
+                                android:visibility="gone">
+
+                            <include layout="@layout/text_view_winner"/>
+
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:rotation="-20"
+                                android:id="@+id/tvLoser"
+                                android:visibility="gone">
+
+                            <include layout="@layout/text_view_loser"/>
+
+                            </RelativeLayout>
+
                             <TextView
                                 android:id="@+id/image_caption"
                                 android:layout_width="match_parent"
@@ -66,7 +90,7 @@
                                 android:text="This is another description
                              #description"
                                 android:textSize="16sp"
-                                android:textColor="@color/black"
+                                android:textColor="@color/white"
                                 android:layout_alignParentBottom="true"/>
 
                         </RelativeLayout>
@@ -241,6 +265,30 @@
                                     android:scaleType="centerCrop"
                                     android:src="@drawable/intro1"/>
 
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:rotation="-20"
+                                    android:id="@+id/tvWinner2"
+                                    android:visibility="gone">
+
+                                    <include layout="@layout/text_view_winner"/>
+
+                                </RelativeLayout>
+
+                                <RelativeLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerInParent="true"
+                                    android:rotation="-20"
+                                    android:id="@+id/tvLoser2"
+                                    android:visibility="gone">
+
+                                    <include layout="@layout/text_view_loser"/>
+
+                                </RelativeLayout>
+
                                 <TextView
                                     android:id="@+id/image_caption2"
                                     android:layout_width="match_parent"
@@ -249,7 +297,7 @@
                                     android:text="This is another description
                              #description"
                                     android:textSize="16sp"
-                                    android:textColor="@color/black"
+                                    android:textColor="@color/white"
                                     android:layout_alignParentBottom="true"/>
 
                             </RelativeLayout>
@@ -376,177 +424,6 @@
 
                 </LinearLayout>
 
-
-
-                <!--
-                <android.support.v7.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="8dp"
-                    app:cardMaxElevation="10dp">
-
-
-
-                    <LinearLayout
-                        android:layout_width="800dp"
-                        android:layout_height="35dp"
-                        android:orientation="horizontal">
-
-
-
-                        <RelativeLayout
-                            android:id="@+id/relLayoutToolbar2"
-                            android:layout_width="398dp"
-                            android:layout_height="35dp"
-                            android:layout_marginEnd="5dp"
-                            android:background="@drawable/white_pink_border_bottom">
-
-                            <de.hdodenhof.circleimageview.CircleImageView
-                                android:id="@+id/profile_photo2"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:layout_centerVertical="true"
-                                android:layout_marginLeft="10dp"
-                                android:layout_marginTop="0dp"
-                                app:civ_border_color="@color/black"
-                                app:civ_border_width="0.5dp" />
-
-
-                            <TextView
-                                android:id="@+id/username2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_centerVertical="true"
-                                android:layout_marginLeft="10dp"
-                                android:layout_toRightOf="@+id/profile_photo2"
-                                android:text="toseef.khan"
-                                android:textColor="@color/black"
-                                android:textSize="20sp" />
-
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="35dp"
-                        android:id="@+id/images">
-
-
-
-                        <com.android.toseefkhan.pandog.Utils.SquareImageView
-                            android:id="@+id/post_image2"
-                            android:layout_width="390dp"
-                            android:layout_height="wrap_content"
-                            android:layout_toRightOf="@id/post_image"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/intro1" />
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="398dp"
-                        android:layout_height="35dp"
-                        android:layout_below="@+id/images"
-                        android:id="@+id/toolbar1"
-                        android:layout_marginTop="2dp"
-                        android:background="@color/white">
-
-
-
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="398dp"
-                        android:layout_height="35dp"
-                        android:layout_below="@+id/images"
-                        android:layout_toRightOf="@+id/toolbar1"
-                        android:layout_marginTop="2dp"
-                        android:background="@color/white">
-
-                        <RelativeLayout
-                            android:id="@+id/heartLayout2"
-                            android:layout_width="60dp"
-                            android:layout_height="match_parent"
-                            android:background="@color/white">
-
-                            <ImageView
-                                android:id="@+id/image_heart_red2"
-                                android:layout_width="45dp"
-                                android:layout_height="45dp"
-                                android:layout_centerInParent="true"
-                                android:layout_marginLeft="20dp"
-                                android:src="@drawable/heart_red"
-                                android:visibility="visible" />
-
-                            <ImageView
-                                android:id="@+id/image_heart_white2"
-                                android:layout_width="40dp"
-                                android:layout_height="40dp"
-                                android:layout_centerInParent="true"
-                                android:layout_marginLeft="20dp"
-                                android:src="@drawable/ic_heart"
-                                android:visibility="invisible" />
-
-                        </RelativeLayout>
-
-                        <TextView
-                            android:id="@+id/image_likes2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="22 Likes"
-                            android:layout_centerVertical="true"
-                            android:layout_marginTop="1.5dp"
-                            android:layout_toRightOf="@id/heartLayout2"
-                            android:layout_alignParentBottom="true"
-                            android:layout_marginBottom="12dp"
-                            android:layout_marginLeft="5dp"
-                            android:textColor="@color/black"
-                            android:textSize="18sp" />
-
-                    </RelativeLayout>
-
-                    <LinearLayout
-                        android:layout_width="800dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="1dp"
-                        android:orientation="horizontal"
-                        android:id="@+id/captions"
-                        android:layout_below="@id/toolbar1">
-
-                        <TextView
-                            android:id="@+id/image_caption"
-                            android:layout_width="398dp"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="8dp"
-                            android:text="This is another description
-                             #description
-whatever it takes
-cause i love the
-adrenaline"
-                            android:textColor="@color/black"
-                            android:textSize="18sp" />
-
-                        <TextView
-                            android:id="@+id/image_caption2"
-                            android:layout_width="398dp"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="8dp"
-                            android:layout_marginEnd="1dp"
-                            android:text="This is another description #description"
-                            android:textColor="@color/black"
-                            android:textSize="18sp" />
-
-                    </LinearLayout>
-
-                </RelativeLayout>
-
-                </android.support.v7.widget.CardView>
--->
 
             </HorizontalScrollView>
 

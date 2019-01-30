@@ -27,7 +27,7 @@ public class Post implements Parcelable{
     private String postKey;
 
     private long timeStamp;
-    private String challenge_id, status;
+    private String challenge_id, status, winner;
 
     public Post() {
     }
@@ -46,7 +46,6 @@ public class Post implements Parcelable{
         this.tags2 = tags2;
     }
 
-
     protected Post(Parcel in) {
         image_url = in.readString();
         caption = in.readString();
@@ -63,6 +62,7 @@ public class Post implements Parcelable{
         timeStamp = in.readLong();
         challenge_id = in.readString();
         status = in.readString();
+        winner = in.readString();
     }
 
     public static final Creator<Post> CREATOR = new Creator<Post>() {
@@ -91,6 +91,14 @@ public class Post implements Parcelable{
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+
+    public void setWinner(String winner) {
+        this.winner = winner;
     }
 
     public String getCaption() {
@@ -234,6 +242,7 @@ public class Post implements Parcelable{
         this.status = status;
     }
 
+
     @Override
     public int describeContents() {
         return 0;
@@ -256,5 +265,6 @@ public class Post implements Parcelable{
         parcel.writeLong(timeStamp);
         parcel.writeString(challenge_id);
         parcel.writeString(status);
+        parcel.writeString(winner);
     }
 }

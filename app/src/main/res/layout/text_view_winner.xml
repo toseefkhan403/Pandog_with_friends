@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+
+    <com.github.florent37.shapeofview.shapes.RoundRectView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:shape_roundRect_borderColor="@color/pink_400"
+        app:shape_roundRect_borderWidth="10dp"
+        app:shape_roundRect_bottomLeftRadius="60dp"
+        app:shape_roundRect_bottomRightRadius="60dp"
+        app:shape_roundRect_topLeftRadius="60dp"
+        app:shape_roundRect_topRightRadius="60dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="85sp"
+            android:padding="25dp"
+            android:text="WINNER"
+            android:textColor="@color/colorAccent"/>
+
+
+    </com.github.florent37.shapeofview.shapes.RoundRectView>
+
+</LinearLayout>

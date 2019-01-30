@@ -91,6 +91,10 @@ public class SearchActivity extends AppCompatActivity {
 
                             post.setChallenge_id(objectMap.get("challenge_id").toString());
                             post.setStatus(objectMap.get("status").toString());
+
+                            if (post.getStatus().equals("INACTIVE"))
+                                post.setWinner(objectMap.get("winner").toString());
+
                             post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
 
                             post.setPostKey(objectMap.get("postKey").toString());

@@ -144,6 +144,10 @@ public class ViewPostActivity extends AppCompatActivity {
 
                         post.setChallenge_id(objectMap.get("challenge_id").toString());
                         post.setStatus(objectMap.get("status").toString());
+
+                        if (post.getStatus().equals("INACTIVE"))
+                            post.setWinner(objectMap.get("winner").toString());
+
                         post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
 
                         post.setPostKey(objectMap.get("postKey").toString());
@@ -242,6 +246,8 @@ public class ViewPostActivity extends AppCompatActivity {
         cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight));
         cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight));
 
+        setTopToolbar(post);
+
         final ObjectAnimator animator= ObjectAnimator.ofInt(horizontalScrollView, "scrollX",screenWidth*2 );
         final ObjectAnimator animator2= ObjectAnimator.ofInt(horizontalScrollView, "scrollX",0 );
         animator.setDuration(200);
@@ -259,8 +265,6 @@ public class ViewPostActivity extends AppCompatActivity {
                 animator2.start();
             }
         });
-
-        setTopToolbar(post);
 
         UniversalImageLoader.setImage(post.getImage_url(),image1,null,"",child);
         UniversalImageLoader.setImage(post.getImage_url2(),image2,null,"",child2);
@@ -315,11 +319,65 @@ public class ViewPostActivity extends AppCompatActivity {
             heartHolder.setVisibility(View.GONE);
             heartHolder2.setVisibility(View.GONE);
 
-            //todo set watermarks on the images of winner and loser
-            timeRemaining.setText("THis guy won");
+            timeRemaining.setPadding(1,1,10,1);
+            timeRemaining.setTextColor(getResources().getColor(R.color.black));
 
+            image1.setAlpha(0.5f);
+            image2.setAlpha(0.5f);
+
+            RelativeLayout tvWinner = findViewById(R.id.tvWinner);
+            RelativeLayout tvWinner2 = findViewById(R.id.tvWinner2);
+            RelativeLayout tvLoser = findViewById(R.id.tvLoser);
+            RelativeLayout tvLoser2 = findViewById(R.id.tvLoser2);
+
+            if (post.getWinner().equals("tie")){
+                timeRemaining.setText("It's a draw!!");
+
+            }else if (post.getWinner().equals(post.getUser_id())){
+
+                tvWinner.setVisibility(View.VISIBLE);
+                tvLoser2.setVisibility(View.VISIBLE);
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                ref.child(getString(R.string.dbname_users))
+                        .child(post.getUser_id())
+                        .child("username")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String username = dataSnapshot.getValue(String.class);
+                                timeRemaining.setText(username + " won the challenge");
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+            }else if (post.getWinner().equals(post.getUser_id2())){
+
+                tvWinner2.setVisibility(View.VISIBLE);
+                tvLoser.setVisibility(View.VISIBLE);
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                ref.child(getString(R.string.dbname_users))
+                        .child(post.getUser_id2())
+                        .child("username")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String username = dataSnapshot.getValue(String.class);
+                                timeRemaining.setText(username + " won the challenge");
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+            }
         }
-
     }
 
     private void initLikesString(Post post) {
