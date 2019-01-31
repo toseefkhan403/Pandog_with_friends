@@ -5,7 +5,6 @@ admin.initializeApp(functions.config().firebase);
 
 exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((change) => {
     console.log("ResultMessage Invoked");
-
     const postSnapshot = change.after;
     const post = postSnapshot.val();
     const status = post.status;
@@ -40,8 +39,12 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
             winner = userUid2;
             loser = userUid1;
         }
-        console.log("winner" + winner, "loser" + loser);
-
+        if (winner == null) {
+            console.log("Its a draw");
+            winner = "tie";
+        } else {
+            console.log("winner" + winner, "loser" + loser);
+        }
         var promises = [];
         var p1 = admin.database().ref("/users/" + userUid1).once('value');
         var p2 = admin.database().ref("/users/" + userUid2).once('value');
@@ -54,12 +57,16 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
                 var userUid = user.user_id;
                 var pandaPoints = user.panda_points;
                 var newPoints;
+                var result;
                 if (userUid == winner) {
                     newPoints = pandaPoints + 5;
+                    result = "win";
                 } else if (userUid == loser) {
                     newPoints = pandaPoints - 2;
+                    result = "lose";
                 } else {
                     newPoints = pandaPoints + 2;
+                    result = "draw";
                 }
                 var promise = userSnap.ref.update({ panda_points: newPoints }).then(() => {
                     return admin.database().ref('/token/' + userUid).once('value').then((tokenSnap) => {
@@ -68,7 +75,7 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
                             return null;
                         }
                         var payload;
-                        if (userUid == winner) {
+                        if (result == "win") {
                             payload = {
                                 data: {
                                     type: "RESULTS",
@@ -78,7 +85,7 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
                                     postKey: postKey
                                 }
                             };
-                        } else if (userUid = loser) {
+                        } else if (result == "lose") {
                             payload = {
                                 data: {
                                     type: "RESULTS",
@@ -88,28 +95,22 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
                                     postKey: postKey
                                 }
                             };
-                        } else {
+                        } else if (result == "draw") {
+                            var anotherUid;
                             if (userUid == userUid1) {
-                                payload = {
-                                    data: {
-                                        type: "RESULTS",
-                                        user1: userUid1,
-                                        user2: userUid2,
-                                        status: "draw",
-                                        postKey: postKey
-                                    }
-                                };
+                                anotherUid = userUid2;
                             } else if (userUid == userUid2) {
-                                payload = {
-                                    data: {
-                                        type: "RESULTS",
-                                        user1: userUid2,
-                                        user2: userUid1,
-                                        status: "draw",
-                                        postKey: postKey
-                                    }
-                                };
+                                anotherUid = userUid1;
                             }
+                            payload = {
+                                data: {
+                                    type: "RESULTS",
+                                    user1: userUid,
+                                    user2: anotherUid,
+                                    status: "draw",
+                                    postKey: postKey
+                                }
+                            };
                         }
 
                         return admin.messaging().sendToDevice(fcmToken, payload).then((response) => {
@@ -122,9 +123,10 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
             return Promise.all(p);
         })
             .then(() => {
+                console.log("imp tasks started", challengeKey, postSnapshot.ref);
                 var Pr = [];
-                var pr1 = postSnapshot.ref.update({ winner: winner });
-                var pr2 = postSnapshot.ref.update({ status: "INACTIVE" });
+                var pr1 = admin.database().ref("/Posts/" + postKey).update({ winner: winner });
+                var pr2 = admin.database().ref("/Posts/" + postKey).update({ status: "INACTIVE" });
                 var pr3 = admin.database().ref("/Challenges/" + challengeKey).remove();
                 var pr4 = admin.database().ref("/User_Challenges/" + userUid1).child(challengeKey).remove();
                 var pr5 = admin.database().ref("/User_Challenges/" + userUid2).child(challengeKey).remove();
@@ -135,7 +137,6 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
         return null;
     }
 });
-
 
 exports.sendMessage = functions.database.ref('/Challenges/{challengeId}').onUpdate((change, context) => {
     console.log("update triggered");
@@ -177,7 +178,7 @@ exports.sendMessage = functions.database.ref('/Challenges/{challengeId}').onUpda
             promise = datasnapshot.ref.remove();
             p.push(promise);
         }
-        promise = admin.messaging.sendToDevice(fcmToken, payload).then((response) => {
+        promise = admin.messaging().sendToDevice(fcmToken, payload).then((response) => {
             console.log("Successfully sent", response);
         }).catch((error) => {
             console.log("error occured", error);
