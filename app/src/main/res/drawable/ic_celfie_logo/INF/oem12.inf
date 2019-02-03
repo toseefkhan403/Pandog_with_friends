@@ -1,0 +1,171 @@
+;----------------------------------------------------------------------------
+; SynHIDMin.inf
+;
+; Installs Synaptics HID mini driver - for HID part.
+; Copyright (c) 2014-2016 Synaptics Incorporated.
+;----------------------------------------------------------------------------
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = HIDClass
+ClassGuid   = {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+Provider    = %Provider%
+CatalogFile = SynTP.cat
+DriverVer=12/16/2017, 19.2.17.64
+
+;----------------------------------------------------------------------------
+; Manufacturer Sections
+;----------------------------------------------------------------------------
+
+[Manufacturer]
+%SynMfg% = SynMfg, NTx86, NTamd64
+
+[SynMfg.NTx86]
+; No support
+
+[SynMfg.NTamd64]
+%SynHIDMini.SynDeviceDesc%  = SynHIDMini_Inst, root\VID_06CB&PID_000F 
+
+[ControlFlags]
+ExcludeFromSelect=*
+
+;----------------------------------------------------------------------------
+; Install Sections
+;----------------------------------------------------------------------------
+[SourceDisksNames]
+1=%DiskName%,,
+
+[SourceDisksFiles]
+SynTP.sys = 1
+WdfCoInstaller01011.dll = 1
+
+[DestinationDirs]
+DefaultDestDir        = 12 ; Drivers directory
+CopyFiles_Drivers     = 12 ; Drivers directory
+CopyFiles_CoInstaller = 11 ; System directory
+
+;===============================================================
+;   Install section for Win8.1 and later
+;   Use the inbox mshidkmdf.sys as the shim
+;===============================================================
+[SynHIDMini_Inst]
+; Just copy the driver. No neeed to copy other system binaries.
+CopyFiles = CopyFiles_Drivers
+AddReg = Common_AddReg
+DelReg = Common_DelReg
+
+[Common_AddReg]
+
+; This section is added to all INFs to add registry entries for Driver Info.
+HKLM,Software\InstalledOptions\%DriverOEM%\%DriverFamily%\%DriverMfgr%\%DriverProduct%,Description,,%DriverDescription%
+HKLM,Software\InstalledOptions\%DriverOEM%\%DriverFamily%\%DriverMfgr%\%DriverProduct%,CurrentVer,,%DriverOEMVersion%
+HKLM,Software\InstalledOptions\%DriverOEM%\%DriverFamily%\%DriverMfgr%\%DriverProduct%,Ver_%DriverOEMVersion%,,%DriverVersionID%
+HKLM,Software\InstalledOptions\%DriverOEM%\%DriverFamily%\%DriverMfgr%\%DriverProduct%, BaseDriverFileName,,%BaseDriverFileName%
+HKLM,Software\InstalledOptions\%DriverOEM%\%DriverFamily%\%DriverMfgr%\%DriverProduct%, BaseDriverFileVersion,,%BaseDriverFileVersion%
+
+; Store the Program Files directory and the install directory (source path)
+HKLM,Software\Synaptics\SynHidMiniPort\Install,InstallDir,0x00000000,"%1%"
+HKLM,Software\Synaptics\SynHidMiniPort\Install,DriverVersion,0x00000000,"%DriverVersionID%"
+
+; *********************************************************************
+; Driver defaults.
+; *********************************************************************
+
+[Common_DelReg]
+HKLM,Software\Synaptics\SynHIDMiniPort
+
+[CopyFiles_Drivers]
+SynTP.sys,,,0x00000001
+
+[SynHIDMini_Inst.HW]
+AddReg = SynHIDMini_AddReg.Hw
+
+[SynHIDMini_AddReg.Hw]
+HKR,,"LowerFilters",0x00010000,"SynTP"
+HKR,,"AllowIdleIrpInD3",0x00010001,0x1
+HKR,,SynPortType,0x00010001,10
+HKR,,SynDeviceType,0x00010001,3
+
+[SynHIDMini_Inst.Services]
+AddService = SynTP,, SynHIDMiniHID_Service_Inst
+AddService = mshidkmdf, 0x000001fa, mshidkmdf_AddService ; flag 0x2 sets this as the service for the device
+
+[SynHIDMiniHID_Service_Inst]
+DisplayName    = %SynHIDMini%
+ServiceType    = %SERVICE_KERNEL_DRIVER% 
+StartType      = %SERVICE_DEMAND_START% 
+ErrorControl   = %SERVICE_ERROR_IGNORE% 
+ServiceBinary  = %12%\SynTP.sys 
+
+[mshidkmdf_AddService]
+ServiceType    = 1                  ; SERVICE_KERNEL_DRIVER
+StartType      = 3                  ; SERVICE_DEMAND_START
+ErrorControl   = 1                  ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %10%\System32\Drivers\mshidkmdf.sys
+
+;================================================================
+; WDF Coinstaller installation
+;===============================================================
+[SynHIDMini_Inst.CoInstallers]
+AddReg = SynHIDMini_Inst_CoInstaller_AddReg
+CopyFiles = CopyFiles_CoInstaller
+
+[CopyFiles_CoInstaller]
+WdfCoInstaller01011.dll,,,0x00000010    ;COPYFLG_NO_OVERWRITE
+
+[SynHIDMini_Inst_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000,"WdfCoInstaller01011.dll,WdfCoInstaller"
+
+[SynHIDMini_Inst.Wdf]
+KmdfService = SynTP, SynHIDMini_Inst_wdfsect
+
+[SynHIDMini_Inst_wdfsect]
+KmdfLibraryVersion = 1.11
+
+;================================================================
+; Strings section
+;===============================================================
+
+[Strings] 
+Provider = "Synaptics" 
+SynMfg = "Synaptics"
+DiskName = "Synaptics Driver Installation Disk"
+
+; Driver Information Entries
+DriverMfgr="Synaptics"
+DriverVersionID="19.2.17.64"
+DriverOEM="Synaptics"
+DriverFamily="Mouse"
+DriverProduct="HID Device"
+DriverDescription="Synaptics HID mini Driver"
+DriverOEMVersion="19.2.17.64"
+BaseDriverFileName="SynTP.sys"
+BaseDriverFileVersion="19.2.17.64"
+
+; Device Names
+SynHIDMini.SynDeviceDesc = "Synaptics HID-Compliant Touch pad Device"
+
+; Service Names
+SynTP.SvcDesc = "Synaptics Pointing Device Driver"
+SynHIDMini = "Synaptics TouchPad HID Mini Driver"
+
+customCollection    = "HID Vendor-defined Collection for Synaptics HID Mini driver"
+
+;Non-Localizable
+SERVICE_BOOT_START     = 0x0 
+SERVICE_SYSTEM_START   = 0x1 
+SERVICE_AUTO_START     = 0x2 
+SERVICE_DEMAND_START   = 0x3 
+SERVICE_DISABLED       = 0x4 
+
+SERVICE_KERNEL_DRIVER  = 0x1 
+SERVICE_ERROR_IGNORE   = 0x0 
+SERVICE_ERROR_NORMAL   = 0x1 
+SERVICE_ERROR_SEVERE   = 0x2 
+SERVICE_ERROR_CRITICAL = 0x3 
+
+REG_EXPAND_SZ          = 0x00020000 
+REG_DWORD              = 0x00010001 
+REG_MULTI_SZ           = 0x00010000
+REG_BINARY             = 0x00000001
+REG_SZ                 = 0x00000000

@@ -23,6 +23,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/ScrollView"
         android:layout_marginTop="50dp">
 
     <RelativeLayout
@@ -43,10 +44,8 @@
         <ImageView
             android:id="@+id/profile_photo"
             android:src="@drawable/intro2"
-            app:civ_border_color="@color/black"
             android:focusedByDefault="true"
             android:focusableInTouchMode="true"
-            app:civ_border_width="2dp"
             android:scaleType="centerCrop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -114,19 +113,53 @@
                 android:id="@+id/rel_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
                 android:paddingBottom="5dp"
                 android:layout_marginBottom="50dp"
                 android:layout_below="@id/snippet">
 
-                <Button
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="horizontal"
+                    android:weightSum="100"
+                    android:background="@drawable/white_grey_border"
+                    android:layout_height="50dp"
+                    android:id="@+id/fonts">
+
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupP
+                        android:id="@+id/fontViewP"
+                        android:layout_width="0dp"
+                        android:layout_weight="20"
+                        android:layout_height="50dp"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupO
+                        android:id="@+id/fontViewO"
+                        android:layout_width="0dp"
+                        android:layout_weight="20"
+                        android:layout_height="50dp"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupS
+                        android:id="@+id/fontViewS"
+                        android:layout_width="0dp"
+                        android:layout_weight="20"
+                        android:layout_height="50dp"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupT
+                        android:id="@+id/fontViewT"
+                        android:layout_width="0dp"
+                        android:layout_weight="20"
+                        android:layout_height="50dp"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupS
+                        android:id="@+id/fontViewS2"
+                        android:layout_width="0dp"
+                        android:layout_weight="20"
+                        android:layout_height="50dp"/>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/white_rounded_fb_button"
-                    android:layout_centerInParent="true"
-                    android:padding="10dp"
-                    android:text="whatever"
-                    android:id="@+id/button_view_challenges"/>
+                    android:id="@+id/RecyclerViewPost"
+                    android:layout_below="@+id/fonts">
+
+                </androidx.recyclerview.widget.RecyclerView>
 
             </RelativeLayout>
 

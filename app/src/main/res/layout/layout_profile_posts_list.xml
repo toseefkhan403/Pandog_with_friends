@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <!-- ***********************Top Toolbar***************** -->
+    <RelativeLayout
+        android:id="@+id/relLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <include layout="@layout/snippet_top_profile_post_bar" />
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/posts_recycler_view_list"
+        android:layout_below="@id/relLayout1">
+
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <include layout="@layout/layout_bottom_nav_view" />
+
+
+</RelativeLayout>

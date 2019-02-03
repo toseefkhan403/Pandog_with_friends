@@ -3,12 +3,8 @@ package com.android.toseefkhan.pandog.Profile;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +32,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAdapter.ViewHolder>{
@@ -81,9 +80,12 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder,final int position) {
 
         final Post post = mPostList.get(position);
+        holder.setIsRecyclable(false);
+        Log.d(TAG, "onBindViewHolder: post " + post.getStatus());
+        Log.d(TAG, "onBindViewHolder: post " + post.getWinner());
 
         long timediff = System.currentTimeMillis() - post.getTimeStamp();
         int time = (int) ((86400000-timediff)/3600000);
@@ -112,7 +114,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             }
         });
 
-        Log.d(TAG, "onBindViewHolder: give me the post " + post);
         setTopToolbar(holder, post);
 
         UniversalImageLoader.setImage(post.getImage_url(),holder.image1,null,"",holder.child);
@@ -146,21 +147,80 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
         holder.timeRemaining.setText(String.valueOf(time) + " hr remaining");
 
-        if (time <= 0){
+        if (!post.getStatus().equals("INACTIVE")) {
 
-            holder.timeRemaining.setText("Awaiting result");
-            DatabaseReference ref= FirebaseDatabase.getInstance().getReference();
-            ref.child("Posts")
-                    .child(post.getPostKey())
-                    .child("status")
-                    .setValue("AWAITING_RESULT");
+            if (post.getStatus().equals("ACTIVE") || post.getStatus().equals("AWAITING_RESULT")) {
+                if (time <= 0) {
+                    holder.timeRemaining.setText("Awaiting result");
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                    ref.child("Posts")
+                            .child(post.getPostKey())
+                            .child("status")
+                            .setValue("AWAITING_RESULT");
+
+                    holder.heartHolder.setVisibility(View.GONE);
+                    holder.heartHolder2.setVisibility(View.GONE);
+                } else {
+                    setLikesIcons(holder,post);
+                }
+            }
+        }else if (post.getStatus().equals("INACTIVE")) {
+
             holder.heartHolder.setVisibility(View.GONE);
             holder.heartHolder2.setVisibility(View.GONE);
 
-        }else{
-            setLikesIcons(holder,post);
-        }
+            holder.image1.setAlpha(0.5f);
+            holder.image2.setAlpha(0.5f);
 
+            if (post.getWinner().equals("tie")) {
+                holder.timeRemaining.setText("It's a draw!!");
+
+            } else if (post.getWinner().equals(post.getUser_id())) {
+
+                holder.tvWinner.setVisibility(View.VISIBLE);
+                holder.tvLoser2.setVisibility(View.VISIBLE);
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                ref.child(mContext.getString(R.string.dbname_users))
+                        .child(post.getUser_id())
+                        .child("username")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String username = dataSnapshot.getValue(String.class);
+                                holder.timeRemaining.setText(username + " won the challenge");
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+            } else if (post.getWinner().equals(post.getUser_id2())) {
+
+                holder.tvWinner2.setVisibility(View.VISIBLE);
+                holder.tvLoser.setVisibility(View.VISIBLE);
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                ref.child(mContext.getString(R.string.dbname_users))
+                        .child(post.getUser_id2())
+                        .child("username")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String username = dataSnapshot.getValue(String.class);
+                                holder.timeRemaining.setText(username + " won the challenge");
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+            }
+
+        }
     }
 
     private void initLikesString(final ViewHolder holder, Post post) {
@@ -460,7 +520,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
     @Override
     public int getItemCount() {
-        return mPostList.size();
+        return mPostList.size() ;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -477,7 +537,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         CardView cardView1;
         CardView cardView2;
         View child,child2;
-        RelativeLayout heartHolder, heartHolder2;
+        RelativeLayout heartHolder, heartHolder2,tvWinner,tvWinner2,tvLoser,tvLoser2;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -513,6 +573,11 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             heartWhite2.setVisibility(View.VISIBLE);
             heartHolder = itemView.findViewById(R.id.heart_holder);
             heartHolder2 = itemView.findViewById(R.id.heart_holder2);
+
+            tvWinner = itemView.findViewById(R.id.tvWinner);
+            tvWinner2 = itemView.findViewById(R.id.tvWinner2);
+            tvLoser = itemView.findViewById(R.id.tvLoser);
+            tvLoser2 = itemView.findViewById(R.id.tvLoser2);
         }
     }
 }

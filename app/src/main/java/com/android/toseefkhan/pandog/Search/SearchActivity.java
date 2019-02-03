@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
+
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -166,6 +168,7 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 adapter.filter(newText);
                 vertical.setVisibility(View.GONE);
+
                 return true;
             }
         });
@@ -177,20 +180,6 @@ public class SearchActivity extends AppCompatActivity {
             Snackbar.make(getWindow().getDecorView().getRootView(), "You are not online!", Snackbar.LENGTH_LONG).show();
         }
     }
-
-    /**
-     * BottomNavigationView setup
-     */
-    private void setupBottomNavigationView() {
-        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
-        BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx, SearchActivity.this);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
-    }
-
 
     public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchItemViewHolder> {
 
@@ -219,7 +208,9 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull SearchItemViewHolder searchItemViewHolder, int i) {
 
+            searchItemViewHolder.setIsRecyclable(false);
             User user = getItem(i);
+
             searchItemViewHolder.userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
             searchItemViewHolder.userEmailView.setText(user.getEmail());
             String PhotoUrl = user.getProfile_photo();
@@ -316,5 +307,19 @@ public class SearchActivity extends AppCompatActivity {
             }
 
         }
+    }
+
+
+    /**
+     * BottomNavigationView setup
+     */
+    private void setupBottomNavigationView() {
+        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
+        BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
+        BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx, SearchActivity.this);
+        Menu menu = bottomNavigationViewEx.getMenu();
+        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
+        menuItem.setChecked(true);
     }
 }

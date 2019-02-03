@@ -1,0 +1,160 @@
+;----------------------------------------------------------------------------
+; SynRMIHID.inf
+;
+; Copyright (c) 1996-2016, Synaptics Incorporated
+;----------------------------------------------------------------------------
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = HIDClass
+ClassGuid   = {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+Provider    = %Provider%
+CatalogFile = SynTP.cat
+DriverVer=12/16/2017, 19.2.17.64
+
+[DestinationDirs]
+DefaultDestDir        = 12 ; Drivers directory
+CopyFiles_Drivers     = 12 ; Drivers directory
+
+[SourceDisksNames]
+1 = %DiskId1%,,,""
+
+[SourceDisksFiles]
+SynRMIHID.sys  = 1
+
+;*****************************************
+; SynRMIHID  Install Section
+;*****************************************
+;----------------------------------------------------------------------------
+; Manufacturer Sections
+;----------------------------------------------------------------------------
+
+[Manufacturer]
+%SynMfg% = SynMfg, NTx86, NTamd64
+
+[SynMfg.NTx86]
+; No support
+
+[SynMfg.NTamd64]
+
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\VEN_MSFT&DEV_0001&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL05E2&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL05E3&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL05F7&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL05FF&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL060A&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL063E&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0641&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0651&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0652&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0653&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0654&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0655&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0656&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL065A&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL065B&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL065C&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0662&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL065D&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL065E&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL064D&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL068B&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL068E&Col02  
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06AB&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06AC&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06AD&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06AE&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06AF&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06B0&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06B1&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06C8&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06C9&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06CA&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL06CB&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0725&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0726&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLA6BD&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLA6C0&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLA6C1&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLA6C2&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLA6D7&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLA6D8&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLC6C0&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLC6C1&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLC6C2&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLC6D7&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLLC6D8&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0700&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0701&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DLL0707&Col02  
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL074D&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL074E&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL074F&Col02 
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0779&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0787&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0788&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0789&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL078A&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL078B&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL078C&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL078D&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL078E&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0791&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0792&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0793&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0794&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0795&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0796&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL07AE&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL07AF&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0876&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\DELL0877&Col02
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\VID_06CB&PID_2819&MI_00&Col04
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\VID_06CB&PID_75BF&Col04
+%SynRMIHID.DeviceDesc% = SynRMIHID_Device,HID\VID_06CB&PID_75DD&Col04
+
+[SynRMIHID_Device.NT]
+CopyFiles=CopyFiles_Drivers
+AddReg = Common_AddReg
+
+[Common_AddReg]
+HKLM,Software\Synaptics\SynRMIHID,InstallDir,0x00000000,"%1%"
+HKLM,Software\Synaptics\SynRMIHID,DriverVersion,0x00000000,"19.2.17.64"
+
+[CopyFiles_Drivers]
+SynRMIHID.sys,,,0x00000001
+
+[SynRMIHID_Device.NT.Services]
+Include = input.inf
+Needs = HID_Raw_Inst.NT.Services
+AddService = SynRMIHID,,SynRMIHID_Service_Inst, SynRMIHID_EventLog_Inst
+
+[SynRMIHID_AddReg.HW]
+HKR,,"UpperFilters",0x00010000,"SynRMIHID"
+
+[SynRMIHID_Device.NT.HW]
+AddReg = SynRMIHID_AddReg.HW
+
+; -------------- SynRMIHID driver install sections
+[SynRMIHID_Service_Inst]
+DisplayName    = %SynRMIHID.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START 
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\SynRMIHID.sys
+
+[SynRMIHID_EventLog_Inst]
+AddReg = SynRMIHID_EventLog_AddReg
+
+[SynRMIHID_EventLog_AddReg]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\SynRMIHID.sys"
+HKR,,TypesSupported,0x00010001,7
+
+[Strings]
+Provider               = "Synaptics"
+SynMfg                 = "Synaptics"
+DiskId1                = "Synaptics HID Installation Disk"
+SynRMIHID.DeviceDesc   = "Synaptics HID Device"
+SynRMIHID.SVCDESC      = "Synaptics HID Service"
+ClassName              = "HID Device"
+TargetDir              = "Synaptics\SynTP"

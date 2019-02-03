@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.R;
@@ -17,6 +18,7 @@ import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,10 +65,14 @@ public class HomeFragment extends Fragment {
                         Log.d(TAG, "onDataChange: .getValue " + dataSnapshot.getValue());
                         mPostList.clear();
 
-                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren() ) {
 
                             Post post = new Post();
                             HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+                            post.setStatus(objectMap.get("status").toString());
+
+                            if (post.getStatus().equals("INACTIVE"))
+                                post.setWinner(objectMap.get("winner").toString());
 
                             post.setImage_url(objectMap.get("image_url").toString());
                             post.setImage_url2(objectMap.get("image_url2").toString());
@@ -83,7 +89,6 @@ public class HomeFragment extends Fragment {
                             post.setUser_id2(objectMap.get("user_id2").toString());
 
                             post.setChallenge_id(objectMap.get("challenge_id").toString());
-                            post.setStatus(objectMap.get("status").toString());
                             post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
 
                             post.setPostKey(objectMap.get("postKey").toString());
@@ -118,8 +123,7 @@ public class HomeFragment extends Fragment {
                             }
                             post.setComments(comments);
 
-                            if (!post.getStatus().equals("INACTIVE"))
-                                mPostList.add(post);
+                            mPostList.add(post);
                             Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
                         }
 
@@ -133,12 +137,22 @@ public class HomeFragment extends Fragment {
                 });
     }
 
+
     private void initRecyclerView() {
 
-        Collections.reverse(mPostList);
-        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(getActivity(), OrientationHelper.VERTICAL));
-        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(getActivity(), mPostList);
-        mRVPosts.setAdapter(adapter);
+        if (!mPostList.isEmpty()) {
+            Collections.reverse(mPostList);
+            mRVPosts.setLayoutManager(new ViewPagerLayoutManager(getActivity(), OrientationHelper.VERTICAL));
+            PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(getActivity(), mPostList);
+            mRVPosts.setAdapter(adapter);
+        }else if (mPostList.isEmpty()){
+            Log.d(TAG, "initRecyclerView: no the layout should be empty");
+            try {
+                Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), "NO POSTS FOUND!", Snackbar.LENGTH_LONG).show();
+            }catch (NullPointerException e){
+                Toast.makeText(getActivity(), "NO POSTS FOUND!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
 }

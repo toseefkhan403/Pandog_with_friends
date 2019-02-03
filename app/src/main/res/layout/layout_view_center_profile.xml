@@ -128,15 +128,41 @@
             android:layout_below="@+id/snippet"
             android:paddingBottom="5dp">
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:background="@drawable/white_rounded_fb_button"
-                android:text="View Challenges by"
-                android:textColor="@color/white"
-                android:padding="10dp"
-                android:id="@+id/button_view_challenges"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="100"
+                android:background="@drawable/white_grey_border"
+                android:layout_height="50dp"
+                android:id="@+id/fonts">
+
+                <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupP
+                    android:id="@+id/fontViewP"
+                    android:layout_width="0dp"
+                    android:layout_weight="20"
+                    android:layout_height="50dp"/>
+                <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupO
+                    android:id="@+id/fontViewO"
+                    android:layout_width="0dp"
+                    android:layout_weight="20"
+                    android:layout_height="50dp"/>
+                <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupS
+                    android:id="@+id/fontViewS"
+                    android:layout_width="0dp"
+                    android:layout_weight="20"
+                    android:layout_height="50dp"/>
+                <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupT
+                    android:id="@+id/fontViewT"
+                    android:layout_width="0dp"
+                    android:layout_weight="20"
+                    android:layout_height="50dp"/>
+                <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupS
+                    android:id="@+id/fontViewS2"
+                    android:layout_width="0dp"
+                    android:layout_weight="20"
+                    android:layout_height="50dp"/>
+            </LinearLayout>
 
         </RelativeLayout>
 

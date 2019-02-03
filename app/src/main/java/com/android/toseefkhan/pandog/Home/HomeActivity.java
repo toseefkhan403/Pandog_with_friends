@@ -47,6 +47,29 @@ public class HomeActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private ViewPager mViewPager;
 
+
+    //todo optimizing map section - setting levels and creating dynamic markers
+    //todo better intro
+    //todo a spotlight walkthrough
+    //todo a referral system
+    //todo set a list to view followers or following if the user click on them in Profile and ViewProfile
+    //todo adding "hide my position on map" feature
+    //todo fix the trending screen: both in implementation and in display
+    //todo use share elements animation as much as possible
+    //todo make use of who liked the photo feature
+    //todo implement a fully furnished in-app notifications list that will keep the user up to dated with his challenges and progress
+
+    //todo (Aryal)
+    //todo better search, the search should always take the user to the bottom
+    //todo of the list so he can see all the users and not necessarily swipe up for more results.
+    //todo implementing necessary notifications
+
+    //todo (non-coding stuff)
+    //todo get the maps api key
+    //todo a thorough testing of the app and bug fixes
+    //todo create dev account on google play; launch the app successfully (*happy emoji)(*another happy emoji)
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,23 +90,13 @@ public class HomeActivity extends AppCompatActivity {
                 SquareDrawable indicator = new BallDrawable(new int[]{getResources().getColor(R.color.deep_purple_400), getResources().getColor(R.color.light_green_400)
                         , getResources().getColor(R.color.deep_orange_400), getResources().getColor(R.color.pink_400)});
 
-                SquareDrawable indicator2 = new PacmanDrawable(new int[]{getResources().getColor(R.color.deep_purple_400), getResources().getColor(R.color.light_green_400)
-                        , getResources().getColor(R.color.teal_400), getResources().getColor(R.color.pink_400)});
                 indicator.setPadding(40);
-                indicator2.setPadding(20);
                 View child;
                 child = findViewById(R.id.progress_child);
 
-                if (System.currentTimeMillis()%2 == 1){
-                    child.setBackground(indicator);
-                    final Animatable animatable = (Animatable) indicator;
-                    animatable.start();
-                }
-                else{
-                    child.setBackground(indicator2);
-                    final Animatable animatable2 = (Animatable) indicator2;
-                    animatable2.start();
-                }
+                child.setBackground(indicator);
+                final Animatable animatable = (Animatable) indicator;
+                animatable.start();
                 setupFirebaseAuth();
             }
         } else {

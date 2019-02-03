@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/logo_image">
+
+    <com.github.florent37.shapeofview.shapes.CircleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:shape_circle_borderColor="@color/deep_purple_400"
+        app:shape_circle_borderWidth="20dp">
+
+         <com.github.florent37.shapeofview.shapes.CircleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:shape_circle_borderColor="@color/white"
+        app:shape_circle_borderWidth="20dp">
+
+          <com.github.florent37.shapeofview.shapes.CircleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:shape_circle_borderColor="@color/yellow_400"
+        app:shape_circle_borderWidth="20dp">
+
+
+              <com.github.florent37.shapeofview.shapes.CircleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:shape_circle_borderColor="@color/colorAccent"
+        app:shape_circle_borderWidth="20dp">
+
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="3dp"
+            android:src="@drawable/letter_c" />
+
+
+          </com.github.florent37.shapeofview.shapes.CircleView>
+
+         </com.github.florent37.shapeofview.shapes.CircleView>
+
+    </com.github.florent37.shapeofview.shapes.CircleView>
+
+
+    </com.github.florent37.shapeofview.shapes.CircleView>
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonSave"
+        android:text="save image"/>
+
+</RelativeLayout>

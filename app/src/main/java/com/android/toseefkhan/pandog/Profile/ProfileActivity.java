@@ -4,20 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
@@ -41,6 +44,7 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,11 +70,11 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView mEditProfile,PandaPoints;
     private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
     private RelativeLayout relativeLayout;
+    private LinearLayout fonts;
     private TextView mMenu;
     private ProgressBar pb;
     private Toolbar profile;
-    // private RecyclerView mRVPosts;
-    private Button mViewChallengeButton;
+
     private ArrayList<Post> mPostList = new ArrayList<>();
 
 
@@ -81,8 +85,9 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
         setupBottomNavigationView();
 
-       // setupToolbar();
         setupActivityWidgets();
+
+
         hideWidgets();
         setBackGroundTint();
         setupFirebaseAuth();
@@ -92,97 +97,13 @@ public class ProfileActivity extends AppCompatActivity {
         getFollowingCount();
         getPandaPointsCount();
 
-   //     getPostsOnProfile();
+
 
         if (!InternetStatus.getInstance(this).isOnline()) {
 
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
     }
-
-    private void getPostsOnProfile() {
-        Log.d(TAG, "getPostsOnProfile: getting posts.");
-
-        //todo currently its retrieving all the posts. get only those which the user is related to
-        myRef.child("Posts")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.d(TAG, "onDataChange: .getValue " + dataSnapshot.getValue());
-                        mPostList.clear();
-
-                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren() ) {
-
-                            Post post = new Post();
-                            HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-
-                            post.setImage_url(objectMap.get("image_url").toString());
-                            post.setImage_url2(objectMap.get("image_url2").toString());
-
-                            post.setCaption(objectMap.get("caption").toString());
-                            post.setCaption2(objectMap.get("caption2").toString());
-                            post.setPhoto_id(objectMap.get("photo_id").toString());
-                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
-
-                            post.setTags(objectMap.get("tags").toString());
-                            post.setTags2(objectMap.get("tags2").toString());
-
-                            post.setUser_id(objectMap.get("user_id").toString());
-                            post.setUser_id2(objectMap.get("user_id2").toString());
-
-                            post.setPostKey(objectMap.get("postKey").toString());
-                            /*String image_url, String caption, String photo_id, String user_id, String tags,
-                String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
-
-                            List<Like> likesList = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes").getChildren()){
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList.add(like);
-                            }
-                            post.setLikes(likesList);
-
-                            List<Like> likesList2 = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes2").getChildren()){
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList2.add(like);
-                            }
-                            post.setLikes2(likesList2);
-
-                            List<Comment> comments = new ArrayList<Comment>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("comments").getChildren()){
-                                Comment comment = new Comment();
-                                comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                                comment.setComment(dSnapshot.getValue(Comment.class).getComment());
-                                comments.add(comment);
-                            }
-                            post.setComments(comments);
-
-                            mPostList.add(post);
-                            Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
-                        }
-
-                        //initRecyclerView();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-    }
-
-//    private void initRecyclerView() {
-//
-//        Collections.reverse(mPostList);
-//        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
-//        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
-//        mRVPosts.setAdapter(adapter);
-//    }
 
     private void setBackGroundTint() {
 
@@ -303,14 +224,6 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setupActivityWidgets(){
         profile = findViewById(R.id.profileToolBar);
-        mViewChallengeButton = findViewById(R.id.button_view_challenges);
-        mViewChallengeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(mContext,HomeActivity.class);
-                startActivity(i);
-            }
-        });
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProfilePhoto = findViewById(R.id.profile_photo);
         relativeLayout= findViewById(R.id.main_profile);
@@ -344,7 +257,14 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        //mRVPosts = findViewById(R.id.posts_recycler_view_list);
+        fonts = findViewById(R.id.fonts);
+        fonts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                startActivity(i);
+                overridePendingTransition(R.anim.pull,R.anim.push);            }
+        });
 
     }
 

@@ -437,7 +437,7 @@ public class ShareActivity extends AppCompatActivity {
                         }
                     }
                 } else if (resultCode == RESULT_CANCELED) {
-                    Toast.makeText(mContext, "Hey! Don't hesitate to share your photo!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "onActivityResult: request cancelled");
                 }
                 break;
 

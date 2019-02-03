@@ -8,6 +8,9 @@ import androidx.annotation.Nullable;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -44,6 +48,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,7 +57,6 @@ public class ViewProfileActivity extends AppCompatActivity {
     private static final String TAG = "ViewProfileActivity";
     private Context mContext=ViewProfileActivity.this;
     private static final int ACTIVITY_NUM = 4;
-    private static final int NUM_GRID_COLUMNS =3;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -77,9 +81,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     private RelativeLayout profile2;
     private Button mButtonChallenge;
     private RelativeLayout relativeLayout;
-    private Button mViewChallenges;
 
- //   private RecyclerView mRVPosts;
     private ArrayList<Post> mPostList = new ArrayList<>();
 
 
@@ -89,7 +91,6 @@ public class ViewProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_activity_profile);
         mButtonChallenge = findViewById(R.id.challenge_me);
-  //      mRVPosts = findViewById(R.id.posts_recycler_view_list);
         relativeLayout = findViewById(R.id.reltohide);
         relativeLayout.setVisibility(View.INVISIBLE);
         profile2 = findViewById(R.id.rel_profile);
@@ -107,20 +108,19 @@ public class ViewProfileActivity extends AppCompatActivity {
         PandaPoints= findViewById(R.id.pandaPoints);
         mMenu = findViewById(R.id.menu);
         mMenu.setVisibility(View.GONE);
+        LinearLayout fonts = findViewById(R.id.fonts);
+        fonts.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                startActivity(i);
+                overridePendingTransition(R.anim.pull,R.anim.push);
+            }
+        });
         bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         mFirebaseMethods = new FirebaseMethods(mContext);
         mFollow= findViewById(R.id.textFollow);
         mUnfollow= findViewById(R.id.textUnFollow);
-        mViewChallenges = findViewById(R.id.button_view_challenges);
-        mViewChallenges.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //should take you to a fragment or activity where the posts by the user can be seen
-                //currently it takes you to homeActivity
-                Intent i = new Intent(mContext, HomeActivity.class);
-                startActivity(i);
-            }
-        });
 
         pb = findViewById(R.id.pb);
 
@@ -200,14 +200,11 @@ public class ViewProfileActivity extends AppCompatActivity {
             getFragmentManager().popBackStack();
         }
 
-        mViewChallenges.setText("View Posts By " + mUser.getUsername());
-
         isFollowing();
         getFollowingCount();
         getFollowersCount();
         getPandaPointsCount();
 
-     //   getPostsOnProfile();
 
         if (!InternetStatus.getInstance(this).isOnline()) {
 
@@ -215,93 +212,6 @@ public class ViewProfileActivity extends AppCompatActivity {
         }
 
     }
-
-//    private void initRecyclerView() {
-//
-//        Collections.reverse(mPostList);
-//        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
-//        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
-//        mRVPosts.setAdapter(adapter);
-//    }
-
-    private void getPostsOnProfile(){
-
-        Log.d(TAG, "getPostsOnProfile: getting posts.");
-
-        //todo currently its retrieving all the posts. get only those which the user is related to
-        myRef.child("Posts")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.d(TAG, "onDataChange: .getValue " + dataSnapshot.getValue());
-                        mPostList.clear();
-
-                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren() ) {
-
-                            Post post = new Post();
-                            HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-
-                            post.setImage_url(objectMap.get("image_url").toString());
-                            post.setImage_url2(objectMap.get("image_url2").toString());
-
-                            post.setCaption(objectMap.get("caption").toString());
-                            post.setCaption2(objectMap.get("caption2").toString());
-                            post.setPhoto_id(objectMap.get("photo_id").toString());
-                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
-
-                            post.setTags(objectMap.get("tags").toString());
-                            post.setTags2(objectMap.get("tags2").toString());
-
-                            post.setUser_id(objectMap.get("user_id").toString());
-                            post.setUser_id2(objectMap.get("user_id2").toString());
-
-                            post.setPostKey(objectMap.get("postKey").toString());
-                            /*String image_url, String caption, String photo_id, String user_id, String tags,
-                String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
-
-                            List<Like> likesList = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes").getChildren()){
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList.add(like);
-                            }
-                            post.setLikes(likesList);
-
-                            List<Like> likesList2 = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes2").getChildren()){
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList2.add(like);
-                            }
-                            post.setLikes2(likesList2);
-
-                            List<Comment> comments = new ArrayList<Comment>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("comments").getChildren()){
-                                Comment comment = new Comment();
-                                comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                                comment.setComment(dSnapshot.getValue(Comment.class).getComment());
-                                comments.add(comment);
-                            }
-                            post.setComments(comments);
-
-                            mPostList.add(post);
-                            Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
-                        }
-
-                        //initRecyclerView();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-    }
-
 
     private void checkLevel(User user){
 

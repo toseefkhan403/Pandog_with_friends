@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:layout_marginBottom="20dp"
     android:background="@android:color/transparent">
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="19dp"
         android:background="@drawable/echelon_bg"
         android:orientation="vertical">
@@ -101,23 +101,32 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <com.github.florent37.shapeofview.shapes.RoundRectView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="15dp"
+            app:shape_roundRect_bottomLeftRadius="20dp"
+            app:shape_roundRect_topLeftRadius="20dp"
+            app:shape_roundRect_bottomRightRadius="20dp"
+            app:shape_roundRect_topRightRadius="20dp">
+
         <ImageView
             android:id="@+id/NotifImagePreView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="16dp"
+            android:layout_height="350dp"
             android:scaleType="centerCrop"
             android:src="@drawable/intro1" />
+
+        </com.github.florent37.shapeofview.shapes.RoundRectView>
 
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/progress_child"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="110dp">
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="280dp"
+        android:layout_centerHorizontal="true">
 
         <View
             android:layout_width="match_parent"

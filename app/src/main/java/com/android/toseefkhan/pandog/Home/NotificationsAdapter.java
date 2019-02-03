@@ -79,7 +79,9 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     @Override
     public void onBindViewHolder(@NonNull final NotificationViewHolder holder, int position) {
 
+        holder.setIsRecyclable(false);
         final Challenge challenge = challengesList.get(position);
+
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 

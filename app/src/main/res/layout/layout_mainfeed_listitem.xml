@@ -140,7 +140,8 @@
                                     android:text="22hr remaining"
                                     android:id="@+id/timeRemaining"
                                     android:layout_marginEnd="4dp"
-                                    android:textStyle="italic"
+                                    android:textColor="@color/black"
+                                    android:textStyle="bold"
                                     android:layout_centerInParent="true"/>
 
                             </RelativeLayout>

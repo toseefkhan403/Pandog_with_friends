@@ -3,7 +3,6 @@ package com.android.toseefkhan.pandog.Utils;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import com.google.android.material.snackbar.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
@@ -14,6 +13,7 @@ import android.widget.LinearLayout;
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.Profile.ViewPostActivity;
 import com.android.toseefkhan.pandog.models.Post;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,7 +37,7 @@ public class Heart {
         private PostsProfileRVAdapter.ViewHolder mViewHolder;
         private ViewPostActivity inst;
 
-    public Heart(ImageView heartWhite, ImageView heartRed, ImageView heartWhite2, ImageView heartRed2,LinearLayout view,Context context,ViewPostActivity inst) {
+    public Heart(ImageView heartWhite, ImageView heartRed, ImageView heartWhite2, ImageView heartRed2, LinearLayout view, Context context, ViewPostActivity inst) {
         this.heartWhite = heartWhite;
         this.heartRed = heartRed;
         this.heartWhite2 = heartWhite2;
@@ -111,7 +111,7 @@ public class Heart {
         }
     }
 
-    public void toggleLike2(PostsProfileRVAdapter.ViewHolder viewHolder,Post post){
+    public void toggleLike2(PostsProfileRVAdapter.ViewHolder viewHolder, Post post){
         mViewHolder = viewHolder;
 
             AnimatorSet animationSet2 =  new AnimatorSet();

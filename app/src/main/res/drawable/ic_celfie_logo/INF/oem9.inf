@@ -1,0 +1,52 @@
+; dddriver64Dcsa.inf
+
+[Version]
+Signature = "$Windows NT$"
+Class=System
+ClassGuid={4D36E97D-E325-11CE-BFC1-08002BE10318}
+Provider = %ManufacturerName%
+CatalogFile = dddriver64Dcsa.cat
+DriverVer = 10/05/2018,2.0.1.0
+
+[Manufacturer]
+%ManufacturerName% = DeviceList,NTamd64
+
+[DeviceList.NTamd64]
+%DDVDriveName% = DellDataVault_Install.NTamd64, *DDDriver
+
+[DellDataVault_Install.NTamd64]
+CopyFiles = DellDataVault_Install.DriverFiles
+
+[DellDataVault_Install.NTamd64.Services]
+AddService = DDDriver, 2, DriverService.NTamd64
+
+[DellDataVault_Install.NTamd64.Hw]
+AddReg = DellDataVault_InstallHwAddReg
+
+[DellDataVault_Install.DriverFiles]
+dddriver64Dcsa.sys,,,1
+
+[SourceDisksNames]
+1 = %DiskName%
+
+[SourceDisksFiles]
+dddriver64Dcsa.sys = 1
+
+[DestinationDirs]
+DellDataVault_Install.DriverFiles = 12
+
+[DellDataVault_InstallHwAddReg]
+HKR,,FriendlyName,,%DDVDriveName%
+HKR,,Security,,"D:P(A;;GA;;;SY)(A;;GA;;;BA)(A;;GA;;;LA)"
+
+[DriverService.NTamd64]
+ServiceType = 1
+StartType = 3
+ErrorControl = 1
+ServiceBinary = %12%\dddriver64Dcsa.sys
+
+[Strings]
+ManufacturerName ="Dell Technologies"
+DiskName = "DellDataVault Installation Disk"
+PackageName = "DellDataVaultControlDriver"
+DDVDriveName = "Dell Data Vault Control Device"

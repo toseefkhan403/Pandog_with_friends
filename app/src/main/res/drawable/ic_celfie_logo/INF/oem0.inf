@@ -1,0 +1,465 @@
+;/*++
+;
+;Copyright (c) 2012-2015 Intel Corporation All rights Reserved
+;
+;Module Name:
+;
+;    ibtusb.inf
+;
+;Abstract:
+;    INF file for installing Intel(R) Wireless Bluetooth(R) driver.
+;    This file is dependant on bth.inf
+;
+;--*/
+
+[Version]
+Signature	= "$WINDOWS NT$"
+Class		= Bluetooth
+ClassGuid	= {e0cbf06c-cd8b-4647-bb8a-263b43f0f974}
+Provider	= %PROVIDER_NAME%
+CatalogFile	= ibtusb.cat
+DriverVer=09/02/2016,19.10.1635.0483
+
+[SourceDisksNames]
+1=%SOURCEDISK1%,,,
+
+[SourceDisksFiles]
+ibtusb.sys      = 1
+ibtproppage.dll = 1
+ibtsiva.exe	= 1
+
+
+[DestinationDirs]
+ibtusb.Copy			= 12		; drivers
+ibtproppage.Copy	= 11		; system32
+
+ibtsiva.Copy		= 11		; system32
+
+;
+; Driver Information
+;
+[Manufacturer]
+%COMPANY_NAME% = Device,NTamd64
+
+[Device.NTamd64]
+%USB\VID_8087&PID_0A2A_IBT% = ibtusb, USB\VID_8087&PID_0A2A	; Stone Peak
+
+
+; ==============  This section covers device configuration for ibtusb ================
+[ibtusb]
+Include=bth.inf
+Needs=BthUsb.NT
+DelFiles=ibtsiva.Remove
+CopyFiles=ibtusb.Copy,ibtproppage.Copy,ibtsiva.Copy
+AddReg=ibtproppage.AddReg
+
+[ibtusb.HW]
+Needs=BthUsb.NT.HW
+AddReg=ibtusb.HW.AddReg
+
+[ibtusb.Services]
+Needs=BthUSB.NT.Services
+AddService=ibtusb,,ibtusb_Service_Inst,ibtusb_iBT_EventLog_Inst
+DelService=ibtsiva.exe,0x00000200		; Delete wrongly cloned Siva service
+DelService=ibtsiva,0x00000200
+AddService=ibtsiva,0x00000800,ibtsiva_Service_Inst ; SPSVCSINST_STARTSERVICE
+
+[ibtusb.HW.AddReg]
+HKR,,"LowerFilters",0x00010008,"ibtusb"
+
+
+
+;
+; ======================= Common Sections =======================
+;
+
+
+; === Service install ====
+[ibtusb_Service_Inst]
+DisplayName    = %ibtusb.SVCDESC_IBT%
+ServiceType    = 1 ;SERVICE_KERNEL_DRIVER
+StartType      = 3 ;SERVICE_DEMAND_START
+ErrorControl   = 1 ;SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\ibtusb.sys
+LoadOrderGroup = PNP Filter
+
+
+
+[ibtusb.Copy]
+ibtusb.sys
+
+[ibtusb.NT.Wdf]
+KmdfService = ibtusb, ibtusb_wdfsect
+
+[ibtusb_wdfsect]
+KmdfLibraryVersion = 1.15
+
+; ======================= Property Page Dll ========================
+[ibtproppage.Copy]
+ibtproppage.dll
+ 
+[ibtproppage.AddReg]
+HKR,,EnumPropPages32,,"ibtproppage.dll,IBTPropPageEntryPoint"
+
+; ======================= ibtsiva ========================
+[ibtsiva_Service_Inst]
+DisplayName    = %SERVICE_NAME%
+Description    = %SERVICE_DESC%
+ServiceType    = 0x00000010      ; SERVICE_WIN32_OWN_PROCESS
+StartType      = 2               ; SERVICE_AUTO_START 
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %11%\ibtsiva
+
+[ibtsiva.Copy]
+ibtsiva.exe
+
+[ibtsiva.Remove]
+ibtsiva.exe
+;
+; Event Log install section
+;
+[ibtusb_iBT_EventLog_Inst]
+AddReg=ibtusb_iBT_EventLog_AddReg
+
+[ibtusb_iBT_EventLog_AddReg]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\ibtusb.sys"
+HKR,,TypesSupported,0x00010001,7
+
+; === String Section ===
+[Strings]
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			= "Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		= "Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				= "Intel(R) Wireless Bluetooth(R) Install Disk"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				= "Intel Corporation"
+COMPANY_NAME				= "Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0001] ; Arabic
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) قرص تثبيت"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0005] ; Czech
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Instalační disk aplikace Intel(R) Wireless Bluetooth(R)"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0006] ; Danish
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R)-installationsdisk"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0007] ; German
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R)-Installationsdatenträger"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0008] ; Greek
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Δίσκος εγκατάστασης Intel(R) Wireless Bluetooth(R)"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.000A] ; Spanish
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Disco de instalación Intel(R) Wireless Bluetooth(R)"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.000B] ; Finnish
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R)-asennuslevy"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.000C] ; French
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Disque d'installation Intel(R) Wireless Bluetooth(R)"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.000D] ; Hebrew
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) תקליטור להתקנת"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.000E] ; Hungarian
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) telepítőlemez"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0010] ; Italian
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) disco di installazione"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0011] ; Japanese
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="インテル(R) ワイヤレス Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="インテル(R) ワイヤレス Bluetooth(R)"
+SOURCEDISK1				="インテル(R) ワイヤレス Bluetooth(R) インストール ディスク"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0012] ; Korean
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="인텔(R) 무선 Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="인텔(R) 무선 Bluetooth(R)"
+SOURCEDISK1				="인텔(R) 무선 Bluetooth(R) 설치 디스크"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0013] ; Dutch
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R)-installatieschijf"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0014] ; Norwegian (Bokmål)
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R)-installasjonsdisk"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0015] ; Polish
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) dysk instalacyjny"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0416] ; Portuguese (Brazil)
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Disco de instalação do Intel(R) Wireless Bluetooth(R)"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0816] ; Portuguese (Portugal)
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Disco de instalação do Intel(R) Wireless Bluetooth(R)"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0019] ; Russian
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) установочный диск"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.001D] ; Swedish
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R)-installationsskiva"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.001E] ; Thai
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) ดิสก์ติดตั้ง"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.001F] ; Turkish
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) Yükleme Diski"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0804] ; Chinese (Simplified)
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="英特尔(R) 无线 Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="英特尔(R) 无线 Bluetooth(R)"
+SOURCEDISK1				="英特尔(R) 无线 Bluetooth(R) 安装磁盘"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+﻿[Strings.0C04] ; Chinese (Hong Kong)
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) 安裝磁片"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
+
+[Strings.0404] ; Chinese (Traditional)
+; ================= Localized Strings section ====================
+ibtusb.SVCDESC_IBT			="Intel(R) Wireless Bluetooth(R)"
+USB\VID_8087&PID_0A2A_IBT		="Intel(R) Wireless Bluetooth(R)"
+SOURCEDISK1				="Intel(R) Wireless Bluetooth(R) 安裝磁片"
+; ================= Non-localizable Strings section ====================
+PROVIDER_NAME				="Intel Corporation"
+COMPANY_NAME				="Intel Corporation"
+INTEL						= "Intel"
+BLUETOOTH					= "Bluetooth"
+SERVICE_NAME 			    = "Intel Bluetooth Service"
+SERVICE_DESC			    = "Intel(R) Wireless Bluetooth(R) iBtSiva Service"
