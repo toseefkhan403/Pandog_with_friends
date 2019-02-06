@@ -39,8 +39,6 @@ import java.util.List;
 public class FAQs extends AppCompatActivity{
 
     private static final String TAG = "FAQs";
-    private static final int ACTIVITY_NUM=4;
-
 
 //    private LinearLayout linearLayout;
 //    private Button saveBtn;
@@ -49,7 +47,6 @@ public class FAQs extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faq);
-        setupBottomNavigationView();
 
 //        linearLayout = (LinearLayout) findViewById(R.id.logo_image);
 //        saveBtn = (Button) findViewById(R.id.buttonSave);
@@ -199,17 +196,4 @@ public class FAQs extends AppCompatActivity{
 //        }
 //    }
 
-
-    /**
-     * BottomNavigationView setup
-     */
-    private void setupBottomNavigationView(){
-        Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
-        BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
-        BottomNavViewHelper.enableNavigation(this, bottomNavigationViewEx,FAQs.this);
-        Menu menu = bottomNavigationViewEx.getMenu();
-        MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
-        menuItem.setChecked(true);
-    }
 }

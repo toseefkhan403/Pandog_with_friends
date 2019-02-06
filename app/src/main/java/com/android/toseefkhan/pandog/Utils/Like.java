@@ -1,6 +1,9 @@
 package com.android.toseefkhan.pandog.Utils;
 
-public class Like {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Like implements Parcelable {
 
     private String user_id;
 
@@ -10,6 +13,22 @@ public class Like {
 
     public Like() {
     }
+
+    protected Like(Parcel in) {
+        user_id = in.readString();
+    }
+
+    public static final Creator<Like> CREATOR = new Creator<Like>() {
+        @Override
+        public Like createFromParcel(Parcel in) {
+            return new Like(in);
+        }
+
+        @Override
+        public Like[] newArray(int size) {
+            return new Like[size];
+        }
+    };
 
     public String getUser_id() {
         return user_id;
@@ -24,5 +43,15 @@ public class Like {
         return "Like{" +
                 "user_id='" + user_id + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(user_id);
     }
 }

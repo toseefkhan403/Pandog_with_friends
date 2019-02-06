@@ -24,17 +24,55 @@
                     android:id="@+id/backArrow"
                     android:src="@drawable/ic_backarrow"/>
 
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:textSize="20sp"
+                <RelativeLayout
+                    android:layout_width="320dp"
+                    android:layout_centerHorizontal="true"
                     android:layout_toRightOf="@+id/backArrow"
-                    android:layout_marginLeft="30dp"
-                    android:text="Comments"
-                    android:textColor="@color/black"
-                    android:id="@+id/tvBackLabel"/>
+                    android:layout_marginStart="5dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/fonts">
+
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupC
+                        android:id="@+id/fontViewP"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupO
+                        android:id="@+id/fontViewO"
+                        android:layout_toRightOf="@+id/fontViewP"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupM
+                        android:id="@+id/fontViewS"
+                        android:layout_toRightOf="@+id/fontViewO"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupM
+                        android:id="@+id/fontViewT"
+                        android:layout_toRightOf="@+id/fontViewS"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+                        android:id="@+id/fontViewS2"
+                        android:layout_toRightOf="@+id/fontViewT"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupN
+                        android:id="@+id/fontViewS3"
+                        android:layout_toRightOf="@+id/fontViewS2"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupT
+                        android:id="@+id/fontViewS4"
+                        android:layout_toRightOf="@+id/fontViewS3"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupS
+                        android:id="@+id/fontViewS5"
+                        android:layout_toRightOf="@+id/fontViewS4"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                </RelativeLayout>
+
 
 
             </RelativeLayout>

@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.Search;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -26,8 +27,6 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
     private ArrayList<Post> mPostList = new ArrayList<>();
     private ArrayList<User> mUserList;
     private RecyclerView mHorizontalRecyclerView;
-    private SkidRightLayoutManager mSkidLM;
-
 
     public VerticalRecyclerViewAdapter(Context mContext, ArrayList<Post> mPostList) {
         this.mContext = mContext;
@@ -51,9 +50,8 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
 
         Post post = mPostList.get(position);
         //for testing
-        holder.for_style.setImageDrawable(mContext.getResources().getDrawable(R.drawable.heart_red));
-        holder.hashtag_title.setText("Featured posts");
 
+   //     holder.hashtag_title.setText("#something");
         holder.horizontalRecyclerViewAdapter = new HorizontalRecyclerViewAdapter(mContext, mPostList);
         mHorizontalRecyclerView.setAdapter(holder.horizontalRecyclerViewAdapter);
     }
@@ -78,9 +76,7 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
             hashtag_title= itemView.findViewById(R.id.hashtag_title);
             mHorizontalRecyclerView = itemView.findViewById(R.id.horizontal_list);
             mHorizontalRecyclerView.setHasFixedSize(true);
-            mSkidLM = new SkidRightLayoutManager(1.5f,0.85f);
-            mHorizontalRecyclerView.setLayoutManager(mSkidLM);
-
+            mHorizontalRecyclerView.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.HORIZONTAL,false));
         }
     }
 }

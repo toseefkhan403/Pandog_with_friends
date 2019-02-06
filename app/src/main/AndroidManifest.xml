@@ -66,6 +66,10 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".Profile.ViewCommentsActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".Utils.ViewLikesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Utils.ViewFollowersActivity"
+            android:screenOrientation="portrait"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

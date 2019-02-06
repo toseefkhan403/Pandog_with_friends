@@ -16,6 +16,7 @@ public class User implements Parcelable {
     private int panda_points;
     private String bitmap;
     private String level;
+    private String hide_position;
 
     public User() {
     }
@@ -44,6 +45,13 @@ public class User implements Parcelable {
         this.level = level;
     }
 
+    public String getHide_position() {
+        return hide_position;
+    }
+
+    public void setHide_position(String hide_position) {
+        this.hide_position = hide_position;
+    }
 
     public String getLevel() {
         return level;

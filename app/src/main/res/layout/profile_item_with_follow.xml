@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:background="@drawable/white_grey_border_bottom"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:id="@+id/main">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            app:civ_border_color="@color/blue"
+            app:civ_border_width="0.5dp"
+            android:id="@+id/UserProfilePictureView"
+            android:layout_marginLeft="20dp"
+            android:layout_centerVertical="true"
+            />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/UserProfilePictureView"
+            android:layout_centerVertical="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:textSize="22sp"
+                android:textColor="@color/black"
+                android:id="@+id/UserNameView"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/UserNameView"
+                android:layout_marginStart="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/darkgrey"
+                android:id="@+id/UserEmailView"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:id="@+id/follow"
+                android:text="Follow"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:visibility="visible"
+                android:background="@drawable/blue_button"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="10dp"
+                android:id="@+id/unfollow"
+                android:text="Unfollow"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:padding="10dp"
+                android:visibility="gone"
+                android:background="@drawable/red_button"/>
+
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

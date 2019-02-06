@@ -205,7 +205,15 @@ public class InitialSetup extends Application {
 
                     try{
                         User user= singleSnapshot.getValue(User.class);
+
                         mUserList.add(user);
+
+                        if (user.getHide_position().equals("true")){
+                            Log.d(TAG, "onDataChange: the user not being added " + user.getUsername());
+                            Log.d(TAG, "onDataChange: the user not being added " + user.getHide_position());
+                            mUserList.remove(user);
+                        }
+
                     }catch (Exception e){
                         Log.d("Error", "onDataChange: NullPointerException " + e.getMessage());
                     }
@@ -226,7 +234,6 @@ public class InitialSetup extends Application {
         MarkerOptions markerOptions;
 
         try{
-
 
         for (int i=0; i<mUserList.size(); i++){
             LatLng latLng= new LatLng(mUserList.get(i).getLat_lng().getLatitude(), mUserList.get(i).getLat_lng().getLongitude());

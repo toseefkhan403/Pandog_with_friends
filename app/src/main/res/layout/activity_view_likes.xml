@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/view_tutorial"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/snippet_top_likes_bar"/>
+
+    <!-- Bottom toolbar-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+
+        <include layout="@layout/layout_bottom_tabs"/>
+
+    </RelativeLayout>
+
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/container"
+        android:layout_marginTop="55dp"
+        android:layout_marginBottom="55dp">
+
+
+    </androidx.viewpager.widget.ViewPager>
+
+</RelativeLayout>

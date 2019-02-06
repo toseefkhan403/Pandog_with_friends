@@ -19,6 +19,7 @@
     <color name="red">#e60000</color>
     <color name="purple">#990099</color>
     <color name="lightgreen">#efbbf9a3</color>
+    <color name="background">#E6000000</color>
 
     <color name="bg_screen1">#f64c73</color>
     <color name="bg_screen2">#20d2bb</color>
@@ -46,6 +47,6 @@
 
     <color name="blue_800">#1565C0</color>
 
-    <color name="activedots">#faf3f5</color>
+    <color name="activedots">#F7EBEE</color>
     <color name="inactivedots">#9b979c</color>
 </resources>

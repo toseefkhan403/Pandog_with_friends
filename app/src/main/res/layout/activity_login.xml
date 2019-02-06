@@ -2,22 +2,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:id="@+id/loginActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingTop="55dp"
+        android:paddingTop="320dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="75dp"
-            android:src="@drawable/ic_logo"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="20dp"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
@@ -83,6 +78,51 @@
 
     </LinearLayout>
 
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:src="@drawable/ic_logo_celfie"
+        android:layout_gravity="center_horizontal" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_height="70dp"
+        android:layout_marginTop="235dp"
+        android:id="@+id/fonts">
+
+        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupC
+            android:id="@+id/fontViewP"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"/>
+        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+            android:id="@+id/fontViewO"
+            android:layout_toRightOf="@+id/fontViewP"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupL
+            android:id="@+id/fontViewS"
+            android:layout_toRightOf="@+id/fontViewO"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupF
+            android:id="@+id/fontViewT"
+            android:layout_toRightOf="@+id/fontViewS"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupI
+            android:id="@+id/fontViewS2"
+            android:layout_toRightOf="@+id/fontViewT"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+            android:id="@+id/fontViewS3"
+            android:layout_toRightOf="@+id/fontViewS2"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+    </RelativeLayout>
+
     <ProgressBar
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -102,7 +142,6 @@
         android:textSize="20sp" />
 
 </RelativeLayout>
-
 
 
 

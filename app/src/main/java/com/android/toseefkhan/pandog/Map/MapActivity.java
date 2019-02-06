@@ -2,9 +2,12 @@ package com.android.toseefkhan.pandog.Map;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -15,6 +18,8 @@ import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+
+import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -23,12 +28,17 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.preference.PreferenceManager;
 import android.transition.Fade;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -61,10 +71,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.koushikdutta.ion.Ion;
+import com.takusemba.spotlight.OnSpotlightStateChangedListener;
+import com.takusemba.spotlight.OnTargetStateChangedListener;
+import com.takusemba.spotlight.Spotlight;
+import com.takusemba.spotlight.shape.Circle;
+import com.takusemba.spotlight.target.CustomTarget;
 
 
 import java.util.ArrayList;
@@ -75,6 +93,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.SlideInRightAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
@@ -113,6 +132,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ProgressBar mProgressbar, dialogProgressbar;
     private ArrayList<Marker> markerList = new ArrayList<>();
 
+    //for the welcome screen
+    SharedPreferences mPrefs;
+    final String tutorialScreenShownPrefMap = "tutorialScreenShownMap";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,11 +145,40 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         setupBottomNavigationView();
 
+        myRef= FirebaseDatabase.getInstance().getReference();
         relativeLayout = findViewById(R.id.permission_null);
         linearLayout = findViewById(R.id.permission_not_null);
         mMapContainer = findViewById(R.id.map_container);
         gps = findViewById(R.id.gps);
         findViewById(R.id.btn_full_screen_map).setOnClickListener(this);
+        findViewById(R.id.btn_hide_my_marker).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+               AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                       .setCancelable(true)
+                       .setMessage("Your position will not be displayed on the map.\nBut if you do so, you won't be able to use the map feature.")
+                       .setPositiveButton("HIDE ME", new DialogInterface.OnClickListener() {
+                           @Override
+                           public void onClick(DialogInterface dialogInterface, int i) {
+
+                               myRef.child(getString(R.string.dbname_users))
+                                       .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                       .child("hide_position")
+                                       .setValue("true");
+
+                               Intent intent = new Intent(mContext,MapActivity.class);
+                               startActivity(intent);
+                               overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                           }
+                       });
+
+               AlertDialog alertDialog = builder.create();
+               alertDialog.setTitle("Hide my Position");
+               alertDialog.show();
+            }
+        });
+
         gpsDialog = new Dialog(mContext);
         mProgressbar = findViewById(R.id.progressBar);
         mProgressbar.setVisibility(View.VISIBLE);
@@ -406,9 +459,181 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
      */
 
     private void showLayout() {
-//        relativeLayout.setVisibility(View.GONE);
-//        linearLayout.setVisibility(View.VISIBLE);
+        relativeLayout.setVisibility(View.GONE);
+        linearLayout.setVisibility(View.VISIBLE);
+        mProgressbar.setVisibility(View.GONE);
+
+        myRef.child(getString(R.string.dbname_users))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("hide_position")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String isPositionHidden = dataSnapshot.getValue(String.class);
+
+                        try{
+
+                            if (isPositionHidden.equals("true")){
+
+                                FrameLayout root = new FrameLayout(mContext);
+                                LayoutInflater inflater = LayoutInflater.from(mContext);
+
+                                View first = inflater.inflate(R.layout.overlay_hidden_position, root);
+
+                                CustomTarget homeView = new CustomTarget.Builder(MapActivity.this)
+                                        .setPoint(0f,0f)
+                                        .setShape(new Circle(0f))
+                                        .setOverlay(first)
+                                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+                                            @Override
+                                            public void onStarted(CustomTarget target) {
+                                                // do something
+                                            }
+                                            @Override
+                                            public void onEnded(CustomTarget target) {
+                                                // do something
+                                            }
+                                        })
+                                        .build();
+
+
+                                TextView Yes = first.findViewById(R.id.yes);
+                                TextView No = first.findViewById(R.id.no);
+
+                                linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                                    @Override
+                                    public void onGlobalLayout() {
+                                        linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                                        Spotlight spotlight = Spotlight.with(MapActivity.this)
+                                                .setOverlayColor(R.color.background)
+                                                .setDuration(1000L)
+                                                .setAnimation(new DecelerateInterpolator(2f))
+                                                .setTargets(homeView)
+                                                .setClosedOnTouchedOutside(false)
+                                                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                                                    @Override
+                                                    public void onStarted() {
+
+                                                    }
+
+                                                    @Override
+                                                    public void onEnded() {
+                                                    }
+                                                });
+                                        spotlight.start();
+
+                                        Yes.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+
+                                                myRef.child(getString(R.string.dbname_users))
+                                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                        .child("hide_position")
+                                                        .removeValue();
+
+                                                Intent intent = new Intent(mContext, MapActivity.class);
+                                                startActivity(intent);
+                                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
+                                                Toast.makeText(mContext, "Kindly restart the app to see changes.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                        No.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View view) {
+
+                                                Intent intent = new Intent(mContext, HomeActivity.class);
+                                                startActivity(intent);
+                                            }
+                                        });
+
+                                    }
+                                });
+                            }
+                        }catch (NullPointerException e){
+                            Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        // second argument is the default to use if the preference can't be found
+        boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefMap, false);
+
+        if (!welcomeScreenShown) {
+
+            startTutorial();
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putBoolean(tutorialScreenShownPrefMap, true);
+            editor.apply(); // Very important to save the preference
+        }
+
     }
+
+    private void startTutorial() {
+
+        Log.d(TAG, "startTutorial: starting the tutorial");
+
+        FrameLayout root = new FrameLayout(mContext);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+
+        View first = inflater.inflate(R.layout.overlay_map_tutorial, root);
+
+        CustomTarget homeView = new CustomTarget.Builder(this)
+                .setPoint(0f,0f)
+                .setShape(new Circle(0f))
+                .setOverlay(first)
+                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+                    @Override
+                    public void onStarted(CustomTarget target) {
+                        // do something
+                    }
+                    @Override
+                    public void onEnded(CustomTarget target) {
+                        // do something
+                    }
+                })
+                .build();
+
+        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                Spotlight spotlight = Spotlight.with(MapActivity.this)
+                        .setOverlayColor(R.color.background)
+                        .setDuration(1000L)
+                        .setAnimation(new DecelerateInterpolator(2f))
+                        .setTargets(homeView)
+                        .setClosedOnTouchedOutside(true)
+                        .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                            @Override
+                            public void onStarted() {
+
+                            }
+
+                            @Override
+                            public void onEnded() {
+                                Intent i = new Intent(mContext,MapActivity.class);
+                                startActivity(i);
+                            }
+                        });
+
+                spotlight.start();
+            }
+        });
+
+    }
+
 
     @Override
     protected void onResume() {
@@ -468,8 +693,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void setLatlongs(LatLng latlng){
 
-        myRef= FirebaseDatabase.getInstance().getReference();
-
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child(mContext.getString(R.string.db_timestamp))
@@ -498,7 +721,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void initUserListRecyclerView(ArrayList<User> users) {
         mProgressbar.setVisibility(View.GONE);
-        dialogProgressbar.setVisibility(View.GONE);
+//        dialogProgressbar.setVisibility(View.GONE);
         mUserRecyclerAdapter = new MapRecyclerViewAdapter(mContext , users);
         AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(mUserRecyclerAdapter);
         a.setDuration(1750);

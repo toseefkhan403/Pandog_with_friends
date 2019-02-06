@@ -1,12 +1,16 @@
 package com.android.toseefkhan.pandog.Intro;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
+
 
 public class Holder extends AppCompatActivity {
 
@@ -17,7 +21,6 @@ public class Holder extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
-
 
         setupViewPager();
     }

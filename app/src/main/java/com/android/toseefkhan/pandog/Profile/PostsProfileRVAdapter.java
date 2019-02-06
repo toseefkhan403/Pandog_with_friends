@@ -20,6 +20,7 @@ import com.android.toseefkhan.pandog.Utils.Heart;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.Utils.ViewLikesActivity;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -84,20 +85,20 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
         final Post post = mPostList.get(position);
         holder.setIsRecyclable(false);
-        Log.d(TAG, "onBindViewHolder: post " + post.getStatus());
+        Log.d(TAG, "onBindViewHolder: postLikes " + post.getLikes());
         Log.d(TAG, "onBindViewHolder: post " + post.getWinner());
 
         long timediff = System.currentTimeMillis() - post.getTimeStamp();
-        int time = (int) ((86400000-timediff)/3600000);
+        int time = (int) ((86400000 - timediff) / 3600000);
 
-        int bottomHeight = 60*(mContext.getResources().getDisplayMetrics().densityDpi/ DisplayMetrics.DENSITY_DEFAULT);
+        int bottomHeight = 60 * (mContext.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
 
-        holder.theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth*2,screenHeight-bottomHeight));
-        holder.cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight-bottomHeight));
-        holder.cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight-bottomHeight));
+        holder.theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth * 2, screenHeight - bottomHeight));
+        holder.cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - bottomHeight));
+        holder.cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - bottomHeight));
 
-        final ObjectAnimator animator= ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX",screenWidth*2 );
-        final ObjectAnimator animator2= ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX",0 );
+        final ObjectAnimator animator = ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX", screenWidth * 2);
+        final ObjectAnimator animator2 = ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX", 0);
         animator.setDuration(800);
         animator2.setDuration(800);
 
@@ -116,13 +117,40 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
         setTopToolbar(holder, post);
 
-        UniversalImageLoader.setImage(post.getImage_url(),holder.image1,null,"",holder.child);
-        UniversalImageLoader.setImage(post.getImage_url2(),holder.image2,null,"",holder.child2);
+        UniversalImageLoader.setImage(post.getImage_url(), holder.image1, null, "", holder.child);
+        UniversalImageLoader.setImage(post.getImage_url2(), holder.image2, null, "", holder.child2);
 
-        initLikesString(holder,post);
+        initLikesString(holder, post);
 
-        holder.caption1.setText(post.getCaption());
-        holder.caption2.setText(post.getCaption2());
+        holder.likesString1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: navigating to ViewLikesActivity");
+                Intent i = new Intent(mContext, ViewLikesActivity.class);
+                i.putExtra(mContext.getString(R.string.intent_post),post);
+                mContext.startActivity(i);
+            }
+        });
+
+        holder.likesString2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: navigating to ViewLikesActivity");
+                Intent i = new Intent(mContext, ViewLikesActivity.class);
+                i.putExtra(mContext.getString(R.string.intent_post),post);
+                mContext.startActivity(i);
+            }
+        });
+
+        if (!post.getCaption().isEmpty()){
+            holder.caption1.setText(post.getCaption());
+        }else
+            holder.caption1.setVisibility(View.GONE);
+
+        if (!post.getCaption2().isEmpty()){
+            holder.caption2.setText(post.getCaption2());
+        }else
+            holder.caption2.setVisibility(View.GONE);
 
         holder.comments_list.setText(String.valueOf(post.getComments().size()) + " comments");
         holder.comments_list2.setText(String.valueOf(post.getComments().size()) + " comments");

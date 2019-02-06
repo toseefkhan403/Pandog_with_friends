@@ -2,20 +2,28 @@ package com.android.toseefkhan.pandog.Share;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.android.toseefkhan.pandog.Map.MapActivity;
+import com.android.toseefkhan.pandog.Profile.ProfileActivity;
+import com.android.toseefkhan.pandog.Search.SearchActivity;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,7 +70,6 @@ public class ShareActivity extends AppCompatActivity {
     private TextView tvNext;
     private ImageView camera;
     private String mSelectedImage;
-    private TextView mOpenGallery;
     private String mCurrentPhotoPath;
     private Uri capturedImageUri;
     // private Spinner directorySpinner;
@@ -85,7 +92,6 @@ public class ShareActivity extends AppCompatActivity {
 
         mOpenGalleryImage= findViewById(R.id.gallery_button);
         mOpenCameraImage= findViewById(R.id.camera_button);
-        mOpenGallery = findViewById(R.id.open_gallery);
         galleryImage = findViewById(R.id.galleryImageView);
         gridView = findViewById(R.id.gridView);
         mProgressBar = findViewById(R.id.progressBar);
@@ -93,6 +99,7 @@ public class ShareActivity extends AppCompatActivity {
         tvNext = findViewById(R.id.tvNext);
 
         Intent i = getIntent();
+
         getIntent = getIntent();
         if (i.hasExtra("chosen_user")){
             Log.d(TAG, "onCreate: the user " + i.getExtras());
@@ -103,16 +110,6 @@ public class ShareActivity extends AppCompatActivity {
             //todo this user should be automatically selected in the NextActivity
             Toast.makeText(mContext, "Please upload a photo to compete with: " + mChosenUser.getUsername() , Toast.LENGTH_SHORT).show();
         }
-
-        mOpenGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "onClick: navigating to gallery");
-                Intent i = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                startActivityForResult(i, ACTIVITY_SELECT_IMAGE);
-            }
-        });
 
         mOpenGalleryImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -377,6 +374,8 @@ public class ShareActivity extends AppCompatActivity {
         }
 
         setupImageGrid(resultIAV);
+
+
         return resultIAV;
 
     }

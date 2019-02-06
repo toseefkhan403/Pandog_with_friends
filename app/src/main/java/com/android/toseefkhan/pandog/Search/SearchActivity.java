@@ -2,9 +2,12 @@ package com.android.toseefkhan.pandog.Search;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
+import com.android.toseefkhan.pandog.Map.MapActivity;
+import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 
 import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
@@ -51,6 +57,7 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -60,13 +67,17 @@ public class SearchActivity extends AppCompatActivity {
     private RecyclerView profilesListView;
     private ArrayList<Post> mPostList = new ArrayList<>();
 
+    //for the welcome screen
+    SharedPreferences mPrefs;
+    final String tutorialScreenShownPrefSearch = "tutorialScreenShownSearch";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
         final RecyclerView vertical = findViewById(R.id.holder_vertical);
-        vertical.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
+        vertical.setLayoutManager(new LinearLayoutManager(mContext));
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child("Posts")
@@ -153,6 +164,8 @@ public class SearchActivity extends AppCompatActivity {
         profilesListView.setItemAnimator(new SlideInUpAnimator());
 
         profilesListView.setLayoutManager(new EchelonLayoutManager(mContext));
+        TextView t = findViewById(R.id.t);
+        ImageView i= findViewById(R.id.trending);
 
         profileSearchView.setActivated(true);
         profileSearchView.onActionViewExpanded();
@@ -168,6 +181,9 @@ public class SearchActivity extends AppCompatActivity {
             public boolean onQueryTextChange(String newText) {
                 adapter.filter(newText);
                 vertical.setVisibility(View.GONE);
+                profilesListView.setVisibility(View.VISIBLE);
+                t.setVisibility(View.GONE);
+                i.setVisibility(View.GONE);
 
                 return true;
             }
@@ -179,6 +195,20 @@ public class SearchActivity extends AppCompatActivity {
 
             Snackbar.make(getWindow().getDecorView().getRootView(), "You are not online!", Snackbar.LENGTH_LONG).show();
         }
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+        // second argument is the default to use if the preference can't be found
+        Boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefSearch, false);
+
+        if (!welcomeScreenShown) {
+
+            startTutorial();
+            SharedPreferences.Editor editor = mPrefs.edit();
+            editor.putBoolean(tutorialScreenShownPrefSearch, true);
+            editor.apply(); // Very important to save the preference
+        }
+
     }
 
     public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchItemViewHolder> {
@@ -321,5 +351,43 @@ public class SearchActivity extends AppCompatActivity {
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+    }
+
+
+    private void startTutorial() {
+
+        Log.d(TAG, "startTutorial: starting the tutorial");
+
+        new MaterialTapTargetPrompt.Builder(SearchActivity.this)
+                .setTarget(findViewById(R.id.trending))
+                .setBackgroundColour(getResources().getColor(R.color.background))
+                .setAutoDismiss(false)
+                .setBackButtonDismissEnabled(false)
+                .setPrimaryText("Feature yourself here by following the trending hashtags of the week!")
+                .setSecondaryText("And let the world know your awesomeness!")
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                    @Override
+                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                        if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                            new MaterialTapTargetPrompt.Builder(SearchActivity.this)
+                                    .setTarget(findViewById(R.id.ic_cloud))
+                                    .setBackgroundColour(getResources().getColor(R.color.background))
+                                    .setAutoDismiss(false)
+                                    .setBackButtonDismissEnabled(false)
+                                    .setPrimaryText("Introducing")
+                                    .setSecondaryText("Maps to find awesome people living near you!")
+                                    .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                                        @Override
+                                        public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                                            if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+
+                                            }
+                                        }
+                                    }).show();
+
+                        }
+                    }
+                }).show();
+
     }
 }

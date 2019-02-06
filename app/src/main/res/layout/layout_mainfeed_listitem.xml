@@ -86,10 +86,13 @@
                                 android:id="@+id/image_caption"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_margin="6dp"
+                                android:layout_marginBottom="20dp"
                                 android:text="This is another description
                              #description"
                                 android:textSize="16sp"
+                                android:background="@color/black"
+                                android:gravity="center"
+                                android:alpha="0.35"
                                 android:textColor="@color/white"
                                 android:layout_alignParentBottom="true"/>
 
@@ -294,10 +297,12 @@
                                     android:id="@+id/image_caption2"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_margin="6dp"
-                                    android:text="This is another description
-                             #description"
+                                    android:layout_marginBottom="20dp"
+                                    android:text="This is another description"
                                     android:textSize="16sp"
+                                    android:background="@color/black"
+                                    android:gravity="center"
+                                    android:alpha="0.35"
                                     android:textColor="@color/white"
                                     android:layout_alignParentBottom="true"/>
 

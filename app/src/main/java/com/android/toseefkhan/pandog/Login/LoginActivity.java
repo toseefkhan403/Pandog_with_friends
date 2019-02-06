@@ -164,6 +164,10 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "onBackPressed: back button pressed");
         mPleaseWait.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.GONE);
+        Intent i = new Intent(Intent.ACTION_MAIN);
+        i.addCategory(Intent.CATEGORY_HOME);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(i);
     }
 
     private String uid,name,email,image;

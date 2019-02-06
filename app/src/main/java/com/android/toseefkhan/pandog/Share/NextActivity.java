@@ -65,7 +65,7 @@ public class NextActivity extends AppCompatActivity {
         image = findViewById(R.id.imageShare);
         setupFirebaseAuth();
 
-        Intent i =getIntent();
+        Intent i = getIntent();
         if (i.hasExtra("challenger_user")){
             Bundle b = i.getExtras();
             if(b!=null){
@@ -116,11 +116,6 @@ public class NextActivity extends AppCompatActivity {
             return;
         }
 
-        if (image == null){
-            Toast.makeText(mContext, "Please wait for the image to load", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         Log.d(TAG, "Attempting to upload new photo");
         String caption = mCaption.getText().toString();
 
@@ -159,21 +154,11 @@ public class NextActivity extends AppCompatActivity {
         }
     }
 
-    //ToDo: Write codes in Next activity so that the user can choose from his friends to compete.
-
     private void setupFriendsList() {
         mFriendsAdapter = new FriendsAdapter(mAuth.getCurrentUser().getUid(), mContext);
         friendsListView.setAdapter(mFriendsAdapter);
     }
-    //step3: on clicking upon his friends name, this pending post can be seen in an fragment which will be available in HomeActivity(to be created).
-    //step4: Now the user's friend will get a notification about this. He can choose to either accept or ignore, and after he submits his photo, a post will
-    //be created which will be available on the main feed of both the users and their respective followers.
-    //step5: All the important notifications must be provided to both the users(if someone accepts their request they should get a notif)
-    //step6: All the posts created by a particular user can be seen under his ProfileActivity replacing the currently placed gridView.
-    //ToDo: Create the post. It will be available for 24 hours.
-    //ToDo: Create mainFeedListAdapter to display posts in the HomeActivity.
 
-    //layout for a basic post is in layout_post
 
   /*
      ------------------------------------ Firebase ---------------------------------------------

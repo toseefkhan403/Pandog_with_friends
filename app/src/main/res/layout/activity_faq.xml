@@ -50,7 +50,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/videoView"
-            android:layout_marginBottom="60dp"
             android:background="@color/white"
             android:childDivider="@color/blue"
             android:divider="@color/colorAccent"
@@ -58,8 +57,6 @@
 
 
         </ExpandableListView>
-
-        <include layout="@layout/layout_bottom_nav_view" />
 
     </RelativeLayout>
 

@@ -10,50 +10,68 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
-            <ImageView
-                android:id="@+id/camera"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/ic_camera" />
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:id="@+id/upload"
+                <ImageView
+                    android:id="@+id/camera"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginStart="15dp"
-                    android:text="Upload a "
-                    android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:background="@drawable/ic_camera" />
 
-                <TextView
-                    android:id="@+id/open_gallery"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <RelativeLayout
+                    android:layout_width="240dp"
+                    android:layout_toRightOf="@+id/camera"
+                    android:layout_marginStart="5dp"
                     android:layout_centerVertical="true"
-                    android:layout_toRightOf="@+id/upload"
-                    android:text="Photo"
-                    android:textColor="@color/blue"
-                    android:textSize="20sp" />
+                    android:layout_height="match_parent"
+                    android:id="@+id/fonts">
+
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupU
+                        android:id="@+id/fontViewP"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupP
+                        android:id="@+id/fontViewO"
+                        android:layout_toRightOf="@+id/fontViewP"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupL
+                        android:id="@+id/fontViewS"
+                        android:layout_toRightOf="@+id/fontViewO"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupO
+                        android:id="@+id/fontViewT"
+                        android:layout_toRightOf="@+id/fontViewS"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupA
+                        android:id="@+id/fontViewS2"
+                        android:layout_toRightOf="@+id/fontViewT"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupD
+                        android:id="@+id/fontViewS3"
+                        android:layout_toRightOf="@+id/fontViewS2"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                </RelativeLayout>
 
                 <TextView
                     android:id="@+id/tvNext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
                     android:layout_marginRight="10dp"
                     android:text="NEXT"
-                    android:textColor="@color/green"
-                    android:textSize="20sp" />
+                    android:textColor="@color/verydarkGreen"
+                    android:textSize="22sp" />
 
             </RelativeLayout>
-
 
         </androidx.appcompat.widget.Toolbar>
 

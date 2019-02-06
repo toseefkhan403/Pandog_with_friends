@@ -36,6 +36,7 @@
     <string name="return_to_fragment">return_to_fragment</string>
     <string name="intent_user">intent_user</string>
     <string name="intent_post">intent_post</string>
+    <string name="intent_user_id">intent_user_id</string>
 
     <!-- activity names -->
     <string name="profile_activity">Profile Activity</string>

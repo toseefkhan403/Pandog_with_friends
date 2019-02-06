@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.android.toseefkhan.pandog.Utils.ViewFollowersActivity;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -103,7 +105,26 @@ public class ViewProfileActivity extends AppCompatActivity {
         mDescription = (TextView) findViewById(R.id.description);
      //   mPosts = (TextView) findViewById(R.id.);
         mFollowers = (TextView) findViewById(R.id.tvFollowers);
+        mFollowers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mContext, ViewFollowersActivity.class);
+                i.putExtra(getString(R.string.intent_user_id), mUser.getUser_id());
+                startActivity(i);
+            }
+        });
+
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
+        mFollowing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mContext, ViewFollowersActivity.class);
+                i.putExtra(getString(R.string.intent_user_id), mUser.getUser_id());
+                i.putExtra("set_to_two",2);
+                startActivity(i);
+            }
+        });
+
         gridView = (GridView) findViewById(R.id.gridView);
         PandaPoints= findViewById(R.id.pandaPoints);
         mMenu = findViewById(R.id.menu);

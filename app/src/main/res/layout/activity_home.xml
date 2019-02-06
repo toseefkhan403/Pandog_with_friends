@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/view_tutorial"
     android:layout_height="match_parent"
     tools:context=".Home.HomeActivity">
 
@@ -14,6 +15,28 @@
 
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:weightSum="10">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:id="@+id/homeFrag"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:id="@+id/notifFrag"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            />
+
+    </LinearLayout>
 
     <androidx.viewpager.widget.ViewPager
         android:layout_width="match_parent"

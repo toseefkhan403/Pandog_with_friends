@@ -23,17 +23,11 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
     private static final String TAG = "HorizontalRecyclerViewA";
     private Context mContext;
     private ArrayList<Post> mPostList;
-    private ArrayList<User> mUserList;
 
 
     public HorizontalRecyclerViewAdapter(Context mContext, ArrayList<Post> mPostList) {
         this.mContext = mContext;
         this.mPostList = mPostList;
-    }
-
-    public HorizontalRecyclerViewAdapter(ArrayList<User> mUserList,Context mContext) {
-        this.mContext = mContext;
-        this.mUserList = mUserList;
     }
 
     @NonNull
@@ -50,6 +44,7 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
         //todo a query to get the post from hash tags
         //for testing
         UniversalImageLoader.setImage(post.getImage_url(),holder.first_photo,null,"",holder.child);
+        UniversalImageLoader.setImage(post.getImage_url2(),holder.second_photo,null,"",holder.child);
 
         holder.first_photo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +53,16 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
                Intent i = new Intent(mContext, ViewPostActivity.class);
                i.putExtra(mContext.getString(R.string.intent_post),post);
                mContext.startActivity(i);
+            }
+        });
+
+        holder.second_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo navigate to that particular post
+                Intent i = new Intent(mContext, ViewPostActivity.class);
+                i.putExtra(mContext.getString(R.string.intent_post),post);
+                mContext.startActivity(i);
             }
         });
 
@@ -70,13 +75,14 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        ImageView first_photo;
+        ImageView first_photo,second_photo;
         View child;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             first_photo = itemView.findViewById(R.id.first_image);
+            second_photo = itemView.findViewById(R.id.second_image);
             child = itemView.findViewById(R.id.progress_child);
         }
     }

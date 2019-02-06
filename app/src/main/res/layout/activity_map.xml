@@ -41,12 +41,21 @@
                 android:layout_height="35dp"
                 android:src="@drawable/ic_full_screen_black"
                 android:background="@color/white"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
                 android:layout_marginTop="10dp"
-                android:layout_marginRight="10dp"
                 android:layout_marginEnd="10dp"
                 android:id="@+id/btn_full_screen_map"/>
+
+            <ImageButton
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/ic_i"
+                android:background="@color/white"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:id="@+id/btn_hide_my_marker"/>
 
         </RelativeLayout>
 

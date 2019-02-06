@@ -46,17 +46,20 @@ public class Post implements Parcelable{
         this.tags2 = tags2;
     }
 
+
     protected Post(Parcel in) {
         image_url = in.readString();
         caption = in.readString();
         photo_id = in.readString();
         user_id = in.readString();
         tags = in.readString();
+        likes = in.createTypedArrayList(Like.CREATOR);
         image_url2 = in.readString();
         caption2 = in.readString();
         photo_id2 = in.readString();
         user_id2 = in.readString();
         tags2 = in.readString();
+        likes2 = in.createTypedArrayList(Like.CREATOR);
         comments = in.createTypedArrayList(Comment.CREATOR);
         postKey = in.readString();
         timeStamp = in.readLong();
@@ -255,11 +258,13 @@ public class Post implements Parcelable{
         parcel.writeString(photo_id);
         parcel.writeString(user_id);
         parcel.writeString(tags);
+        parcel.writeTypedList(likes);
         parcel.writeString(image_url2);
         parcel.writeString(caption2);
         parcel.writeString(photo_id2);
         parcel.writeString(user_id2);
         parcel.writeString(tags2);
+        parcel.writeTypedList(likes2);
         parcel.writeTypedList(comments);
         parcel.writeString(postKey);
         parcel.writeLong(timeStamp);

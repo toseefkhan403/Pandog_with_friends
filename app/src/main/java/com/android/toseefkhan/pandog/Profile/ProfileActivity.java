@@ -2,15 +2,20 @@ package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
+import com.android.toseefkhan.pandog.Home.HomeActivity;
+import com.android.toseefkhan.pandog.Utils.ViewFollowersActivity;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,7 +56,7 @@ import java.util.List;
 public class ProfileActivity extends AppCompatActivity {
 
     private static final String TAG = "ProfileActivity";
-    private Context mContext=ProfileActivity.this;
+    private Context mContext = ProfileActivity.this;
     private static final int ACTIVITY_NUM = 4;
 
     //firebase
@@ -78,6 +83,11 @@ public class ProfileActivity extends AppCompatActivity {
     private ArrayList<Post> mPostList = new ArrayList<>();
 
 
+    //for the welcome screen
+    SharedPreferences mPrefs;
+    final String tutorialScreenShownPrefProfile = "tutorialScreenShownProfile";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: started.");
@@ -96,7 +106,6 @@ public class ProfileActivity extends AppCompatActivity {
         getFollowersCount();
         getFollowingCount();
         getPandaPointsCount();
-
 
 
         if (!InternetStatus.getInstance(this).isOnline()) {
@@ -232,7 +241,26 @@ public class ProfileActivity extends AppCompatActivity {
         mDescription = (TextView) findViewById(R.id.description);
       //  mPosts = (TextView) findViewById(R.id.tvPosts);
         mFollowers = (TextView) findViewById(R.id.tvFollowers);
+        mFollowers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mContext, ViewFollowersActivity.class);
+                i.putExtra(getString(R.string.intent_user_id), FirebaseAuth.getInstance().getCurrentUser().getUid());
+                startActivity(i);
+            }
+        });
+
         mFollowing = (TextView) findViewById(R.id.tvFollowing);
+        mFollowing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mContext, ViewFollowersActivity.class);
+                i.putExtra(getString(R.string.intent_user_id), FirebaseAuth.getInstance().getCurrentUser().getUid());
+                i.putExtra("set_to_two",2);
+                startActivity(i);
+            }
+        });
+
         PandaPoints= findViewById(R.id.pandaPoints);
 //        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
 //        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
@@ -411,6 +439,19 @@ public class ProfileActivity extends AppCompatActivity {
                 mProgressBar.setVisibility(View.GONE);
                 relativeLayout.setVisibility(View.VISIBLE);
 
+                mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+                // second argument is the default to use if the preference can't be found
+                Boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefProfile, false);
+
+                if (!welcomeScreenShown) {
+
+                    startTutorial();
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(tutorialScreenShownPrefProfile, true);
+                    editor.apply(); // Very important to save the preference
+                }
+
                 //retrieve images for the user in question
 
             }
@@ -420,6 +461,43 @@ public class ProfileActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void startTutorial() {
+
+        Log.d(TAG, "startTutorial: starting the tutorial");
+
+        new MaterialTapTargetPrompt.Builder(ProfileActivity.this)
+                .setTarget(findViewById(R.id.menu))
+                .setBackgroundColour(getResources().getColor(R.color.background))
+                .setAutoDismiss(false)
+                .setBackButtonDismissEnabled(false)
+                .setPrimaryText("Click here to know more about the app")
+                .setSecondaryText("")
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                    @Override
+                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                        if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                            new MaterialTapTargetPrompt.Builder(ProfileActivity.this)
+                                    .setTarget(findViewById(R.id.ic_search))
+                                    .setBackgroundColour(getResources().getColor(R.color.background))
+                                    .setAutoDismiss(false)
+                                    .setBackButtonDismissEnabled(false)
+                                    .setPrimaryText("Search")
+                                    .setSecondaryText("Here you can find the latest trends!")
+                                    .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                                        @Override
+                                        public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                                            if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+
+                                            }
+                                        }
+                                    }).show();
+
+                        }
+                    }
+                }).show();
+
     }
 
 

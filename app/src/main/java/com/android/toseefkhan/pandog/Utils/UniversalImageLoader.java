@@ -22,6 +22,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 public class UniversalImageLoader {
 
     private static final int defaultImage = R.drawable.ic_logo;
+    private static final int defaultLoadingImage = R.drawable.loading_grey;
 
     private Context mContext;
     private static Resources r;
@@ -35,6 +36,7 @@ public class UniversalImageLoader {
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(defaultImage)
                 .showImageOnFail(defaultImage)
+                .showImageOnLoading(defaultLoadingImage)
                 .considerExifParams(true)
                 .cacheOnDisk(true).cacheInMemory(true)
                 .cacheOnDisk(true).resetViewBeforeLoading(true)
