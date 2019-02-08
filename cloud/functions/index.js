@@ -120,9 +120,7 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
                 });
                 p.push(promise);
             });
-            return Promise.all(p);
-        })
-            .then(() => {
+            return Promise.all(p).then(() => {
                 console.log("imp tasks started", challengeKey, postSnapshot.ref);
                 var Pr = [];
                 var pr1 = admin.database().ref("/Posts/" + postKey).update({ winner: winner });
@@ -133,6 +131,7 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}").onUpdate((c
                 Pr.push(pr1, pr2, pr3, pr4, pr5);
                 return Promise.all(Pr);
             });
+        });
     } else {
         return null;
     }
@@ -176,6 +175,12 @@ exports.sendMessage = functions.database.ref('/Challenges/{challengeId}').onUpda
                 }
             };
             promise = datasnapshot.ref.remove();
+            p.push(promise);
+
+            promise = admin.database().ref("/User_Challenges/" + challengedUserUid).child(challengeKey).remove();
+            p.push(promise);
+
+            promise = admin.database().ref("/User_Challenges/" + challengerUserUid).child(challengeKey).remove();
             p.push(promise);
         }
         promise = admin.messaging().sendToDevice(fcmToken, payload).then((response) => {
