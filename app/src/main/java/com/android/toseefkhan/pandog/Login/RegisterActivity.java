@@ -120,7 +120,7 @@ public class RegisterActivity extends AppCompatActivity {
      */
 
     /**
-     * Check is @param username already exists in teh database
+     * Check is @param username already exists in the database
      * @param username
      */
     private void checkIfUsernameExists(final String username) {

@@ -35,7 +35,6 @@ displays the most popular among them. "
         android:padding="5dp" />
 
 
-
     <TextView
         android:id="@+id/close_spotlight"
         android:layout_width="wrap_content"

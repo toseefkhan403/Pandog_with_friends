@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
@@ -65,24 +66,50 @@ public class ViewPostsListActivity extends AppCompatActivity {
         mRVPosts = findViewById(R.id.posts_recycler_view_list);
         myRef = FirebaseDatabase.getInstance().getReference();
 
-        getPostsOnProfile();
-
+        getPostKeysOnProfile();
     }
 
 
     private void initRecyclerView() {
 
-        Collections.reverse(mPostList);
-        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
-        PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
-        mRVPosts.setAdapter(adapter);
+        if (!mPostList.isEmpty()) {
+            Collections.reverse(mPostList);
+            mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
+            PostsProfileRVAdapter adapter = new PostsProfileRVAdapter(mContext, mPostList);
+            mRVPosts.setAdapter(adapter);
+        }else{
+            Toast.makeText(mContext, "No posts yet!", Toast.LENGTH_LONG).show();
+        }
     }
 
 
-    private void getPostsOnProfile() {
+    private void getPostKeysOnProfile() {
         Log.d(TAG, "getPostsOnProfile: getting posts.");
+        ArrayList<String> postkeys = new ArrayList<>();
 
-        //todo currently its retrieving all the posts. get only those which the user is related to
+        myRef.child("user_posts")
+                .child(getIntent().getExtras().getString("uid"))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ss : dataSnapshot.getChildren()){
+                            postkeys.add(ss.getValue(String.class));
+                        }
+                        //got the postkeys, fetching posts now
+                        getPostsOnProfile(postkeys);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    //todo needs optimization
+    private void getPostsOnProfile(ArrayList<String> postkeys) {
+
         myRef.child("Posts")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -94,62 +121,65 @@ public class ViewPostsListActivity extends AppCompatActivity {
 
                             Post post = new Post();
                             HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-                            post.setStatus(objectMap.get("status").toString());
 
-                            if (post.getStatus().equals("INACTIVE"))
-                                post.setWinner(objectMap.get("winner").toString());
+                            if (postkeys.contains(objectMap.get("postKey").toString())) {
+                                post.setStatus(objectMap.get("status").toString());
 
-                            post.setImage_url(objectMap.get("image_url").toString());
-                            post.setImage_url2(objectMap.get("image_url2").toString());
+                                if (post.getStatus().equals("INACTIVE"))
+                                    post.setWinner(objectMap.get("winner").toString());
 
-                            post.setCaption(objectMap.get("caption").toString());
-                            post.setCaption2(objectMap.get("caption2").toString());
-                            post.setPhoto_id(objectMap.get("photo_id").toString());
-                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
+                                post.setImage_url(objectMap.get("image_url").toString());
+                                post.setImage_url2(objectMap.get("image_url2").toString());
 
-                            post.setTags(objectMap.get("tags").toString());
-                            post.setTags2(objectMap.get("tags2").toString());
+                                post.setCaption(objectMap.get("caption").toString());
+                                post.setCaption2(objectMap.get("caption2").toString());
+                                post.setPhoto_id(objectMap.get("photo_id").toString());
+                                post.setPhoto_id2(objectMap.get("photo_id2").toString());
 
-                            post.setUser_id(objectMap.get("user_id").toString());
-                            post.setUser_id2(objectMap.get("user_id2").toString());
+                                post.setTags(objectMap.get("tags").toString());
+                                post.setTags2(objectMap.get("tags2").toString());
 
-                            post.setChallenge_id(objectMap.get("challenge_id").toString());
-                            post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
+                                post.setUser_id(objectMap.get("user_id").toString());
+                                post.setUser_id2(objectMap.get("user_id2").toString());
 
-                            post.setPostKey(objectMap.get("postKey").toString());
+                                post.setChallenge_id(objectMap.get("challenge_id").toString());
+                                post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
+
+                                post.setPostKey(objectMap.get("postKey").toString());
                             /*String image_url, String caption, String photo_id, String user_id, String tags,
                 String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
 
-                            List<Like> likesList = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes").getChildren()) {
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList.add(like);
-                            }
-                            post.setLikes(likesList);
+                                List<Like> likesList = new ArrayList<Like>();
+                                for (DataSnapshot dSnapshot : singleSnapshot
+                                        .child("likes").getChildren()) {
+                                    Like like = new Like();
+                                    like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                    likesList.add(like);
+                                }
+                                post.setLikes(likesList);
 
-                            List<Like> likesList2 = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes2").getChildren()) {
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList2.add(like);
-                            }
-                            post.setLikes2(likesList2);
+                                List<Like> likesList2 = new ArrayList<Like>();
+                                for (DataSnapshot dSnapshot : singleSnapshot
+                                        .child("likes2").getChildren()) {
+                                    Like like = new Like();
+                                    like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                                    likesList2.add(like);
+                                }
+                                post.setLikes2(likesList2);
 
-                            List<Comment> comments = new ArrayList<Comment>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("comments").getChildren()) {
-                                Comment comment = new Comment();
-                                comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                                comment.setComment(dSnapshot.getValue(Comment.class).getComment());
-                                comments.add(comment);
-                            }
-                            post.setComments(comments);
+                                List<Comment> comments = new ArrayList<Comment>();
+                                for (DataSnapshot dSnapshot : singleSnapshot
+                                        .child("comments").getChildren()) {
+                                    Comment comment = new Comment();
+                                    comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
+                                    comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                                    comments.add(comment);
+                                }
+                                post.setComments(comments);
 
-                            mPostList.add(post);
-                            Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
+                                mPostList.add(post);
+                                Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
+                            }
                         }
 
                         initRecyclerView();
@@ -160,6 +190,8 @@ public class ViewPostsListActivity extends AppCompatActivity {
 
                     }
                 });
+
+
     }
 
     private void setupBottomNavigationView(){
@@ -171,8 +203,6 @@ public class ViewPostsListActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(4);
         menuItem.setChecked(true);
     }
-
-
 
 
 

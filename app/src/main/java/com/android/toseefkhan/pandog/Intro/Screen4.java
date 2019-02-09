@@ -32,8 +32,6 @@ public class Screen4 extends Fragment {
             }
         });
 
-
-
         return view;
     }
 }

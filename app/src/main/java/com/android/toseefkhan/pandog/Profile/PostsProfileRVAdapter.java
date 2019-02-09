@@ -1,8 +1,20 @@
 package com.android.toseefkhan.pandog.Profile;
 
 import android.animation.ObjectAnimator;
+import android.app.Activity;
+import android.app.ActivityOptions;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.Heart;
@@ -23,6 +36,7 @@ import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.Utils.ViewLikesActivity;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,10 +45,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import org.w3c.dom.Text;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.ShareCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -97,6 +118,72 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         holder.cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - bottomHeight));
         holder.cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - bottomHeight));
 
+        holder.shareIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onLongClick: attempting to share the post ");
+
+                Dialog shareImageDialog = new Dialog(mContext);
+                shareImageDialog.setContentView(R.layout.layout_share_post_dialog);
+                TextView saveGallery = shareImageDialog.findViewById(R.id.save_to_gallery);
+                TextView otherApps = shareImageDialog.findViewById(R.id.other_apps);
+                TextView cancel = shareImageDialog.findViewById(R.id.cancel);
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        shareImageDialog.dismiss();
+                    }
+                });
+
+                saveGallery.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        File file = saveBitMap(mContext, holder.theWholeView);    //which view you want to pass that view as parameter
+                        if (file != null) {
+                            scanGallery(mContext,file.getAbsolutePath());
+                            Toast.makeText(mContext, "Post saved to gallery", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+
+                otherApps.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar.make(holder.theWholeView,"Attempting to share the post...",Snackbar.LENGTH_LONG).show();
+
+                        try{
+                            File file = saveBitMap(mContext, holder.theWholeView);
+                            MediaScannerConnection.scanFile(mContext,
+                                    new String[] { file.getAbsolutePath() }, null,
+                                    new MediaScannerConnection.OnScanCompletedListener() {
+                                        public void onScanCompleted(String path, Uri uri) {
+                                            Log.d("onScanCompleted", uri.getPath());
+
+                                            Intent shareIntent = new Intent();
+                                            shareIntent.setAction(Intent.ACTION_SEND);
+                                            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : app link goes here");
+                                            shareIntent.setType("image/jpg");
+                                            mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
+                                        }
+                                    });
+                        }catch (Exception e){
+                            Log.d(TAG, "onClick: Exception " + e.getMessage());
+                        }
+                    }
+                });
+
+                shareImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                shareImageDialog.show();
+
+            }
+        });
+
         final ObjectAnimator animator = ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX", screenWidth * 2);
         final ObjectAnimator animator2 = ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX", 0);
         animator.setDuration(800);
@@ -138,6 +225,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                 Log.d(TAG, "onClick: navigating to ViewLikesActivity");
                 Intent i = new Intent(mContext, ViewLikesActivity.class);
                 i.putExtra(mContext.getString(R.string.intent_post),post);
+                i.putExtra("set_to_two",2);
                 mContext.startActivity(i);
             }
         });
@@ -453,6 +541,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                 public void onClick(View v) {
                                     Intent i = new Intent(mContext, ViewProfileActivity.class);
                                     i.putExtra(mContext.getString(R.string.intent_user), user);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
                                     mContext.startActivity(i);
                                 }
                             });
@@ -469,6 +558,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                 @Override
                                 public void onClick(View v) {
                                     Intent i = new Intent(mContext, ProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
                                     mContext.startActivity(i);
                                 }
                             });
@@ -476,6 +566,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                 @Override
                                 public void onClick(View v) {
                                     Intent i = new Intent(mContext, ProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
                                     mContext.startActivity(i);
                                 }
                             });
@@ -508,6 +599,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                 public void onClick(View v) {
                                     Intent i = new Intent(mContext, ViewProfileActivity.class);
                                     i.putExtra(mContext.getString(R.string.intent_user), user);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
                                     mContext.startActivity(i);
                                 }
                             });
@@ -515,6 +607,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                 @Override
                                 public void onClick(View v) {
                                     Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
                                     i.putExtra(mContext.getString(R.string.intent_user), user);
                                     mContext.startActivity(i);
                                 }
@@ -526,6 +619,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                 @Override
                                 public void onClick(View v) {
                                     Intent i = new Intent(mContext, ProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
                                     mContext.startActivity(i);
                                 }
                             });
@@ -533,6 +627,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                 @Override
                                 public void onClick(View v) {
                                     Intent i = new Intent(mContext, ProfileActivity.class);
+                                    i.putExtra(mContext.getString(R.string.intent_user), user);
                                     mContext.startActivity(i);
                                 }
                             });
@@ -559,7 +654,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         TextView likesString1,likesString2;
         TextView comments_list,comments_list2;
         TextView caption1,caption2,timeRemaining;
-        ImageView heartWhite,heartWhite2,heartRed,heartRed2;
+        ImageView heartWhite,heartWhite2,heartRed,heartRed2,shareIcon;
         HorizontalScrollView horizontalScrollView;
         LinearLayout theWholeView;
         CardView cardView1;
@@ -572,6 +667,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
             dp1 = itemView.findViewById(R.id.profile_photo);
             dp2 = itemView.findViewById(R.id.profile_photo2);
+            shareIcon = itemView.findViewById(R.id.shareIcon);
             username1 = itemView.findViewById(R.id.username);
             username2 = itemView.findViewById(R.id.username2);
             image1 = itemView.findViewById(R.id.post_image);
@@ -606,6 +702,65 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             tvWinner2 = itemView.findViewById(R.id.tvWinner2);
             tvLoser = itemView.findViewById(R.id.tvLoser);
             tvLoser2 = itemView.findViewById(R.id.tvLoser2);
+        }
+    }
+
+
+    private File saveBitMap(Context context, View drawView){
+        File pictureFileDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Handcare");
+        if (!pictureFileDir.exists()) {
+            boolean isDirectoryCreated = pictureFileDir.mkdirs();
+            if(!isDirectoryCreated)
+                Log.i("ATG", "Can't create directory to save the image");
+            return null;
+        }
+        String filename = pictureFileDir.getPath() +File.separator+ System.currentTimeMillis()+".jpg";
+        File pictureFile = new File(filename);
+        Bitmap bitmap =getBitmapFromView(drawView);
+        try {
+            pictureFile.createNewFile();
+            FileOutputStream oStream = new FileOutputStream(pictureFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, oStream);
+            oStream.flush();
+            oStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.i("TAG", "There was an issue saving the image.");
+        }
+
+        return pictureFile;
+    }
+
+    //create bitmap from view and returns it
+    private Bitmap getBitmapFromView(View view) {
+        //Define a bitmap with the same size as the view
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        //Bind a canvas to it
+        Canvas canvas = new Canvas(returnedBitmap);
+        //Get the view's background
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) {
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        }   else{
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        }
+        // draw the view on the canvas
+        view.draw(canvas);
+        //return the bitmap
+        return returnedBitmap;
+    }
+
+    // used for scanning gallery
+    private void scanGallery(Context cntx, String path) {
+        try {
+            MediaScannerConnection.scanFile(cntx, new String[] { path },null, new MediaScannerConnection.OnScanCompletedListener() {
+                public void onScanCompleted(String path, Uri uri) {
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

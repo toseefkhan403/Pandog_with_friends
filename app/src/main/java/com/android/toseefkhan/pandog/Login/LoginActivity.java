@@ -1,6 +1,7 @@
 package com.android.toseefkhan.pandog.Login;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,8 +9,11 @@ import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -407,7 +411,7 @@ public class LoginActivity extends AppCompatActivity {
                                     if (!task.isSuccessful()) {
                                         Log.w(TAG, "signInWithEmail:failed", task.getException());
 
-                                        Toast.makeText(LoginActivity.this, getString(R.string.auth_failed),
+                                        Toast.makeText(LoginActivity.this, "Wrong email/password combination",
                                                 Toast.LENGTH_SHORT).show();
                                         mProgressBar.setVisibility(View.GONE);
                                         mPleaseWait.setVisibility(View.GONE);
@@ -435,13 +439,48 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        TextView linkSignUp = (TextView) findViewById(R.id.link_signup);
+        TextView linkSignUp = findViewById(R.id.link_signup);
         linkSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to register screen");
                 Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        TextView forgotPassword = findViewById(R.id.link_reset_password);
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                builder.setTitle("Send a Password Reset Link");
+
+                final EditText input = new EditText(mContext);
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                input.setPaddingRelative(30,30,30,30);
+                input.setHint("Your Email here...");
+                builder.setView(input);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "onClick: sending reset link to " +  input.getText().toString());
+
+                        mAuth.sendPasswordResetEmail(input.getText().toString());
+                        Toast.makeText(mContext, "Sending password reset link...", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
             }
         });
 

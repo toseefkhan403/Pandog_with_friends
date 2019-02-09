@@ -134,6 +134,7 @@ public class ViewProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                i.putExtra("uid",mUser.getUser_id());
                 startActivity(i);
                 overridePendingTransition(R.anim.pull,R.anim.push);
             }

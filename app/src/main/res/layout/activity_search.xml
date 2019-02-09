@@ -28,10 +28,63 @@
             android:layout_below="@+id/searchProfiles"
             android:visibility="invisible"/>
 
+        <com.android.toseefkhan.pandog.Utils.InterceptRelativeLayout
+            android:id="@+id/rela_intercept_1"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/searchProfiles"
+            android:visibility="visible"
+            android:layout_height="200dp"
+            >
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler1"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:orientation="horizontal"
+                android:layout_marginBottom="10dp"
+                android:layout_alignParentBottom="true"
+                >
+                <ImageView
+                    android:id="@+id/img_1"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/circle_red"
+                    android:layout_marginLeft="5dp"
+                    />
+                <ImageView
+                    android:id="@+id/img_2"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/circle_grey"
+                    android:layout_marginLeft="5dp"
+                    />
+                <ImageView
+                    android:id="@+id/img_3"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/circle_grey"
+                    android:layout_marginLeft="5dp"
+                    />
+                <ImageView
+                    android:id="@+id/img_4"
+                    android:layout_width="10dp"
+                    android:layout_height="10dp"
+                    android:src="@drawable/circle_grey"
+                    android:layout_marginLeft="5dp"
+                    />
+            </LinearLayout>
+
+        </com.android.toseefkhan.pandog.Utils.InterceptRelativeLayout>
+
+
         <ImageView
             android:layout_width="60dp"
             android:layout_height="50dp"
-            android:layout_below="@id/searchProfiles"
+            android:layout_below="@id/rela_intercept_1"
             android:layout_centerHorizontal="true"
             android:id="@+id/trending"
             android:src="@drawable/heart_red"

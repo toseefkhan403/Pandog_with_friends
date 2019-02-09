@@ -623,11 +623,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                             @Override
                             public void onEnded() {
+                                Log.d(TAG, "onEnded: spotlight ended navigating to usual stuff");
                                 Intent i = new Intent(mContext,MapActivity.class);
                                 startActivity(i);
+                                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                             }
                         });
-
                 spotlight.start();
             }
         });

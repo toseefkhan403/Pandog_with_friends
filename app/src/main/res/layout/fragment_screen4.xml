@@ -3,208 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/lightgreen">
+    android:background="@color/teal_400">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal"
+        android:gravity="center"
         android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:weightSum="100">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="90"
-                android:layout_marginBottom="1dp"
-                android:background="@color/white">
-
-                <HorizontalScrollView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <RelativeLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/theWholeView">
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/user1">
-
-                            <androidx.cardview.widget.CardView
-                                android:layout_width="wrap_content"
-                                android:layout_height="420dp"
-                                app:cardCornerRadius="5dp"
-                                android:layout_marginRight="5dp"
-                                app:cardElevation="3dp"
-                                app:cardMaxElevation="4dp">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:id="@+id/main"
-                                    android:orientation="vertical">
-
-
-                                    <com.android.toseefkhan.pandog.Utils.SquareImageView
-                                        android:id="@+id/post_image"
-                                        android:layout_width="330dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_below="@id/relLayoutToolbar"
-                                        android:layout_margin="0dp"
-                                        android:scaleType="centerCrop"
-                                        android:background="@drawable/pink_border"
-                                        android:src="@drawable/intro1" />
-
-                                    <RelativeLayout
-                                        android:id="@+id/relLayout2"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="50dp"
-                                        android:layout_below="@+id/post_image"
-                                        android:background="@color/white">
-
-                                        <RelativeLayout
-                                            android:id="@+id/heartLayout"
-                                            android:layout_width="60dp"
-                                            android:layout_height="match_parent"
-                                            android:background="@color/white">
-
-                                            <ImageView
-                                                android:id="@+id/image_heart_white"
-                                                android:layout_width="60dp"
-                                                android:layout_height="60dp"
-                                                android:layout_centerInParent="true"
-                                                android:layout_marginLeft="20dp"
-                                                android:src="@drawable/ic_heart"
-                                                android:visibility="visible" />
-
-                                        </RelativeLayout>
-
-                                        <TextView
-                                            android:id="@+id/image_likes"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="225 Likes"
-                                            android:layout_toRightOf="@id/heartLayout"
-                                            android:layout_alignParentBottom="true"
-                                            android:layout_marginBottom="12dp"
-                                            android:layout_marginLeft="5dp"
-                                            android:textColor="@color/black"
-                                            android:textSize="18sp" />
-
-                                    </RelativeLayout>
-
-                                </LinearLayout>
-                            </androidx.cardview.widget.CardView>
-                        </RelativeLayout>
-
-                        <!--- ********************* second profile ***********************-->
-
-
-                        <RelativeLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/user2"
-                            android:layout_toRightOf="@+id/user1">
-
-
-                            <androidx.cardview.widget.CardView
-                                android:layout_width="match_parent"
-                                android:layout_height="420dp"
-                                app:cardCornerRadius="5dp"
-                                android:layout_marginRight="5dp"
-                                app:cardElevation="3dp"
-                                app:cardMaxElevation="4dp">
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:id="@+id/main2"
-                                    android:orientation="vertical">
-
-
-                                    <com.android.toseefkhan.pandog.Utils.SquareImageView
-                                        android:id="@+id/post_image2"
-                                        android:layout_width="330dp"
-                                        android:layout_height="0dp"
-                                        android:layout_below="@id/relLayoutToolbar"
-                                        android:layout_margin="0dp"
-                                        android:scaleType="centerCrop"
-                                        android:background="@drawable/pink_border"
-                                        android:src="@drawable/intro2" />
-
-
-                                    <RelativeLayout
-                                        android:id="@+id/relLayout22"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="50dp"
-                                        android:layout_below="@+id/post_image"
-                                        android:background="@color/white">
-
-                                        <RelativeLayout
-                                            android:id="@+id/heartLayout2"
-                                            android:layout_width="60dp"
-                                            android:layout_height="match_parent"
-                                            android:background="@color/white">
-
-                                            <ImageView
-                                                android:id="@+id/image_heart_red2"
-                                                android:layout_width="45dp"
-                                                android:layout_height="45dp"
-                                                android:layout_centerInParent="true"
-                                                android:layout_marginLeft="20dp"
-                                                android:src="@drawable/heart_red"
-                                                android:visibility="visible" />
-
-                                        </RelativeLayout>
-
-                                        <TextView
-                                            android:id="@+id/image_likes2"
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            android:text="250 Likes"
-                                            android:layout_toRightOf="@id/heartLayout2"
-                                            android:layout_alignParentBottom="true"
-                                            android:layout_marginBottom="12dp"
-                                            android:layout_marginLeft="5dp"
-                                            android:textColor="@color/black"
-                                            android:textSize="18sp" />
-
-                                    </RelativeLayout>
-
-
-
-
-                                </LinearLayout>
-                            </androidx.cardview.widget.CardView>
-
-                        </RelativeLayout>
-
-
-                    </RelativeLayout>
-                </HorizontalScrollView>
-
-
-            </RelativeLayout>
-
-        </LinearLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="So if you think you have what it takes to win these epic battles of Celfies, then what are you waiting for?
+            android:layout_margin="10dp"
+            android:text="So if you think you have what it takes to win the epic battles of Celfies, then what are you waiting for?
 May the best celfie win!"
             android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="17dp"
+            android:textColor="@color/white"
+            android:padding="10dp"
+            android:textSize="20dp"
             android:textStyle="normal" />
 
         <TextView
@@ -216,6 +32,43 @@ May the best celfie win!"
             android:padding="10dp"
             android:layout_gravity="center"
             android:id="@+id/tvFinish"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="bottom|center_horizontal">
+
+            <ImageView
+                android:id="@+id/img_1"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/circle_grey"
+                android:layout_marginLeft="5dp"
+                />
+            <ImageView
+                android:id="@+id/img_2"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/circle_grey"
+                android:layout_marginLeft="5dp"
+                />
+            <ImageView
+                android:id="@+id/img_3"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/circle_grey"
+                android:layout_marginLeft="5dp"
+                />
+            <ImageView
+                android:id="@+id/img_4"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/circle_red"
+                android:layout_marginLeft="5dp"
+                />
+        </LinearLayout>
 
 
     </LinearLayout>

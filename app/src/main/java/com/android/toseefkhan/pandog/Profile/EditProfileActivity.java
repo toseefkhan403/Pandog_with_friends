@@ -3,6 +3,7 @@ package com.android.toseefkhan.pandog.Profile;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -69,6 +70,12 @@ public class EditProfileActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_profile_activity);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            postponeEnterTransition();
+            startPostponedEnterTransition();
+        }
+
         mProfilePhoto = findViewById(R.id.profile_photo);
         mDisplayName = findViewById(R.id.display_name);
         mUsername = findViewById(R.id.username);

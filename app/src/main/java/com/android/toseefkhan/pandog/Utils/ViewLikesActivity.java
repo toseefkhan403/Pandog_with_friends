@@ -92,6 +92,9 @@ public class ViewLikesActivity extends AppCompatActivity {
                         }
                     });
         }
+
+        if (getIntent().hasExtra("set_to_two"))
+            mViewPager.setCurrentItem(1);
     }
 
 }

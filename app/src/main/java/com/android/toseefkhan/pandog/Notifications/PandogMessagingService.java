@@ -42,6 +42,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
     @Override
     public void onMessageReceived(final RemoteMessage remoteMessage) {
         Log.d(TAG, "onMessageReceived: remoteMessage " + remoteMessage);
+
         String notificationType = remoteMessage.getData().get("type");
         if (notificationType.equals("Challenge")) {
             String challengerUserUid = "";
@@ -230,7 +231,6 @@ public class PandogMessagingService extends FirebaseMessagingService {
 
     private void buildNotification
             (RemoteMessage remoteMessage, String notificationTitle, String notificationBody, User user) {
-
         Log.d(TAG, "buildNotification: " + remoteMessage + notificationTitle + notificationBody + user);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,
                 getString(R.string.default_notification_channel_id));

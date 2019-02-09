@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import com.android.toseefkhan.pandog.Intro.Holder;
 import com.android.toseefkhan.pandog.Map.MapActivity;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
+import com.android.toseefkhan.pandog.models.User;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
@@ -31,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -49,7 +51,11 @@ import com.android.toseefkhan.pandog.Utils.SquareDrawable;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.takusemba.spotlight.OnSpotlightStateChangedListener;
@@ -77,23 +83,19 @@ public class HomeActivity extends AppCompatActivity {
     //for the welcome screen
     SharedPreferences mPrefs;
     final String tutorialScreenShownPref = "tutorialScreenShown";
+    final String referralScreenShownPref = "referralScreenShown";
 
+    private FrameLayout root;
+    private LayoutInflater inflater;
 
     //todo optimizing map section - setting levels and creating dynamic markers
-    //todo a better intro
-    //todo a spotlight walkthrough  ---------DONE
-    //todo a referral system
-    //todo set a list to view followers or following if the user click on them in Profile and ViewProfile    --------DONE
-    //todo adding "hide my position on map" feature  ------------DONE
     //todo fix the trending screen: both in implementation(my hashtags: their posts) and in display
-    //todo use share elements animation as much as possible
-    //todo make use of who liked the photo feature  ------------DONE
-    //todo implement a fully furnished in-app notifications list that will keep the user up to dated with his challenges and progress
+    //todo implement a fully furnished in-app notifications list that will keep the user up to date with his challenges and progress
+    //todo set the pagination on posts and set sensible adapters for posts list everywhere in the app
 
     //todo (Aryal)
     //todo better search, the search should always take the user to the bottom
     //todo of the list so he can see all the users and not necessarily swipe up for more results.
-    //todo implementing necessary notifications
 
     //todo (non-coding stuff)
     //todo get the maps api key
@@ -144,17 +146,16 @@ public class HomeActivity extends AppCompatActivity {
 
             mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-            // second argument is the default to use if the preference can't be found
-            Boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPref, false);
+            boolean referralScreenShown = mPrefs.getBoolean(referralScreenShownPref, false);
 
-            if (!welcomeScreenShown) {
+            if (!referralScreenShown) {
 
-                RelativeLayout view = findViewById(R.id.view_tutorial);
-                startTutorial(view);
+                startReferralScreen();
                 SharedPreferences.Editor editor = mPrefs.edit();
-                editor.putBoolean(tutorialScreenShownPref, true);
+                editor.putBoolean(referralScreenShownPref, true);
                 editor.apply(); // Very important to save the preference
             }
+
         }
 
         if (!InternetStatus.getInstance(this).isOnline()) {
@@ -286,11 +287,8 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void startTutorial(RelativeLayout view){
+    private void startTutorial(RelativeLayout Rview){
         Log.d(TAG, "startTutorial: spotlight tutorial started.");
-
-        FrameLayout root = new FrameLayout(mContext);
-        LayoutInflater inflater = LayoutInflater.from(mContext);
 
         View first = inflater.inflate(R.layout.overlay_home_tutorial, root);
 
@@ -310,15 +308,14 @@ public class HomeActivity extends AppCompatActivity {
                 })
                 .build();
 
-
         TextView Skip = first.findViewById(R.id.close_spotlight);
         TextView Next = first.findViewById(R.id.close_target);
         TextView Recommend = first.findViewById(R.id.recommend);
         ImageView image = first.findViewById(R.id.image);
 
-        view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        Rview.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override public void onGlobalLayout() {
-                view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                Rview.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 Spotlight spotlight = Spotlight.with(HomeActivity.this)
                         .setOverlayColor(R.color.background)
                         .setDuration(1000L)
@@ -333,14 +330,16 @@ public class HomeActivity extends AppCompatActivity {
 
                             @Override
                             public void onEnded() {
+
                             }
                         });
                 spotlight.start();
 
+
                 Skip.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Recommend.setText("Are you sure you want to skip? \n Long click below to skip the tutorial");
+                        Recommend.setText("Are you sure you want to skip? \nLong click below to skip the tutorial");
 
                         Skip.setText("Long click here");
                         Skip.setTextSize(18.0f);
@@ -371,44 +370,67 @@ public class HomeActivity extends AppCompatActivity {
                                 .setBackgroundColour(getResources().getColor(R.color.background))
                                 .setPrimaryText("This is where you will find your news feed")
                                 .setSecondaryText("And vote for your favourite contender!")
-                                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener()
-                                {
+                                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                                     @Override
-                                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state)
-                                    {
-                                        if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED)
-                                        {
-
+                                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                                        if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
                                             new MaterialTapTargetPrompt.Builder(HomeActivity.this)
-                                                    .setTarget(findViewById(R.id.notifFrag))
-                                                    .setBackgroundColour(getResources().getColor(R.color.background))
-                                                    .setAutoDismiss(false)
+                                                    .setTarget(findViewById(R.id.pc))
                                                     .setBackButtonDismissEnabled(false)
-                                                    .setIconDrawable(getResources().getDrawable(R.drawable.ic_notification))
-                                                    .setPrimaryText("Click here to see the list of your pending challenges")
+                                                    .setAutoDismiss(true)
+                                                    .setBackgroundColour(getResources().getColor(R.color.background))
+                                                    .setPrimaryText("Tap here!")
                                                     .setSecondaryText("")
-                                                    .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener()
-                                                    {
+                                                    .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                                                         @Override
-                                                        public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state)
-                                                        {
-                                                            if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED)
-                                                            {
-                                                                new MaterialTapTargetPrompt.Builder(HomeActivity.this)
-                                                                        .setTarget(findViewById(R.id.ic_android))
-                                                                        .setBackgroundColour(getResources().getColor(R.color.background))
-                                                                        .setAutoDismiss(false)
-                                                                        .setBackButtonDismissEnabled(false)
-                                                                        .setPrimaryText("This is your profile")
-                                                                        .setSecondaryText("Make sure you keep it updated!")
-                                                                        .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener()
-                                                                        {
-                                                                            @Override
-                                                                            public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state)
-                                                                            {
-                                                                                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED)
-                                                                                {
+                                                        public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
 
+                                                            if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                                                                new MaterialTapTargetPrompt.Builder(HomeActivity.this)
+                                                                        .setTarget(findViewById(R.id.pc))
+                                                                        .setBackButtonDismissEnabled(false)
+                                                                        .setAutoDismiss(true)
+                                                                        .setBackgroundColour(getResources().getColor(R.color.background))
+                                                                        .setPrimaryText("And here!")
+                                                                        .setSecondaryText("This is how you can navigate through a post")
+                                                                        .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                                                                            @Override
+                                                                            public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+
+                                                                                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+
+                                                                                    new MaterialTapTargetPrompt.Builder(HomeActivity.this)
+                                                                                            .setTarget(findViewById(R.id.notifFrag))
+                                                                                            .setBackgroundColour(getResources().getColor(R.color.background))
+                                                                                            .setAutoDismiss(false)
+                                                                                            .setBackButtonDismissEnabled(false)
+                                                                                            .setIconDrawable(getResources().getDrawable(R.drawable.ic_notification))
+                                                                                            .setPrimaryText("Click here to see the list of your pending challenges")
+                                                                                            .setSecondaryText("")
+                                                                                            .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                                                                                                @Override
+                                                                                                public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                                                                                                    if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+                                                                                                        new MaterialTapTargetPrompt.Builder(HomeActivity.this)
+                                                                                                                .setTarget(findViewById(R.id.ic_android))
+                                                                                                                .setBackgroundColour(getResources().getColor(R.color.background))
+                                                                                                                .setAutoDismiss(false)
+                                                                                                                .setBackButtonDismissEnabled(false)
+                                                                                                                .setPrimaryText("This is your profile")
+                                                                                                                .setSecondaryText("Make sure you keep it updated!")
+                                                                                                                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                                                                                                                    @Override
+                                                                                                                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                                                                                                                        if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+
+                                                                                                                        }
+                                                                                                                    }
+                                                                                                                })
+                                                                                                                .show();
+                                                                                                    }
+                                                                                                }
+                                                                                            })
+                                                                                            .show();
                                                                                 }
                                                                             }
                                                                         })
@@ -425,6 +447,142 @@ public class HomeActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void startReferralScreen() {
+
+        setContentView(R.layout.overlay_referral);
+        setupFirebaseAuth();
+
+        EditText inputReferral = findViewById(R.id.input_referral);
+        TextView closeBonus = findViewById(R.id.close_bonus);
+        TextView addBonus = findViewById(R.id.add_bonus);
+
+        closeBonus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // second argument is the default to use if the preference can't be found
+                boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPref, false);
+
+                if (!welcomeScreenShown) {
+
+                    setContentView(R.layout.activity_home);
+                    setupFirebaseAuth();
+                    initImageLoader();
+                    setupBottomNavigationView();
+                    setupViewPager();
+                    RelativeLayout Rview = findViewById(R.id.view_tutorial);
+                    root = new FrameLayout(mContext);
+                    inflater = LayoutInflater.from(mContext);
+                    startTutorial(Rview);
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(tutorialScreenShownPref, true);
+                    editor.apply(); // Very important to save the preference
+                }
+            }
+        });
+
+        addBonus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: giving the points to both the users");
+
+                String referralCode = inputReferral.getText().toString();
+                setReferralPoints(referralCode);
+            }
+        });
+    }
+
+
+    private boolean isReferralCorrect = false;
+
+    private void setReferralPoints(String referralCode) {
+
+        Log.d(TAG, "setReferralPoints: referral code " + referralCode);
+
+        //checking whether the code is correct or not
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child(getString(R.string.dbname_users))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d(TAG, "onDataChange: checking for match");
+
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+
+                            User user = singleSnapshot.getValue(User.class);
+                            Log.d(TAG, "onDataChange: user is " + user);
+
+                            if (user.getUsername().equals(referralCode)){
+                                Log.d(TAG, "onDataChange: found a match");
+                                isReferralCorrect = true;
+
+                                ref.child(getString(R.string.dbname_users))
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .child("panda_points")
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                int currentPoints = dataSnapshot.getValue(Integer.class);
+
+                                                if (currentPoints == 0) {
+                                                    Log.d(TAG, "onDataChange: user is eligible, give them points");
+
+                                                    ref.child(getString(R.string.dbname_users))
+                                                            .child(user.getUser_id())
+                                                            .child("panda_points")
+                                                            .setValue(user.getPanda_points() + 50);
+
+                                                    ref.child(getString(R.string.dbname_users))
+                                                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                            .child("panda_points")
+                                                            .setValue(50);
+
+                                                    Toast.makeText(HomeActivity.this, "Hooray! Bonus has been successfully added to your account", Toast.LENGTH_LONG).show();
+
+                                                    // second argument is the default to use if the preference can't be found
+                                                    boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPref, false);
+
+                                                    if (!welcomeScreenShown) {
+
+                                                        setContentView(R.layout.activity_home);
+                                                        setupFirebaseAuth();
+                                                        initImageLoader();
+                                                        setupBottomNavigationView();
+                                                        setupViewPager();
+                                                        RelativeLayout view = findViewById(R.id.view_tutorial);
+                                                        root = new FrameLayout(mContext);
+                                                        inflater = LayoutInflater.from(mContext);
+                                                        startTutorial(view);
+                                                        SharedPreferences.Editor editor = mPrefs.edit();
+                                                        editor.putBoolean(tutorialScreenShownPref, true);
+                                                        editor.apply(); // Very important to save the preference
+                                                    }
+                                                }else
+                                                    Toast.makeText(HomeActivity.this, "You are not eligible for referral bonus", Toast.LENGTH_LONG).show();
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+
+                                break;
+                            }
+                        }
+
+                        if (!isReferralCorrect)
+                            Toast.makeText(mContext, "Incorrect referral code", Toast.LENGTH_LONG).show();
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
 }

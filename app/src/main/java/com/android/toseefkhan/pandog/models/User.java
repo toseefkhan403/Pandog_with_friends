@@ -37,12 +37,13 @@ public class User implements Parcelable {
         this.username = username;
     }
 
-    public User(String profile_photo, String user_id, String email, String username,String level) {
+    public User(String profile_photo, String user_id, String email, String username,String level, int panda_points) {
         this.profile_photo = profile_photo;
         this.user_id = user_id;
         this.email = email;
         this.username = username;
         this.level = level;
+        this.panda_points = panda_points;
     }
 
     public String getHide_position() {

@@ -1,5 +1,7 @@
 package com.android.toseefkhan.pandog.Profile;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.Utils.ViewFollowersActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -79,6 +82,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView mMenu;
     private ProgressBar pb;
     private Toolbar profile;
+    private FloatingActionButton fab;
 
     private ArrayList<Post> mPostList = new ArrayList<>();
 
@@ -232,6 +236,14 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private void setupActivityWidgets(){
+
+        fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //do something
+            }
+        });
         profile = findViewById(R.id.profileToolBar);
         mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
         mProfilePhoto = findViewById(R.id.profile_photo);
@@ -272,7 +284,12 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(ProfileActivity.this, EditProfileActivity.class);
-                startActivity(intent);
+                ActivityOptions options = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                    options = ActivityOptions
+                            .makeSceneTransitionAnimation((Activity) mContext,mProfilePhoto, "user_pp");
+                }
+                startActivity(intent,options.toBundle());
             }
         });
         mMenu = findViewById(R.id.menu);
@@ -290,8 +307,10 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                i.putExtra("uid",FirebaseAuth.getInstance().getCurrentUser().getUid());
                 startActivity(i);
-                overridePendingTransition(R.anim.pull,R.anim.push);            }
+                overridePendingTransition(R.anim.pull,R.anim.push);
+            }
         });
 
     }

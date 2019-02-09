@@ -43,6 +43,7 @@
             android:src="@drawable/intro1"
             android:focusedByDefault="true"
             android:focusableInTouchMode="true"
+            android:transitionName="user_pp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"

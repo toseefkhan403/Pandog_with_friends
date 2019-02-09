@@ -64,12 +64,12 @@
                     android:id="@+id/tvNext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="12dp"
                     android:text="NEXT"
                     android:textColor="@color/verydarkGreen"
-                    android:textSize="22sp" />
+                    android:textSize="18sp" />
 
             </RelativeLayout>
 

@@ -4,13 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
         <RelativeLayout
             android:layout_width="match_parent"
+            android:id="@+id/scrollView"
             android:layout_height="wrap_content">
 
             <RelativeLayout
@@ -36,7 +32,8 @@
                     android:id="@+id/imageShare"
                     android:scaleType="centerCrop"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dp"
+                    android:transitionName="imm"
+                    android:layout_marginStart="20dp"
                     android:layout_marginBottom="40dp"/>
 
                 <EditText
@@ -53,7 +50,7 @@
             </RelativeLayout>
 
         </RelativeLayout>
-    </ScrollView>
+
 
     <ListView
         android:id="@+id/FriendsListView"

@@ -1,5 +1,7 @@
 package com.android.toseefkhan.pandog.Share;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -19,6 +22,7 @@ import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.Search.SearchActivity;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +32,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
@@ -43,6 +48,8 @@ import com.android.toseefkhan.pandog.Utils.GridImageAdapter;
 import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.Utils.Permissions;
 import com.android.toseefkhan.pandog.models.User;
+import com.google.android.material.tabs.TabItem;
+import com.google.android.material.tabs.TabLayout;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -73,8 +80,8 @@ public class ShareActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private Uri capturedImageUri;
     // private Spinner directorySpinner;
-    private Button mOpenGalleryImage;
-    private Button mOpenCameraImage;
+    private View mOpenGalleryImage;
+    private View mOpenCameraImage;
 
     //vars
     private ArrayList<String> directories;
@@ -90,10 +97,10 @@ public class ShareActivity extends AppCompatActivity {
         setContentView(R.layout.activity_share);
         setupBottomNavigationView();
 
+        gridView = findViewById(R.id.gridView);
         mOpenGalleryImage= findViewById(R.id.gallery_button);
         mOpenCameraImage= findViewById(R.id.camera_button);
         galleryImage = findViewById(R.id.galleryImageView);
-        gridView = findViewById(R.id.gridView);
         mProgressBar = findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.GONE);
         tvNext = findViewById(R.id.tvNext);
@@ -111,6 +118,7 @@ public class ShareActivity extends AppCompatActivity {
             Toast.makeText(mContext, "Please upload a photo to compete with: " + mChosenUser.getUsername() , Toast.LENGTH_SHORT).show();
         }
 
+
         mOpenGalleryImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,6 +130,7 @@ public class ShareActivity extends AppCompatActivity {
         });
 
         tvNext.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: taking user to the next share screen where he can choose amongst his friends");

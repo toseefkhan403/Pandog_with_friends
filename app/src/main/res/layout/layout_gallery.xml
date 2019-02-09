@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -31,6 +32,7 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:transitionName="imm"
                 android:id="@+id/galleryImageView"
                 android:scaleType="centerCrop"/>
 
@@ -43,48 +45,10 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/white"
                 android:layout_alignParentBottom="true">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="100"
-                    android:orientation="horizontal">
+                <include layout="@layout/layout_share_tabs" />
 
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="50">
-
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:layout_centerInParent="true"
-                            android:id="@+id/gallery_button"
-                            android:text="gallery"
-                            android:textColor="@color/white"
-                            android:background="@drawable/white_rounded_purple_button"/>
-
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="50">
-
-                        <Button
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:id="@+id/camera_button"
-                            android:layout_centerInParent="true"
-                            android:textColor="@color/white"
-                            android:text="camera"
-                            android:background="@drawable/white_rounded_purple_button"/>
-
-                    </RelativeLayout>
-
-                </LinearLayout>
 
             </RelativeLayout>
 

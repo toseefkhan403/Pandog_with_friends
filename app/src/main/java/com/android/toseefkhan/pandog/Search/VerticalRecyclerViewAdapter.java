@@ -24,18 +24,12 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
 
     private static final String TAG = "VerticalRecyclerViewAda";
     private Context mContext;
-    private ArrayList<Post> mPostList = new ArrayList<>();
-    private ArrayList<User> mUserList;
+    private ArrayList<Post> mPostList;
     private RecyclerView mHorizontalRecyclerView;
 
     public VerticalRecyclerViewAdapter(Context mContext, ArrayList<Post> mPostList) {
         this.mContext = mContext;
         this.mPostList = mPostList;
-    }
-
-    public VerticalRecyclerViewAdapter(ArrayList<User> mUserList, Context mContext) {
-        this.mContext = mContext;
-        this.mUserList = mUserList;
     }
 
     @NonNull
@@ -49,8 +43,8 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         Post post = mPostList.get(position);
+        holder.setIsRecyclable(false);
         //for testing
-
    //     holder.hashtag_title.setText("#something");
         holder.horizontalRecyclerViewAdapter = new HorizontalRecyclerViewAdapter(mContext, mPostList);
         mHorizontalRecyclerView.setAdapter(holder.horizontalRecyclerViewAdapter);

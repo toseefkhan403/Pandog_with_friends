@@ -48,7 +48,7 @@ dependencies {
     //  implementation 'com.huangyz0918:androidwm-light:0.1.2'
     implementation 'com.github.DingMouRen:LayoutManagerGroup:1e6f4f96eb'
     implementation 'com.github.florent37:shapeofview:1.3.2'
-    implementation 'com.instabug.library:instabug:8.0.16'
+ //   implementation 'com.instabug.library:instabug:8.0.16'
     // base module
     implementation 'ru.noties:tumbleweed:1.0.3'
     // android module
@@ -71,10 +71,7 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-core:16.0.3'	//Analytics
     implementation 'com.google.firebase:firebase-database:16.0.1'	//Realtime Database
-    // FirebaseUI for Firebase Realtime Database
-    implementation 'com.firebaseui:firebase-ui-database:4.1.0'
     implementation 'com.google.firebase:firebase-storage:16.0.1'    //storage
-
     implementation 'com.google.firebase:firebase-auth:16.0.1'      //auth
 
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)'
@@ -96,8 +93,8 @@ dependencies {
 
 
     //library for detecting memory leaks : leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
 
     //Arch
     implementation 'androidx.arch.core:core-runtime:2.0.0-beta01'

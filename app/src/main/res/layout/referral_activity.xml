@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/white_pink_border_bottom"
+            >
+
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/profileToolBar">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_centerVertical="true"
+                        android:id="@+id/back"
+                        android:src="@drawable/ic_backarrow"/>
+
+                    <RelativeLayout
+                        android:layout_width="250dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_toRightOf="@id/back"
+                        android:layout_height="70dp"
+                        android:layout_marginStart="10dp"
+                        android:id="@+id/fonts">
+
+                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupR
+                            android:id="@+id/fontViewP"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+                            android:id="@+id/fontViewO"
+                            android:layout_toRightOf="@+id/fontViewP"
+                            android:layout_width="50dp"
+                            android:layout_height="match_parent"/>
+                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupF
+                            android:id="@+id/fontViewS"
+                            android:layout_toRightOf="@+id/fontViewO"
+                            android:layout_width="50dp"
+                            android:layout_height="match_parent"/>
+                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+                            android:id="@+id/fontViewT"
+                            android:layout_toRightOf="@+id/fontViewS"
+                            android:layout_width="50dp"
+                            android:layout_height="match_parent"/>
+                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupR
+                            android:id="@+id/fontViewT2"
+                            android:layout_toRightOf="@+id/fontViewT"
+                            android:layout_width="50dp"
+                            android:layout_height="match_parent"/>
+
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+            </androidx.appcompat.widget.Toolbar>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/darkbeige"
+            android:id="@+id/ij"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:text="Invite friends"
+            android:padding="2dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/darkbeige"
+            android:id="@+id/i"
+            android:layout_below="@id/ij"
+            android:textSize="24sp"
+            android:text="Your referral code is "
+            android:layout_marginTop="40dp"
+            />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/purple"
+            android:textSize="24sp"
+            android:layout_below="@+id/i"
+            android:id="@+id/ref_code"
+            android:padding="12dp"
+            android:background="@drawable/pink_border"
+            android:text="Your Username"
+            android:layout_marginTop="40dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/darkbeige"
+            android:id="@+id/ref_code_long_click"
+            android:layout_below="@+id/ref_code"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="(Long click to share)"
+            android:layout_margin="2dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/darkbeige"
+            android:layout_below="@+id/ref_code"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:text="Share this code with your friends and you both earn 50 flames each upon successful registration!"
+            android:layout_margin="55dp"
+            />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

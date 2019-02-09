@@ -58,6 +58,12 @@
                                 android:scaleType="centerCrop"
                                 android:src="@drawable/intro2"/>
 
+                            <View
+                                android:layout_width="70dp"
+                                android:layout_height="70dp"
+                                android:layout_centerInParent="true"
+                                android:id="@+id/pc"/>
+
                             <RelativeLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -191,10 +197,21 @@
                                 android:textSize="18sp" />
 
 
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_share"
+                                android:id="@+id/shareIcon"
+                                android:layout_below="@+id/heartLayout"
+                                android:layout_marginEnd="12dp"
+                                android:layout_alignParentEnd="true" />
+
+
                             <RelativeLayout
                                 android:id="@+id/relLayoutToolbar"
                                 android:layout_width="wrap_content"
                                 android:layout_height="35dp"
+                                android:gravity="center"
                                 android:layout_centerInParent="true"
                                 android:layout_below="@+id/comments_link">
 
@@ -202,7 +219,9 @@
                                     android:id="@+id/profile_photo"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
+                                    android:transitionName="user_pp"
                                     app:civ_border_color="@color/black"
+                                    android:src="@color/beige"
                                     app:civ_border_width="0.5dp" />
 
                                 <TextView
@@ -210,7 +229,8 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="10dp"
-                                    android:layout_marginTop="0dp"
+                                    android:transitionName="username"
+                                    android:layout_marginTop="-1.5dp"
                                     android:layout_toRightOf="@+id/profile_photo"
                                     android:text="toseef.khan"
                                     android:textColor="@color/black"
@@ -228,7 +248,6 @@
 
 
                 </androidx.cardview.widget.CardView>
-
 
 
                     <androidx.cardview.widget.CardView
@@ -326,21 +345,21 @@
                                         android:layout_centerInParent="true"
                                         android:id="@+id/heart_holder2">
 
-                                    <ImageView
-                                        android:id="@+id/image_heart_red2"
-                                        android:layout_width="45dp"
-                                        android:layout_height="45dp"
-                                        android:layout_centerInParent="true"
-                                        android:src="@drawable/heart_red"
-                                        android:visibility="invisible" />
+                                        <ImageView
+                                            android:id="@+id/image_heart_red2"
+                                            android:layout_width="45dp"
+                                            android:layout_height="45dp"
+                                            android:layout_centerInParent="true"
+                                            android:src="@drawable/heart_red"
+                                            android:visibility="invisible" />
 
-                                    <ImageView
-                                        android:id="@+id/image_heart_white2"
-                                        android:layout_width="40dp"
-                                        android:layout_height="40dp"
-                                        android:layout_centerInParent="true"
-                                        android:src="@drawable/ic_heart"
-                                        android:visibility="visible" />
+                                        <ImageView
+                                            android:id="@+id/image_heart_white2"
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp"
+                                            android:layout_centerInParent="true"
+                                            android:src="@drawable/ic_heart"
+                                            android:visibility="visible" />
 
                                     </RelativeLayout>
 
@@ -393,12 +412,15 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="35dp"
                                     android:layout_centerInParent="true"
+                                    android:gravity="center"
                                     android:layout_below="@+id/comments_link2">
 
                                     <de.hdodenhof.circleimageview.CircleImageView
                                         android:id="@+id/profile_photo2"
                                         android:layout_width="30dp"
                                         android:layout_height="30dp"
+                                        android:src="@color/beige"
+                                        android:transitionName="user_pp"
                                         app:civ_border_color="@color/black"
                                         app:civ_border_width="0.5dp" />
 
@@ -409,15 +431,14 @@
                                         android:layout_marginLeft="10dp"
                                         android:layout_toRightOf="@+id/profile_photo2"
                                         android:text="toseef.khan"
+                                        android:transitionName="username"
+                                        android:layout_marginTop="-1.5dp"
                                         android:textColor="@color/black"
                                         android:textSize="20sp" />
 
                                 </RelativeLayout>
 
                             </RelativeLayout>
-
-
-
 
 
                         </LinearLayout>

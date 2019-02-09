@@ -41,6 +41,7 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         Post post = mPostList.get(position);
+        holder.setIsRecyclable(false);
         //todo a query to get the post from hash tags
         //for testing
         UniversalImageLoader.setImage(post.getImage_url(),holder.first_photo,null,"",holder.child);

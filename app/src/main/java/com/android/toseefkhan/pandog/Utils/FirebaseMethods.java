@@ -640,7 +640,7 @@ public class FirebaseMethods {
                             if(task.isSuccessful()){
 
                             }else{
-                                Toast.makeText(mContext, "couldn't send verification email.", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(mContext, "Couldn't send verification email", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -657,7 +657,7 @@ public class FirebaseMethods {
      */
     public void addNewUser(String email, String username, String description, String profile_photo){
 
-        User user = new User( null,userID,  email,  StringManipulation.condenseUsername(username),"GREY" );
+        User user = new User( null,userID,  email,  StringManipulation.condenseUsername(username),"GREY",0 );
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userID)

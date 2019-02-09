@@ -14,7 +14,7 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:layout_width="220dp"
             android:layout_height="220dp"
-            android:src="@drawable/ic_logo"
+            android:src="@drawable/ic_logo_celfie"
             app:civ_border_color="@color/white"
             app:civ_border_width="0.5dp"
             android:layout_marginTop="5dp"
@@ -56,6 +56,44 @@
             android:layout_gravity="center"
             android:layout_margin="20dp"
             android:id="@+id/tvNext"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentBottom="true"
+            >
+            <ImageView
+                android:id="@+id/img_1"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/circle_black"
+                android:layout_marginLeft="5dp"
+                />
+            <ImageView
+                android:id="@+id/img_2"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/circle_grey"
+                android:layout_marginLeft="5dp"
+                />
+            <ImageView
+                android:id="@+id/img_3"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/circle_grey"
+                android:layout_marginLeft="5dp"
+                />
+            <ImageView
+                android:id="@+id/img_4"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:src="@drawable/circle_grey"
+                android:layout_marginLeft="5dp"
+                />
+        </LinearLayout>
 
 
     </LinearLayout>

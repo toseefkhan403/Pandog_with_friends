@@ -8,6 +8,9 @@ import androidx.annotation.NonNull;
 
 import com.android.toseefkhan.pandog.Map.MapActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
+import com.android.toseefkhan.pandog.Profile.ViewPostsListActivity;
+import com.android.toseefkhan.pandog.Utils.InterceptRelativeLayout;
+import com.dingmouren.layoutmanagergroup.banner.BannerLayoutManager;
 import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +70,9 @@ public class SearchActivity extends AppCompatActivity {
     private Context mContext = SearchActivity.this;
     private RecyclerView profilesListView;
     private ArrayList<Post> mPostList = new ArrayList<>();
+    private List<ImageView> mImgList = new ArrayList<>();
+    private int mLastSelectPosition = 0;
+
 
     //for the welcome screen
     SharedPreferences mPrefs;
@@ -75,6 +82,32 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        //setting the banner recycler view on the top
+        InterceptRelativeLayout mRelaIntercept1 = findViewById(R.id.rela_intercept_1);
+        mRelaIntercept1.setIntercept(false);
+        ImageView mImg1 =  findViewById(R.id.img_1);
+        ImageView mImg2 =  findViewById(R.id.img_2);
+        ImageView mImg3 =  findViewById(R.id.img_3);
+        ImageView mImg4 =  findViewById(R.id.img_4);
+        mImgList.add(mImg1);
+        mImgList.add(mImg2);
+        mImgList.add(mImg3);
+        mImgList.add(mImg4);
+
+
+        RecyclerView mRecycler_1 = findViewById(R.id.recycler1);
+        MyAdapter myAdapter = new MyAdapter();
+        BannerLayoutManager bannerLayoutManager = new BannerLayoutManager(this,mRecycler_1,4,OrientationHelper.HORIZONTAL);
+        mRecycler_1.setLayoutManager(bannerLayoutManager);
+        mRecycler_1.setAdapter(myAdapter);
+        bannerLayoutManager.setOnSelectedViewListener(new BannerLayoutManager.OnSelectedViewListener() {
+            @Override
+            public void onSelectedView(View view, int position) {
+                changeUI(position);
+            }
+        });
+        changeUI(0);
 
         final RecyclerView vertical = findViewById(R.id.holder_vertical);
         vertical.setLayoutManager(new LinearLayoutManager(mContext));
@@ -145,6 +178,7 @@ public class SearchActivity extends AppCompatActivity {
                         }
                         VerticalRecyclerViewAdapter adapter = new VerticalRecyclerViewAdapter(mContext, mPostList);
                         vertical.setAdapter(adapter);
+                        ArrayList<ArrayList<String>> arrayLists = new ArrayList<ArrayList<String>>();
                     }
 
                     @Override
@@ -184,6 +218,7 @@ public class SearchActivity extends AppCompatActivity {
                 profilesListView.setVisibility(View.VISIBLE);
                 t.setVisibility(View.GONE);
                 i.setVisibility(View.GONE);
+                mRelaIntercept1.setVisibility(View.GONE);
 
                 return true;
             }
@@ -210,6 +245,15 @@ public class SearchActivity extends AppCompatActivity {
         }
 
     }
+
+    private void changeUI(int position){
+        if (position != mLastSelectPosition) {
+            mImgList.get(position).setImageDrawable(getResources().getDrawable(R.drawable.circle_red));
+            mImgList.get(mLastSelectPosition).setImageDrawable(getResources().getDrawable(R.drawable.circle_grey));
+            mLastSelectPosition = position;
+        }
+    }
+
 
     public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchItemViewHolder> {
 
@@ -390,4 +434,74 @@ public class SearchActivity extends AppCompatActivity {
                 }).show();
 
     }
+
+    class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
+
+
+        private Context mContext;
+        private ArrayList<String> mUrls;
+        private ArrayList<String> mTitles;
+
+        public MyAdapter() {
+        }
+
+        public MyAdapter(Context mContext, ArrayList<String> mUrls, ArrayList<String> mTitles) {
+            this.mContext = mContext;
+            this.mUrls = mUrls;
+            this.mTitles = mTitles;
+        }
+
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.item_banner, parent, false);
+
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+
+            holder.setIsRecyclable(false);
+            UniversalImageLoader.setImage(mUrls.get(position),holder.img,null,"",null);
+            holder.text.setText(mTitles.get(position));
+//            holder.img.setImageResource(imgs[position % 4]);
+//            holder.text.
+
+            //take to refer screen
+            if (position%4 == 0) {
+                holder.img.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        //take to referral activity
+                        Intent i = new Intent(mContext, ReferActivity.class);
+                        i.putExtra("position", position);
+                        startActivity(i);
+                    }
+                });
+            }else {
+                //take the user to viewPostsListActivity where he can see the trending stuff
+                Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                i.putExtra("trending", holder.text.getText().toString());
+                startActivity(i);
+            }
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return mUrls.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            ImageView img;
+            TextView text;
+            public ViewHolder(View itemView) {
+                super(itemView);
+                img = itemView.findViewById(R.id.img);
+                text = itemView.findViewById(R.id.text);
+            }
+        }
+    }
+
 }

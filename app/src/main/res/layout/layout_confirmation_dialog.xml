@@ -33,6 +33,7 @@
                 android:padding="5dp"
                 android:id="@+id/textDialog"
                 android:textStyle="bold"
+                android:gravity="center"
                 android:layout_marginLeft="14dp"
                 android:text="Are you sure you want to upload this photo?"
                 android:textSize="20sp"

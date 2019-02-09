@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:paddingTop="320dp"
+        android:paddingTop="300dp"
         android:paddingLeft="25dp"
         android:paddingRight="25dp">
 
@@ -75,6 +75,15 @@
             android:textSize="16dp"
             android:id="@+id/link_signup"
             android:textColor="@color/blue"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Forgot password? Get a new one!"
+            android:gravity="center"
+            android:textSize="16dp"
+            android:id="@+id/link_reset_password"
+            android:textColor="@color/purple_400"/>
 
     </LinearLayout>
 
@@ -88,39 +97,39 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_height="70dp"
+        android:layout_height="50dp"
         android:layout_marginTop="235dp"
         android:id="@+id/fonts">
 
         <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupC
             android:id="@+id/fontViewP"
             android:layout_width="50dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="50dp"/>
         <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
             android:id="@+id/fontViewO"
             android:layout_toRightOf="@+id/fontViewP"
             android:layout_width="50dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="50dp"/>
         <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupL
             android:id="@+id/fontViewS"
             android:layout_toRightOf="@+id/fontViewO"
             android:layout_width="50dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="50dp"/>
         <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupF
             android:id="@+id/fontViewT"
             android:layout_toRightOf="@+id/fontViewS"
             android:layout_width="50dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="50dp"/>
         <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupI
             android:id="@+id/fontViewS2"
             android:layout_toRightOf="@+id/fontViewT"
             android:layout_width="50dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="50dp"/>
         <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
             android:id="@+id/fontViewS3"
             android:layout_toRightOf="@+id/fontViewS2"
             android:layout_width="50dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="50dp"/>
     </RelativeLayout>
 
     <ProgressBar

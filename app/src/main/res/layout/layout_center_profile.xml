@@ -45,6 +45,7 @@
             android:id="@+id/profile_photo"
             android:src="@drawable/intro2"
             android:focusedByDefault="true"
+            android:transitionName="user_pp"
             android:focusableInTouchMode="true"
             android:scaleType="centerCrop"
             android:layout_width="match_parent"
@@ -52,6 +53,17 @@
             android:layout_centerHorizontal="true" />
 
         </com.github.florent37.shapeofview.shapes.ArcView>
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="354dp"
+            android:src="@drawable/ic_not"
+            app:fabSize="auto"
+            android:layout_marginEnd="25dp"
+            android:id="@+id/fab"
+            android:layout_alignParentEnd="true"/>
 
         <ProgressBar
             android:layout_width="100dp"
@@ -152,14 +164,6 @@
                         android:layout_weight="20"
                         android:layout_height="50dp"/>
                 </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/RecyclerViewPost"
-                    android:layout_below="@+id/fonts">
-
-                </androidx.recyclerview.widget.RecyclerView>
 
             </RelativeLayout>
 
