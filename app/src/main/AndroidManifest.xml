@@ -19,9 +19,9 @@
     <application
         android:name=".Utils.InitialSetup"
         android:allowBackup="true"
-        android:icon="@mipmap/logo_celfie"
+        android:icon="@mipmap/ic_logo_celfie"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/logo_celfie"
+        android:roundIcon="@mipmap/ic_logo_celfie"
         android:supportsRtl="true"
         android:largeHeap="true"
         android:hardwareAccelerated="true"
@@ -71,6 +71,8 @@
         <activity android:name=".Utils.ViewFollowersActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".Search.ReferActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Profile.NotificationsActivity"
             android:screenOrientation="portrait"/>
 
         <provider

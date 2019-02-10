@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.Challenge;
@@ -159,7 +160,6 @@ public class NotificationFragment extends Fragment {
         Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
 
         mNotificationRecyclerView.setAdapter(a);
-        mNotificationRecyclerView.smoothScrollToPosition(0);
     }
 
 }

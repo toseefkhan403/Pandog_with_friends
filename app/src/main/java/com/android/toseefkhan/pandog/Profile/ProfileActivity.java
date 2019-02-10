@@ -242,6 +242,8 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //do something
+                Intent i = new Intent(mContext, NotificationsActivity.class);
+                startActivity(i);
             }
         });
         profile = findViewById(R.id.profileToolBar);

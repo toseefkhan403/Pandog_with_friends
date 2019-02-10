@@ -178,7 +178,7 @@ public class SearchActivity extends AppCompatActivity {
                         }
                         VerticalRecyclerViewAdapter adapter = new VerticalRecyclerViewAdapter(mContext, mPostList);
                         vertical.setAdapter(adapter);
-                        ArrayList<ArrayList<String>> arrayLists = new ArrayList<ArrayList<String>>();
+                 //       ArrayList<ArrayList<String>> arrayLists = new ArrayList<ArrayList<String>>();
                     }
 
                     @Override
@@ -437,19 +437,19 @@ public class SearchActivity extends AppCompatActivity {
 
     class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
-
-        private Context mContext;
         private ArrayList<String> mUrls;
         private ArrayList<String> mTitles;
+
+        private int[] imgs = {R.drawable.referandearn,R.drawable.ic_circle,R.drawable.ic_logo_celfie,R.drawable.ic_android};
 
         public MyAdapter() {
         }
 
-        public MyAdapter(Context mContext, ArrayList<String> mUrls, ArrayList<String> mTitles) {
-            this.mContext = mContext;
-            this.mUrls = mUrls;
-            this.mTitles = mTitles;
-        }
+//        public MyAdapter(Context mContext, ArrayList<String> mUrls, ArrayList<String> mTitles) {
+//            this.mContext = mContext;
+//            this.mUrls = mUrls;
+//            this.mTitles = mTitles;
+//        }
 
         @NonNull
         @Override
@@ -463,10 +463,12 @@ public class SearchActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
             holder.setIsRecyclable(false);
-            UniversalImageLoader.setImage(mUrls.get(position),holder.img,null,"",null);
-            holder.text.setText(mTitles.get(position));
+//            UniversalImageLoader.setImage(mUrls.get(position),holder.img,null,"",null);
+//            holder.text.setText(mTitles.get(position));
 //            holder.img.setImageResource(imgs[position % 4]);
 //            holder.text.
+
+            holder.img.setImageResource(imgs[position%4]);
 
             //take to refer screen
             if (position%4 == 0) {
@@ -481,16 +483,16 @@ public class SearchActivity extends AppCompatActivity {
                 });
             }else {
                 //take the user to viewPostsListActivity where he can see the trending stuff
-                Intent i = new Intent(mContext, ViewPostsListActivity.class);
-                i.putExtra("trending", holder.text.getText().toString());
-                startActivity(i);
+//                Intent i = new Intent(mContext, ViewPostsListActivity.class);
+//                i.putExtra("trending", holder.text.getText().toString());
+//                startActivity(i);
             }
 
         }
 
         @Override
         public int getItemCount() {
-            return mUrls.size();
+            return Integer.MAX_VALUE;
         }
 
         public class ViewHolder extends RecyclerView.ViewHolder {

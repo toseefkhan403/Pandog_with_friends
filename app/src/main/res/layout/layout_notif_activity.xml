@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/white_pink_border_bottom"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/profileToolBar">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/back"
+                    android:src="@drawable/ic_backarrow"/>
+
+                <RelativeLayout
+                    android:layout_width="240dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_toRightOf="@id/back"
+                    android:layout_height="70dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/fonts">
+
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupN
+                        android:id="@+id/fontViewP"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupO
+                        android:id="@+id/fontViewO"
+                        android:layout_toRightOf="@+id/fontViewP"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupT
+                        android:id="@+id/fontViewS"
+                        android:layout_toRightOf="@+id/fontViewO"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupI
+                        android:id="@+id/fontViewT"
+                        android:layout_toRightOf="@+id/fontViewS"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupF
+                        android:id="@+id/fontViewT2"
+                        android:layout_toRightOf="@+id/fontViewT"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupS
+                        android:id="@+id/fontViewT3"
+                        android:layout_toRightOf="@+id/fontViewT2"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"/>
+
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:id="@+id/recycler_view_list_notifs">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>

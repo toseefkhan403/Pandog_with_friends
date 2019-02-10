@@ -89,8 +89,7 @@ public class HomeActivity extends AppCompatActivity {
     private LayoutInflater inflater;
 
     //todo optimizing map section - setting levels and creating dynamic markers
-    //todo fix the trending screen: both in implementation(my hashtags: their posts) and in display
-    //todo implement a fully furnished in-app notifications list that will keep the user up to date with his challenges and progress
+    //todo fix the trending screen in implementation(my hashtags: their posts)
     //todo set the pagination on posts and set sensible adapters for posts list everywhere in the app
 
     //todo (Aryal)
