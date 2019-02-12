@@ -9,6 +9,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
+import es.dmoral.toasty.Toasty;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -113,7 +115,7 @@ public class NextActivity extends AppCompatActivity {
         //upload the image to firebase
         int selectedUserPosition = mFriendsAdapter.getSelectedUserPosition();
         if (selectedUserPosition == -1) {
-            Toast.makeText(mContext, "Select a user from list first", Toast.LENGTH_SHORT).show();
+            Toasty.info(mContext, "Select a user from list first", Toast.LENGTH_SHORT,true).show();
             return;
         }
 

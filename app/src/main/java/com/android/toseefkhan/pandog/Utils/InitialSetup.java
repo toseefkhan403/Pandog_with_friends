@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
 public class InitialSetup extends Application {
 
@@ -52,6 +53,11 @@ public class InitialSetup extends Application {
 //        new Instabug.Builder(this, "6b5e492b9aa3d1d98d594ac00dce5085")
 //                .setInvocationEvents(InstabugInvocationEvent.SHAKE)
 //                .build();
+
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                        .setDefaultFontPath("fonts/Comic Neue.ttf")
+                        .setFontAttrId(R.attr.fontPath)
+                        .build());
 
         mUserList = new ArrayList<>();
         markerOptionsList = new ArrayList<>();

@@ -26,6 +26,7 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.appcompat.app.AppCompatActivity;
+import es.dmoral.toasty.Toasty;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import android.util.Log;
@@ -115,7 +116,7 @@ public class ShareActivity extends AppCompatActivity {
             Log.d(TAG, "onCreate: the chosen user " + mChosenUser);
 
             //todo this user should be automatically selected in the NextActivity
-            Toast.makeText(mContext, "Please upload a photo to compete with: " + mChosenUser.getUsername() , Toast.LENGTH_SHORT).show();
+            Toasty.warning(mContext, "Please upload a photo to compete with: " + mChosenUser.getUsername() , Toast.LENGTH_SHORT,true).show();
         }
 
 
@@ -318,7 +319,7 @@ public class ShareActivity extends AppCompatActivity {
         if (isPermissionsGranted) {
             getFilePaths();
         } else {
-            Toast.makeText(this, "Need to grant Permission to work properly", Toast.LENGTH_SHORT).show();
+            Toasty.error(this, "Need to grant Permission to work properly", Toast.LENGTH_SHORT,false).show();
         }
     }
 

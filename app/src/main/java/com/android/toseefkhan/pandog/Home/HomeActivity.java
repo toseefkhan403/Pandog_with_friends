@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.android.toseefkhan.pandog.Intro.Holder;
 import com.android.toseefkhan.pandog.Map.MapActivity;
+import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.android.material.snackbar.Snackbar;
@@ -17,6 +18,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
+import es.dmoral.toasty.Toasty;
 import kotlin.jvm.internal.Intrinsics;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
@@ -69,7 +71,18 @@ import com.takusemba.spotlight.target.Target;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements PostsProfileRVAdapter.OnLoadMoreItemsListener {
+
+
+    @Override
+    public void onLoadMoreItems() {
+        Log.d(TAG, "onLoadMoreItems: displaying more photos");
+        HomeFragment fragment = (HomeFragment)getSupportFragmentManager()
+                .findFragmentByTag("android:switcher:" + R.id.container + ":" + mViewPager.getCurrentItem());
+        if(fragment != null){
+            fragment.displayMorePhotos();
+        }
+    }
 
     private static final String TAG = "HomeActivity";
     private Context mContext=HomeActivity.this;
@@ -90,11 +103,12 @@ public class HomeActivity extends AppCompatActivity {
 
     //todo optimizing map section - setting levels and creating dynamic markers
     //todo fix the trending screen in implementation(my hashtags: their posts)
-    //todo set the pagination on posts and set sensible adapters for posts list everywhere in the app
+    //todo clean code (delete unnecessary code from the db and app)
 
     //todo (Aryal)
     //todo better search, the search should always take the user to the bottom
     //todo of the list so he can see all the users and not necessarily swipe up for more results.
+    //todo delete stuff from user_notif node too (after a challenge is accepted or rejected)
 
     //todo (non-coding stuff)
     //todo get the maps api key
@@ -538,7 +552,7 @@ public class HomeActivity extends AppCompatActivity {
                                                             .child("panda_points")
                                                             .setValue(50);
 
-                                                    Toast.makeText(HomeActivity.this, "Hooray! Bonus has been successfully added to your account", Toast.LENGTH_LONG).show();
+                                                    Toasty.success(HomeActivity.this, "Hooray! Bonus has been successfully added to your account", Toast.LENGTH_LONG,true).show();
 
                                                     // second argument is the default to use if the preference can't be found
                                                     boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPref, false);
@@ -559,7 +573,7 @@ public class HomeActivity extends AppCompatActivity {
                                                         editor.apply(); // Very important to save the preference
                                                     }
                                                 }else
-                                                    Toast.makeText(HomeActivity.this, "You are not eligible for referral bonus", Toast.LENGTH_LONG).show();
+                                                    Toasty.error(HomeActivity.this, "You are not eligible for referral bonus", Toast.LENGTH_LONG,true).show();
                                             }
 
                                             @Override
@@ -573,7 +587,7 @@ public class HomeActivity extends AppCompatActivity {
                         }
 
                         if (!isReferralCorrect)
-                            Toast.makeText(mContext, "Incorrect referral code", Toast.LENGTH_LONG).show();
+                            Toasty.error(mContext, "Incorrect referral code", Toast.LENGTH_LONG,true).show();
 
                     }
 

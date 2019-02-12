@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import es.dmoral.toasty.Toasty;
 
 import android.util.Log;
 import android.view.Menu;
@@ -218,7 +219,7 @@ public class ViewProfileActivity extends AppCompatActivity {
             checkLevel(mUser);
         }catch (NullPointerException e){
             Log.e(TAG, "onCreateView: NullPointerException: "  + e.getMessage() );
-            Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();
+            Toasty.error(mContext, "something went wrong", Toast.LENGTH_SHORT,true).show();
             getFragmentManager().popBackStack();
         }
 

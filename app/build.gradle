@@ -7,7 +7,7 @@ android {
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.android.toseefkhan.pandog"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         multiDexEnabled true
         versionCode 1
@@ -91,6 +91,10 @@ dependencies {
     implementation 'com.github.takusemba:spotlight:1.8.0'
     implementation 'uk.co.samuelwall:material-tap-target-prompt:2.0.1'
 
+    //toasty
+    implementation 'com.github.GrenderG:Toasty:1.4.0'
+    //calligraphy
+    implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
 
     //library for detecting memory leaks : leakcanary
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'

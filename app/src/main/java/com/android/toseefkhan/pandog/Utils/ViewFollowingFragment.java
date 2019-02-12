@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import es.dmoral.toasty.Toasty;
 
 public class ViewFollowingFragment extends Fragment {
 
@@ -91,7 +92,7 @@ public class ViewFollowingFragment extends Fragment {
             try {
                 Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), "NO FOLLOWING FOUND!", Snackbar.LENGTH_LONG).show();
             } catch (NullPointerException e) {
-                Toast.makeText(getActivity(), "NO FOLLOWING FOUND!", Toast.LENGTH_SHORT).show();
+                Toasty.warning(getActivity(), "NO FOLLOWING FOUND!", Toast.LENGTH_SHORT,true).show();
             }
         }
 

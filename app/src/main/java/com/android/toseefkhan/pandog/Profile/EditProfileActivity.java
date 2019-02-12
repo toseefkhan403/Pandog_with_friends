@@ -2,6 +2,7 @@ package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,6 +40,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class EditProfileActivity extends AppCompatActivity {
 
@@ -81,6 +84,7 @@ public class EditProfileActivity extends AppCompatActivity {
         mUsername = findViewById(R.id.username);
         mDescription = findViewById(R.id.description);
         mChangeProfilePhoto = findViewById(R.id.changeProfilePhoto);
+        mChangeProfilePhoto.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Comic Neue.ttf"));
         mLogOut = findViewById(R.id.log_out_button);
         mFirebaseMethods = new FirebaseMethods(mContext);
         pb = findViewById(R.id.pb);
@@ -100,7 +104,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 LoginManager.getInstance().logOut();
                 Intent i = new Intent(mContext, LoginActivity.class);
                 startActivity(i);
-                Toast.makeText(mContext, "Successfully logged out.", Toast.LENGTH_SHORT).show();
+                Toasty.success(mContext, "Successfully logged out.", Toast.LENGTH_SHORT,true).show();
                 finish();
             }
         });
@@ -129,6 +133,11 @@ public class EditProfileActivity extends AppCompatActivity {
 
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
     private void getIncomingIntent(){
@@ -172,13 +181,13 @@ public class EditProfileActivity extends AppCompatActivity {
          */
         if(!mUserSettings.getSettings().getDisplay_name().equals(displayName)){
             //update displayname
-            Toast.makeText(mContext, "Name updated.", Toast.LENGTH_SHORT).show();
+            Toasty.success(mContext, "Name updated.", Toast.LENGTH_SHORT,true).show();
             mFirebaseMethods.updateUserAccountSettings(displayName, null);
         }
 
         if(!mUserSettings.getSettings().getDescription().equals(description)){
             //update description
-            Toast.makeText(mContext, "Your description is updated.", Toast.LENGTH_SHORT).show();
+            Toasty.success(mContext, "Your description is updated.", Toast.LENGTH_SHORT,true).show();
             mFirebaseMethods.updateUserAccountSettings(null, description);
         }
 
@@ -203,13 +212,13 @@ public class EditProfileActivity extends AppCompatActivity {
                 if(!dataSnapshot.exists()){
                     //add the username
                     mFirebaseMethods.updateUsername(username);
-                    Toast.makeText(mContext, "saved username.", Toast.LENGTH_SHORT).show();
+                    Toasty.success(mContext, "saved username.", Toast.LENGTH_SHORT,true).show();
 
                 }
                 for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
                     if (singleSnapshot.exists()){
                         Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + singleSnapshot.getValue(User.class).getUsername());
-                        Toast.makeText(mContext, "That username already exists.", Toast.LENGTH_SHORT).show();
+                        Toasty.warning(mContext, "That username already exists.", Toast.LENGTH_SHORT,true).show();
                     }
                 }
             }

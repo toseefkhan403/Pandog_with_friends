@@ -38,6 +38,7 @@ public class ViewCommentsActivity extends AppCompatActivity{
     private EditText editComment;
     private Context mContext = ViewCommentsActivity.this;
     private ArrayList<Comment> mComments;
+    private CommentsRVAdapter mAdapter;
 
     private Post mPost;
 
@@ -56,6 +57,8 @@ public class ViewCommentsActivity extends AppCompatActivity{
         });
 
         recyclerView = findViewById(R.id.comments_rv);
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext,RecyclerView.VERTICAL,false));
+
         editComment = findViewById(R.id.comment);
         editComment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,7 +101,6 @@ public class ViewCommentsActivity extends AppCompatActivity{
 
     private void getCommentsFromPost() {
 
-        mComments.clear();
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
         myRef.child("Posts")
                 .child(mPost.getPostKey())
@@ -112,7 +114,9 @@ public class ViewCommentsActivity extends AppCompatActivity{
                             Comment comment = singleSnapshot.getValue(Comment.class);
                             mComments.add(comment);
                         }
-                        initRecyclerView();
+                        Collections.reverse(mComments);
+                        mAdapter = new CommentsRVAdapter(mContext, mComments);
+                        recyclerView.setAdapter(mAdapter);
                     }
 
                     @Override
@@ -138,16 +142,10 @@ public class ViewCommentsActivity extends AppCompatActivity{
                 .child(commentID)
                 .setValue(comment);
 
-        getCommentsFromPost();
+        mComments.add(0,comment);
+        mAdapter.notifyDataSetChanged();
     }
 
-    private void initRecyclerView() {
-
-        Collections.reverse(mComments);
-        recyclerView.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.VERTICAL,false));
-        CommentsRVAdapter adapter = new CommentsRVAdapter(mContext, mComments);
-        recyclerView.setAdapter(adapter);
-    }
 
     private Post getPostFromBundle() {
         Log.d(TAG, "getPhotoFromBundle: arguments: " + getIntent().getExtras());

@@ -54,6 +54,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import androidx.annotation.NonNull;
+import es.dmoral.toasty.Toasty;
 
 
 public class FirebaseMethods {
@@ -136,7 +137,7 @@ public class FirebaseMethods {
                                 }
                             });
 
-                            Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
+                            Toasty.success(mContext, "Photo upload success", Toast.LENGTH_SHORT,true).show();
                             Log.d(TAG, "onSuccess: this is the filepath " + filePaths.FIREBASE_IMAGE_STORAGE);
 
                             ((Activity)mContext).finish();
@@ -150,7 +151,7 @@ public class FirebaseMethods {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.d(TAG, "onFailure: Photo upload failed.");
-                            Toast.makeText(mContext, "Photo upload failed ", Toast.LENGTH_SHORT).show();
+                            Toasty.error(mContext, "Photo upload failed ", Toast.LENGTH_SHORT,true).show();
                         }
                     }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -159,7 +160,7 @@ public class FirebaseMethods {
                             Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
 
                             uploadDialog.dismiss();
-                            Toast.makeText(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT).show();
+                            Toasty.info(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT,true).show();
 
                             SquareDrawable indicator = new TriangleDrawable(new int[]{r.getColor(R.color.teal_400), r.getColor(R.color.brown_400)
                                     , r.getColor(R.color.light_blue_400)});
@@ -201,7 +202,7 @@ public class FirebaseMethods {
                             });
 
                             uploadBitmap(imageUri);
-                            Toast.makeText(mContext, "Photo upload success", Toast.LENGTH_SHORT).show();
+                            Toasty.success(mContext, "Photo upload success", Toast.LENGTH_SHORT,true).show();
 
                             ((Activity)mContext).finish();
 
@@ -214,7 +215,7 @@ public class FirebaseMethods {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Log.d(TAG, "onFailure: Photo upload failed.");
-                            Toast.makeText(mContext, "Photo upload failed ", Toast.LENGTH_SHORT).show();
+                            Toasty.error(mContext, "Photo upload failed ", Toast.LENGTH_SHORT,true).show();
                         }
                     }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -223,7 +224,7 @@ public class FirebaseMethods {
                             Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
 
                             uploadDialog.dismiss();
-                            Toast.makeText(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT).show();
+                            Toasty.info(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT,true).show();
 
 
                             SquareDrawable indicator = new SquareSpinDrawable(new int[]{r.getColor(R.color.amber_400), r.getColor(R.color.blue_400)
@@ -298,7 +299,7 @@ public class FirebaseMethods {
 
                                 //navigate to the main feed so the user can see their photo
                                 Intent intent = new Intent(mContext, ProfileActivity.class);
-                                Toast.makeText(mContext, "Your post is up for voting!", Toast.LENGTH_SHORT).show();
+                                Toasty.success(mContext, "Your post is up for voting!", Toast.LENGTH_SHORT,true).show();
                                 mContext.startActivity(intent);
 
                             }
@@ -306,7 +307,7 @@ public class FirebaseMethods {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 Log.d(TAG, "onFailure: Photo upload failed.");
-                                Toast.makeText(mContext, "Photo upload failed ", Toast.LENGTH_SHORT).show();
+                                Toasty.error(mContext, "Photo upload failed ", Toast.LENGTH_SHORT,true).show();
                             }
                         }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                             @Override
@@ -314,7 +315,7 @@ public class FirebaseMethods {
                                 double progress = (100 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
                                 Log.d(TAG, "onProgress: progress " + String.format("%.0f", progress));
                                 uploadDialog.dismiss();
-                                Toast.makeText(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT).show();
+                                Toasty.info(mContext, "Photo upload " + (int)progress + "% done", Toast.LENGTH_SHORT,true).show();
 
                                 SquareDrawable indicator = new SquareSpinDrawable(new int[]{r.getColor(R.color.deep_purple_400), r.getColor(R.color.brown_400)
                                         , r.getColor(R.color.deep_orange_400), r.getColor(R.color.lime_400)});
@@ -491,9 +492,6 @@ public class FirebaseMethods {
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                 .child(newPhotoKey).setValue(photo);
 
-//        //todo find the challenge the user chose to compete with ----------done
-//        //todo create a post containing that challenge and remove the challenge value from challenges node -----------done
-
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference();
         dref.child("Challenges").child(challengeKey)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -514,7 +512,8 @@ public class FirebaseMethods {
                 post.setTimeStamp(timeStamp);
 
                 addPostToDataBase(post, postKey);
-                addPostToUserNode(postKey);
+
+                addPostToUserNode(c.getChallengerUserUid(),postKey);
                 c.setPostKey(postKey);
                 c.setStatus("ACCEPTED");
                 //delete the challenge as it is accepted successfully
@@ -526,21 +525,18 @@ public class FirebaseMethods {
 
             }
         });
-
-        /* String image_url, String caption, String photo_id, String user_id,
-                String tags, int likes, String image_url2, String caption2, String photo_id2,
-                String user_id2, String tags2, int likes2, HashMap<String, String> comments */
     }
 
-    private void addPostToUserNode(String postKey) {
+    private void addPostToUserNode(String challengerUid, String postKey) {
         String userUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         myRef.child("user_posts").child(userUid).child(postKey).setValue(postKey);
+        myRef.child("user_posts").child(challengerUid).child(postKey).setValue(postKey);
     }
 
     private void addPostToDataBase(Post post, String postKey){
 
         myRef.child("Posts").child(postKey).setValue(post);
-        Toast.makeText(mContext, "Your post is up for voting!", Toast.LENGTH_SHORT).show();
+        Toasty.success(mContext, "Your post is up for voting!", Toast.LENGTH_SHORT,true).show();
     }
 
     public int getImageCount(DataSnapshot dataSnapshot) {
@@ -614,8 +610,8 @@ public class FirebaseMethods {
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Toast.makeText(mContext, R.string.auth_failed,
-                                    Toast.LENGTH_SHORT).show();
+                            Toasty.error(mContext, R.string.auth_failed,
+                                    Toast.LENGTH_SHORT,true).show();
 
                         } else if (task.isSuccessful()) {
                             //send verificaton email
@@ -640,7 +636,7 @@ public class FirebaseMethods {
                             if(task.isSuccessful()){
 
                             }else{
-                                Toast.makeText(mContext, "Couldn't send verification email", Toast.LENGTH_SHORT).show();
+                                Toasty.error(mContext, "Couldn't send verification email", Toast.LENGTH_SHORT,true).show();
                             }
                         }
                     });

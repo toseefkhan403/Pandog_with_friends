@@ -23,6 +23,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import es.dmoral.toasty.Toasty;
 
 public class ViewFollowersFragment extends Fragment {
 
@@ -91,7 +92,7 @@ public class ViewFollowersFragment extends Fragment {
             try {
                 Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), "NO FOLLOWERS FOUND!", Snackbar.LENGTH_LONG).show();
             } catch (NullPointerException e) {
-                Toast.makeText(getActivity(), "NO FOLLOWERS FOUND!", Toast.LENGTH_SHORT).show();
+                Toasty.warning(getActivity(), "NO FOLLOWERS FOUND!", Toast.LENGTH_SHORT,true).show();
             }
         }
 

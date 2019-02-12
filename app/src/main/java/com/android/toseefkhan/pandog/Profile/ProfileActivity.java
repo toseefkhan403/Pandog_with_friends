@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import android.preference.PreferenceManager;
@@ -234,7 +235,6 @@ public class ProfileActivity extends AppCompatActivity {
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
-
     private void setupActivityWidgets(){
 
         fab = findViewById(R.id.fab);
@@ -362,48 +362,6 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
-
-//    private void getPostsCount(){
-//        mPostsCount = 0;
-//
-//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-//        Query query = reference.child(getString(R.string.dbname_user_photos))
-//                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-//        query.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                for(DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
-//                    Log.d(TAG, "onDataChange: found post:" + singleSnapshot.getValue());
-//                    mPostsCount++;
-//                }
-//                mPosts.setText(String.valueOf(mPostsCount));
-//                getPandaPointsCount();
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//    }
-
-    /**
-     * Responsible for setting up the profile toolbar
-     */
-//    private void setupToolbar(){
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.profileToolBar);
-//        setSupportActionBar(toolbar);
-//
-//        ImageView profileMenu = (ImageView) findViewById(R.id.profileMenu);
-//        profileMenu.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "onClick: navigating to account settings.");
-//                Intent intent = new Intent(mContext, AccountSettingsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//    }
 
     /**
      * BottomNavigationView setup

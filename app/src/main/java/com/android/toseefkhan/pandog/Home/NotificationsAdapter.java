@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
 
 public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdapter.NotificationViewHolder> {
 
@@ -227,7 +228,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(mContext, "An error occurred.", Toast.LENGTH_SHORT).show();
+                        Toasty.error(mContext, "An error occurred.", Toast.LENGTH_SHORT, true).show();
                     }
                 });
     }

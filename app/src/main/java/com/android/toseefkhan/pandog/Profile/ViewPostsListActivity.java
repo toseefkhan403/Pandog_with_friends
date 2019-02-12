@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
+import com.android.toseefkhan.pandog.Home.HomeFragment;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.Like;
@@ -24,11 +25,13 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,15 +43,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ViewPostsListActivity extends AppCompatActivity {
+public class ViewPostsListActivity extends AppCompatActivity implements PostsProfileRVAdapter.OnLoadMoreItemsListener {
+
+    @Override
+    public void onLoadMoreItems() {
+        Log.d(TAG, "onLoadMoreItems: displaying more photos");
+
+        this.displayMorePhotos();
+    }
 
     private static final String TAG = "ViewPostsListActivity";
 
     private Context mContext = ViewPostsListActivity.this;
     private RecyclerView mRVPosts;
+    private ArrayList<String> mPostKeysList = new ArrayList<>();
     private ArrayList<Post> mPostList = new ArrayList<>();
-    private PostsProfileRVAdapter adapter;
-    private DatabaseReference myRef;
+    private PostsProfileRVAdapter mAdapter;
+    private ArrayList<Post> mPaginatedPosts;
+    private int mResults;
 
 
     @Override
@@ -66,144 +78,193 @@ public class ViewPostsListActivity extends AppCompatActivity {
         });
 
         mRVPosts = findViewById(R.id.posts_recycler_view_list);
-        myRef = FirebaseDatabase.getInstance().getReference();
+        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
 
         getPostKeysOnProfile();
-
-        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
-        adapter = new PostsProfileRVAdapter(mContext, mPostList);
-        mRVPosts.setAdapter(adapter);
-
     }
-
-
-//    private void initRecyclerView() {
-//
-//        if (!mPostList.isEmpty()) {
-//            Collections.reverse(mPostList);
-//
-//        }else{
-//            Toast.makeText(mContext, "No posts yet!", Toast.LENGTH_LONG).show();
-//        }
-//    }
-
 
     private void getPostKeysOnProfile() {
         Log.d(TAG, "getPostsOnProfile: getting posts." + getIntent().getExtras().getString("uid"));
 
-        myRef.child("user_posts")
-                .child(getIntent().getExtras().getString("uid"))
-                .orderByKey()
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference
+                .child("user_posts")
+                .child(getIntent().getExtras().getString("uid"));
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found user: " +
+                            singleSnapshot.getValue(String.class));
 
-                        String postKey = dataSnapshot.getValue(String.class);
-                        Log.d(TAG, "ChildAdded POSTS" + postKey);
-                        getPostsOnProfile(postKey);
-                    }
+                    mPostKeysList.add(singleSnapshot.getValue(String.class));
+                }
+                //get the photos
+                getPhotos();
+            }
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+            }
+        });
     }
 
-    //todo sometimes, one of the posts is null. Idk why.
-    private void getPostsOnProfile(String postkey) {
+    private void getPhotos(){
+        Log.d(TAG, "getPhotos: getting photos");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        for(int i = 0; i < mPostKeysList.size(); i++){
+            final int count = i;
+            Query query = reference
+                    .child("Posts")
+                    .child(mPostKeysList.get(i));
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-        myRef.child("Posts")
-                .child(postkey)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot singleSnapshot) {
+                    Post post = new Post();
+                    if (dataSnapshot.exists()) {
+                        HashMap<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
+                        post.setStatus(objectMap.get("status").toString());
 
-                        if (singleSnapshot.exists()) {
-                            Post post = new Post();
-                            HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
+                        if (post.getStatus().equals("INACTIVE"))
+                            post.setWinner(objectMap.get("winner").toString());
 
-                            post.setStatus(objectMap.get("status").toString());
+                        post.setImage_url(objectMap.get("image_url").toString());
+                        post.setImage_url2(objectMap.get("image_url2").toString());
 
-                            if (post.getStatus().equals("INACTIVE"))
-                                post.setWinner(objectMap.get("winner").toString());
+                        post.setCaption(objectMap.get("caption").toString());
+                        post.setCaption2(objectMap.get("caption2").toString());
+                        post.setPhoto_id(objectMap.get("photo_id").toString());
+                        post.setPhoto_id2(objectMap.get("photo_id2").toString());
 
-                            post.setImage_url(objectMap.get("image_url").toString());
-                            post.setImage_url2(objectMap.get("image_url2").toString());
+                        post.setTags(objectMap.get("tags").toString());
+                        post.setTags2(objectMap.get("tags2").toString());
 
-                            post.setCaption(objectMap.get("caption").toString());
-                            post.setCaption2(objectMap.get("caption2").toString());
-                            post.setPhoto_id(objectMap.get("photo_id").toString());
-                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
+                        post.setUser_id(objectMap.get("user_id").toString());
+                        post.setUser_id2(objectMap.get("user_id2").toString());
 
-                            post.setTags(objectMap.get("tags").toString());
-                            post.setTags2(objectMap.get("tags2").toString());
+                        post.setChallenge_id(objectMap.get("challenge_id").toString());
+                        post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
 
-                            post.setUser_id(objectMap.get("user_id").toString());
-                            post.setUser_id2(objectMap.get("user_id2").toString());
-
-                            post.setChallenge_id(objectMap.get("challenge_id").toString());
-                            post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
-
-                            post.setPostKey(objectMap.get("postKey").toString());
-                            /*String image_url, String caption, String photo_id, String user_id, String tags,
+                        post.setPostKey(objectMap.get("postKey").toString());
+                                            /*String image_url, String caption, String photo_id, String user_id, String tags,
                 String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
 
-                            List<Like> likesList = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes").getChildren()) {
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList.add(like);
-                            }
-                            post.setLikes(likesList);
-
-                            List<Like> likesList2 = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes2").getChildren()) {
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList2.add(like);
-                            }
-                            post.setLikes2(likesList2);
-
-                            List<Comment> comments = new ArrayList<Comment>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("comments").getChildren()) {
-                                Comment comment = new Comment();
-                                comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                                comment.setComment(dSnapshot.getValue(Comment.class).getComment());
-                                comments.add(comment);
-                            }
-                            post.setComments(comments);
-
-                            mPostList.add(post);
-                         //   Collections.reverse(mPostList);
-                            adapter.notifyDataSetChanged();
+                        List<Like> likesList = new ArrayList<Like>();
+                        for (DataSnapshot dSnapshot : dataSnapshot
+                                .child("likes").getChildren()) {
+                            Like like = new Like();
+                            like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                            likesList.add(like);
                         }
+                        post.setLikes(likesList);
+
+                        List<Like> likesList2 = new ArrayList<Like>();
+                        for (DataSnapshot dSnapshot : dataSnapshot
+                                .child("likes2").getChildren()) {
+                            Like like = new Like();
+                            like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
+                            likesList2.add(like);
+                        }
+                        post.setLikes2(likesList2);
+
+                        List<Comment> comments = new ArrayList<Comment>();
+                        for (DataSnapshot dSnapshot : dataSnapshot
+                                .child("comments").getChildren()) {
+                            Comment comment = new Comment();
+                            comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
+                            comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                            comments.add(comment);
+                        }
+                        post.setComments(comments);
+
+                        mPostList.add(post);
+                        Log.d(TAG, "onDataChange: contents of the postlist " + mPostList.size());
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    if(count >= mPostKeysList.size() -1){
+                        //display our photos
+                        displayPhotos();
+                    }
+                }
 
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    private void displayPhotos(){
+        mPaginatedPosts = new ArrayList<>();
+
+        if(!mPostList.isEmpty()){
+            try{
+                Collections.sort(mPostList, new Comparator<Post>() {
+                    @Override
+                    public int compare(Post post, Post t1) {
+                        return Long.compare(t1.getTimeStamp(),post.getTimeStamp());
                     }
                 });
+
+                Log.d(TAG, "displayPhotos: postslist now" + mPostList);
+
+                int iterations = mPostList.size();
+
+                if(iterations > 10){
+                    iterations = 10;
+                }
+
+                mResults = 10;
+                for(int i = 0; i < iterations; i++){
+                    Log.d(TAG, "displayPhotos: adding posts to paginated posts" + mPostList.get(i).getPostKey());
+                    mPaginatedPosts.add(mPostList.get(i));
+                }
+
+                mAdapter = new PostsProfileRVAdapter(mContext, mPaginatedPosts);
+                mRVPosts.setAdapter(mAdapter);
+                Log.d(TAG, "displayPhotos: i am making it this far and let's see what paginated posts has " + mPaginatedPosts.size());
+
+            }catch (NullPointerException e){
+                Log.e(TAG, "displayPhotos: NullPointerException: " + e.getMessage() );
+            }catch (IndexOutOfBoundsException e){
+                Log.e(TAG, "displayPhotos: IndexOutOfBoundsException: " + e.getMessage() );
+            }
+        }
     }
+
+    public void displayMorePhotos(){
+        Log.d(TAG, "displayMorePhotos: displaying more photos");
+
+        try{
+
+            if(mPostList.size() > mResults && mPostList.size() > 0){
+
+                int iterations;
+                if(mPostList.size() > (mResults + 10)){
+                    Log.d(TAG, "displayMorePhotos: there are greater than 10 more photos");
+                    iterations = 10;
+                }else{
+                    Log.d(TAG, "displayMorePhotos: there is less than 10 more photos");
+                    iterations = mPostList.size() - mResults;
+                }
+
+                //add the new photos to the paginated results
+                for(int i = mResults; i < mResults + iterations; i++){
+                    mPaginatedPosts.add(mPostList.get(i));
+                }
+                mResults = mResults + iterations;
+                mAdapter.notifyDataSetChanged();
+            }
+        }catch (NullPointerException e){
+            Log.e(TAG, "displayPhotos: NullPointerException: " + e.getMessage() );
+        }catch (IndexOutOfBoundsException e){
+            Log.e(TAG, "displayPhotos: IndexOutOfBoundsException: " + e.getMessage() );
+        }
+    }
+
 
     private void setupBottomNavigationView(){
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
@@ -214,13 +275,5 @@ public class ViewPostsListActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(4);
         menuItem.setChecked(true);
     }
-
-
-
-
-
-
-
-
 
 }

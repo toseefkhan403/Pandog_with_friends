@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import es.dmoral.toasty.Toasty;
 
 import android.text.InputType;
 import android.util.Log;
@@ -393,7 +394,7 @@ public class LoginActivity extends AppCompatActivity {
                 String password = mPassword.getText().toString();
 
                 if(isStringNull(email) || isStringNull(password)){
-                    Toast.makeText(mContext, "You must fill out all the fields", Toast.LENGTH_SHORT).show();
+                    Toasty.info(mContext, "You must fill out all the fields", Toast.LENGTH_SHORT,true).show();
                 }else{
                     mProgressBar.setVisibility(View.VISIBLE);
                     mPleaseWait.setVisibility(View.VISIBLE);
@@ -411,8 +412,8 @@ public class LoginActivity extends AppCompatActivity {
                                     if (!task.isSuccessful()) {
                                         Log.w(TAG, "signInWithEmail:failed", task.getException());
 
-                                        Toast.makeText(LoginActivity.this, "Wrong email/password combination",
-                                                Toast.LENGTH_SHORT).show();
+                                        Toasty.error(LoginActivity.this, "Wrong email/password combination",
+                                                Toast.LENGTH_SHORT,true).show();
                                         mProgressBar.setVisibility(View.GONE);
                                         mPleaseWait.setVisibility(View.GONE);
                                     }
@@ -423,7 +424,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                                                 startActivity(intent);
                                             }else{
-                                                Toast.makeText(mContext, "Email is not verified \n check your email inbox.", Toast.LENGTH_SHORT).show();
+                                                Toasty.warning(mContext, "Email is not verified \n check your email inbox.", Toast.LENGTH_SHORT,true).show();
                                                 mProgressBar.setVisibility(View.GONE);
                                                 mPleaseWait.setVisibility(View.GONE);
                                                 mAuth.signOut();
@@ -469,7 +470,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d(TAG, "onClick: sending reset link to " +  input.getText().toString());
 
                         mAuth.sendPasswordResetEmail(input.getText().toString());
-                        Toast.makeText(mContext, "Sending password reset link...", Toast.LENGTH_LONG).show();
+                        Toasty.info(mContext, "Sending password reset link...", Toast.LENGTH_LONG,true).show();
                     }
                 });
 

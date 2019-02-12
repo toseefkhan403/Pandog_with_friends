@@ -13,15 +13,9 @@ import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
-import com.android.toseefkhan.pandog.Search.ReferActivity;
-import com.android.toseefkhan.pandog.Search.SearchActivity;
-import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
-import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Notif;
-import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
-import com.google.android.gms.common.data.ObjectExclusionFilterable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class NotificationsActivity extends AppCompatActivity {
 
@@ -48,8 +42,10 @@ public class NotificationsActivity extends AppCompatActivity {
     private Context mContext = NotificationsActivity.this;
 
     private DatabaseReference myRef;
+    private RecyclerView r;
     private ArrayList<Notif> mNotifsList = new ArrayList<>();
-    private NotifsAdapter adapter;
+    private NotifsAdapter mAdapter;
+    private int count = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,13 +64,25 @@ public class NotificationsActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView r = findViewById(R.id.recycler_view_list_notifs);
+        r = findViewById(R.id.recycler_view_list_notifs);
         r.setLayoutManager(new LinearLayoutManager(mContext));
 
-        adapter = new NotifsAdapter(mNotifsList);
-        r.setAdapter(adapter);
-
         getNotifs();
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    private void hasListEnded(){
+
+        if (mNotifsList.size() == count) {
+            Log.d(TAG, "hasListEnded: making sure you happen only once");
+            Collections.reverse(mNotifsList);
+            mAdapter = new NotifsAdapter(mNotifsList);
+            r.setAdapter(mAdapter);
+        }
     }
 
     private void getNotifs() {
@@ -84,6 +92,9 @@ public class NotificationsActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ss : dataSnapshot.getChildren())
+                            count++;
 
                         for (DataSnapshot ss : dataSnapshot.getChildren()){
 
@@ -97,7 +108,13 @@ public class NotificationsActivity extends AppCompatActivity {
                                     break;
 
                                 case "Challenge":
-                                    getDataForChallenge((String) data.get("challengerUserUid"));
+                                    if (data.get("status").equals("NOT_DECIDED"))
+                                        getDataForChallenger((String) data.get("challengerUserUid"));
+                                    else if (data.get("status").equals("ACCEPTED"))
+                                        getDataForChallenged((String) data.get("challengedUserUid"),(String) data.get("postKey"));
+                                    else if (data.get("status").equals("REJECTED"))
+                                        getDataForRejected((String) data.get("challengedUserUid"));
+
                                     break;
 
                                 case "RESULTS":
@@ -113,6 +130,71 @@ public class NotificationsActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void getDataForRejected(String challengedUserUid) {
+
+        Notif notif = new Notif();
+
+        myRef.child(getString(R.string.dbname_users))
+                .child(challengedUserUid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        User user = dataSnapshot.getValue(User.class);
+                        String username = user.getUsername();
+                        notif.setmTitle(username +" rejected your challenge " + getEmojiByUnicode(0x1F614));
+                        notif.setmDescription("Perhaps you should unfollow him/her " + getEmojiByUnicode(0x1F606));
+                        notif.setmImgUrl(user.getProfile_photo());
+
+                        HashMap<String, Object> obj = new HashMap<>();
+                        obj.put(getString(R.string.intent_user),user);
+                        notif.setmIntentExtra(obj);
+
+                        mNotifsList.add(notif);
+                        hasListEnded();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
+    private void getDataForChallenged(String challengedUserUid, String postKey) {
+
+        Log.d(TAG, "getDataForChallenged: getting data for accepted post");
+        Notif notif = new Notif();
+
+        myRef.child(getString(R.string.dbname_users))
+                .child(challengedUserUid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        User user = dataSnapshot.getValue(User.class);
+                        String username = user.getUsername();
+                        notif.setmTitle("Your post with "+ username +" is up for voting!");
+                        notif.setmDescription("Get maximum likes on your Celfie to win the war " + getEmojiByUnicode(0x1F60E));
+                        notif.setmImgUrl(user.getProfile_photo());
+
+                        HashMap<String, Object> obj = new HashMap<>();
+                        obj.put("intent_post_key",postKey);
+                        notif.setmIntentExtra(obj);
+
+                        mNotifsList.add(notif);
+                        hasListEnded();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
     }
 
     private void getDataForResult(String postKey, String status,HashMap<String,Object> data) {
@@ -139,6 +221,14 @@ public class NotificationsActivity extends AppCompatActivity {
                                 User user = dataSnapshot.getValue(User.class);
 
                                 notif.setmDescription("Your challenge with " + user.getUsername() + " ended in a Draw");
+
+                                HashMap<String, Object> obj = new HashMap<>();
+                                obj.put("intent_post_key",postKey);
+                                notif.setmIntentExtra(obj);
+                                notif.setmImgUrl(user.getProfile_photo());
+
+                                mNotifsList.add(notif);
+                                hasListEnded();
                             }
 
                             @Override
@@ -150,7 +240,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
             case "win":
 
-                notif.setmTitle("Woohooo! You Won!");
+                notif.setmTitle("Woohooo! You Won! " + getEmojiByUnicode(0x1F603));
 
                 myRef.child(getString(R.string.dbname_users))
                         .child((String) data.get("loser"))
@@ -161,6 +251,14 @@ public class NotificationsActivity extends AppCompatActivity {
                                 User user = dataSnapshot.getValue(User.class);
 
                                 notif.setmDescription("You won your challenge against " + user.getUsername());
+
+                                HashMap<String, Object> obj = new HashMap<>();
+                                obj.put("intent_post_key",postKey);
+                                notif.setmIntentExtra(obj);
+                                notif.setmImgUrl(user.getProfile_photo());
+
+                                mNotifsList.add(notif);
+                                hasListEnded();
                             }
 
                             @Override
@@ -172,7 +270,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
             case "lose":
 
-                notif.setmTitle("You lose! Better Luck Next Time!");
+                notif.setmTitle("You lose! Better Luck Next Time! " + getEmojiByUnicode(0x1F613));
 
                 myRef.child(getString(R.string.dbname_users))
                         .child((String) data.get("winner"))
@@ -183,6 +281,14 @@ public class NotificationsActivity extends AppCompatActivity {
                                 User user = dataSnapshot.getValue(User.class);
 
                                 notif.setmDescription("You lost against " + user.getUsername() + ". \nAll you need is a better photographer, trust me.");
+
+                                HashMap<String, Object> obj = new HashMap<>();
+                                obj.put("intent_post_key",postKey);
+                                notif.setmIntentExtra(obj);
+                                notif.setmImgUrl(user.getProfile_photo());
+
+                                mNotifsList.add(notif);
+                                hasListEnded();
                             }
 
                             @Override
@@ -192,112 +298,34 @@ public class NotificationsActivity extends AppCompatActivity {
                         });
                 break;
         }
-
-        myRef.child("Posts")
-                .child(postKey)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot singleSnapshot) {
-
-                        Post post = new Post();
-                        HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-
-                        post.setStatus(objectMap.get("status").toString());
-
-                        if (post.getStatus().equals("INACTIVE"))
-                            post.setWinner(objectMap.get("winner").toString());
-
-                        post.setImage_url(objectMap.get("image_url").toString());
-                        post.setImage_url2(objectMap.get("image_url2").toString());
-
-                        post.setCaption(objectMap.get("caption").toString());
-                        post.setCaption2(objectMap.get("caption2").toString());
-                        post.setPhoto_id(objectMap.get("photo_id").toString());
-                        post.setPhoto_id2(objectMap.get("photo_id2").toString());
-
-                        post.setTags(objectMap.get("tags").toString());
-                        post.setTags2(objectMap.get("tags2").toString());
-
-                        post.setUser_id(objectMap.get("user_id").toString());
-                        post.setUser_id2(objectMap.get("user_id2").toString());
-
-                        post.setChallenge_id(objectMap.get("challenge_id").toString());
-                        post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
-
-                        post.setPostKey(objectMap.get("postKey").toString());
-                        /*String image_url, String caption, String photo_id, String user_id, String tags,
-                String image_url2, String caption2, String photo_id2, String user_id2, String tags2*/
-
-                        List<Like> likesList = new ArrayList<Like>();
-                        for (DataSnapshot dSnapshot : singleSnapshot
-                                .child("likes").getChildren()) {
-                            Like like = new Like();
-                            like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                            likesList.add(like);
-                        }
-                        post.setLikes(likesList);
-
-                        List<Like> likesList2 = new ArrayList<Like>();
-                        for (DataSnapshot dSnapshot : singleSnapshot
-                                .child("likes2").getChildren()) {
-                            Like like = new Like();
-                            like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                            likesList2.add(like);
-                        }
-                        post.setLikes2(likesList2);
-
-                        List<Comment> comments = new ArrayList<Comment>();
-                        for (DataSnapshot dSnapshot : singleSnapshot
-                                .child("comments").getChildren()) {
-                            Comment comment = new Comment();
-                            comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                            comment.setComment(dSnapshot.getValue(Comment.class).getComment());
-                            comments.add(comment);
-                        }
-                        post.setComments(comments);
-
-                        notif.setmImgUrl(post.getImage_url());
-                        HashMap<String, Object> obj = new HashMap<>();
-                        obj.put(getString(R.string.intent_post),post);
-                        notif.setmIntentExtra(obj);
-
-                        mNotifsList.add(notif);
-                        adapter.notifyDataSetChanged();
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
     }
 
-    private void getDataForChallenge(String s) {
+    private void getDataForChallenger(String s) {
 
-        myRef.child(getString(R.string.dbname_users))
-                .child(s)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if(s != null) {
+            myRef.child(getString(R.string.dbname_users))
+                    .child(s)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        User user = dataSnapshot.getValue(User.class);
+                            User user = dataSnapshot.getValue(User.class);
 
-                        HashMap<String,Object> obj = new HashMap<>();
-                        obj.put("ChallengerUser",user);
+                            HashMap<String, Object> obj = new HashMap<>();
+                            obj.put("ChallengerUser", user);
 
-                        mNotifsList.add(new Notif(user.getUsername() + " Challenged you!",
-                                "Put up your selfie and show'em who's the best!",
-                                user.getProfile_photo(),obj));
-                        adapter.notifyDataSetChanged();
-                    }
+                            mNotifsList.add(new Notif(user.getUsername() + " challenged you!",
+                                    "Put up your selfie and show'em who's the best! " + getEmojiByUnicode(0x1F60E),
+                                    user.getProfile_photo(), obj));
+                            hasListEnded();
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+        }
     }
 
     private void getDataForFollowing(String followerUserUid) {
@@ -314,14 +342,14 @@ public class NotificationsActivity extends AppCompatActivity {
                         Notif notif = new Notif();
                         notif.setmImgUrl(user.getProfile_photo());
                         notif.setmTitle(user.getUsername() + " started following you!");
-                        notif.setmDescription("Click here now to challenge him/her with your best Selfie");
+                        notif.setmDescription("Click here now to challenge him/her with your best Selfie " + getEmojiByUnicode(0x1F60E));
 
                         HashMap<String,Object> obj = new HashMap<>();
                         obj.put(getString(R.string.intent_user),user);
                         notif.setmIntentExtra(obj);
 
                         mNotifsList.add(notif);
-                        adapter.notifyDataSetChanged();
+                        hasListEnded();
                     }
 
                     @Override
@@ -338,9 +366,6 @@ public class NotificationsActivity extends AppCompatActivity {
 
         public NotifsAdapter(ArrayList<Notif> notifsList) {
             this.notifsList = notifsList;
-        }
-
-        public NotifsAdapter() {
         }
 
         @NonNull
@@ -376,10 +401,10 @@ public class NotificationsActivity extends AppCompatActivity {
                         i.putExtra(getString(R.string.intent_user),(User)intentExtra.get(getString(R.string.intent_user)));
                         startActivity(i);
 
-                    }else if (intentExtra.containsKey(getString(R.string.intent_post))){
+                    }else if (intentExtra.containsKey("intent_post_key")){
 
                         Intent i = new Intent(mContext, ViewPostActivity.class);
-                        i.putExtra(getString(R.string.intent_post),(Post)intentExtra.get(getString(R.string.intent_post)));
+                        i.putExtra("intent_post_key",(String) intentExtra.get("intent_post_key"));
                         startActivity(i);
 
                     }else if(intentExtra.containsKey("ChallengerUser")){
@@ -410,6 +435,10 @@ public class NotificationsActivity extends AppCompatActivity {
                 view = itemView.findViewById(R.id.main);
             }
         }
+    }
+
+    private String getEmojiByUnicode(int unicode){
+        return new String(Character.toChars(unicode));
     }
 
 }

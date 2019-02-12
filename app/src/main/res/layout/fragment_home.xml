@@ -13,4 +13,23 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:id="@+id/pb"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Follow some people to see their posts here"
+        android:textStyle="italic"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:textColor="@color/purple_400"
+        android:id="@+id/no_posts"/>
+
 </RelativeLayout>

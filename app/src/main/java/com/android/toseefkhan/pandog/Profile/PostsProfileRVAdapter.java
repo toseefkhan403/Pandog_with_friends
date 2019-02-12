@@ -58,8 +58,15 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ShareCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
 
 public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAdapter.ViewHolder>{
+
+
+    public interface OnLoadMoreItemsListener{
+        void onLoadMoreItems();
+    }
+    OnLoadMoreItemsListener mOnLoadMoreItemsListener;
 
     private static final String TAG = "PostsPRVAdapter";
     private Context mContext;
@@ -143,9 +150,9 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                         File file = saveBitMap(mContext, holder.theWholeView);    //which view you want to pass that view as parameter
                         if (file != null) {
                             scanGallery(mContext,file.getAbsolutePath());
-                            Toast.makeText(mContext, "Post saved to gallery", Toast.LENGTH_SHORT).show();
+                            Toasty.success(mContext, "Post saved to gallery", Toast.LENGTH_SHORT,true).show();
                         } else {
-                            Toast.makeText(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT).show();
+                            Toasty.error(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT,true).show();
                         }
 
                     }
@@ -172,7 +179,9 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                             mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
                                         }
                                     });
-                        }catch (Exception e){
+                        }catch (NullPointerException e){
+                            Log.d(TAG, "onClick: Exception " + e.getMessage());
+                        }catch (IllegalStateException e){
                             Log.d(TAG, "onClick: Exception " + e.getMessage());
                         }
                     }
@@ -273,6 +282,8 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                             .child(post.getPostKey())
                             .child("status")
                             .setValue("AWAITING_RESULT");
+                    Log.d(TAG, "onBindViewHolder: i am setting the status to AWAITING_RESULT");
+
 
                     holder.heartHolder.setVisibility(View.GONE);
                     holder.heartHolder2.setVisibility(View.GONE);
@@ -335,7 +346,30 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                             }
                         });
             }
+        }
 
+        if(reachedEndOfList(position)){
+            loadMoreData();
+        }
+
+    }
+
+    private boolean reachedEndOfList(int position){
+        return position == getItemCount() - 1;
+    }
+
+    private void loadMoreData(){
+
+        try{
+            mOnLoadMoreItemsListener = (OnLoadMoreItemsListener) mContext;
+        }catch (ClassCastException e){
+            Log.e(TAG, "loadMoreData: ClassCastException: " +e.getMessage() );
+        }
+
+        try{
+            mOnLoadMoreItemsListener.onLoadMoreItems();
+        }catch (Exception e){
+            Log.e(TAG, "loadMoreData: ClassCastException: " +e.getMessage() );
         }
     }
 
@@ -643,7 +677,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
     @Override
     public int getItemCount() {
-        return mPostList.size() ;
+        return mPostList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{

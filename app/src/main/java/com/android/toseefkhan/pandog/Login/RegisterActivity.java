@@ -5,6 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import es.dmoral.toasty.Toasty;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -82,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean checkInputs(String email, String username, String password){
         Log.d(TAG, "checkInputs: checking inputs for null values.");
         if(email.equals("") || username.equals("") || password.equals("")){
-            Toast.makeText(mContext, "All fields must be filled out.", Toast.LENGTH_SHORT).show();
+            Toasty.info(mContext, "All fields must be filled out.", Toast.LENGTH_SHORT,true).show();
             return false;
         }
         return true;
@@ -149,7 +151,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //add new user to the database
                 firebaseMethods.addNewUser(email, mUsername, "This is my cool bio", "");
 
-                Toast.makeText(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_LONG).show();
+                Toasty.success(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_LONG,true).show();
 
                 mAuth.signOut();
             }

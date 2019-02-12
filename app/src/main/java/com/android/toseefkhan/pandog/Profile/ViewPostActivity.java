@@ -1,18 +1,28 @@
 package com.android.toseefkhan.pandog.Profile;
 
 import android.animation.ObjectAnimator;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.toseefkhan.pandog.Utils.Heart;
+import com.android.toseefkhan.pandog.Utils.ViewLikesActivity;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -21,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
@@ -40,12 +51,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
 
 public class ViewPostActivity extends AppCompatActivity {
 
@@ -61,7 +76,7 @@ public class ViewPostActivity extends AppCompatActivity {
     private int likesCount2 = 0;
     private TextView comments_list,comments_list2;
     private TextView caption1,caption2,timeRemaining;
-    private ImageView heartWhite,heartWhite2,heartRed,heartRed2;
+    private ImageView heartWhite,heartWhite2,heartRed,heartRed2,shareIcon;
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout theWholeView;
     private CardView cardView1;
@@ -72,6 +87,11 @@ public class ViewPostActivity extends AppCompatActivity {
     private RelativeLayout heartHolder, heartHolder2;
 
     private Context mContext = ViewPostActivity.this;
+
+
+    /*
+      pass to this activity either the post or the post_key as intent extra. It will show the post itself.
+     */
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -210,6 +230,7 @@ public class ViewPostActivity extends AppCompatActivity {
         heartWhite2 = findViewById(R.id.image_heart_white2);
         heartRed = findViewById(R.id.image_heart_red);
         heartRed2 = findViewById(R.id.image_heart_red2);
+        shareIcon = findViewById(R.id.shareIcon);
         horizontalScrollView = findViewById(R.id.horizontal_scroll_view);
         theWholeView = findViewById(R.id.theWholeView);
         cardView1 = findViewById(R.id.user1_card_view);
@@ -248,6 +269,94 @@ public class ViewPostActivity extends AppCompatActivity {
 
         setTopToolbar(post);
 
+        shareIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onLongClick: attempting to share the post ");
+
+                Dialog shareImageDialog = new Dialog(mContext);
+                shareImageDialog.setContentView(R.layout.layout_share_post_dialog);
+                TextView saveGallery = shareImageDialog.findViewById(R.id.save_to_gallery);
+                TextView otherApps = shareImageDialog.findViewById(R.id.other_apps);
+                TextView cancel = shareImageDialog.findViewById(R.id.cancel);
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        shareImageDialog.dismiss();
+                    }
+                });
+
+                saveGallery.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        File file = saveBitMap(mContext, theWholeView);    //which view you want to pass that view as parameter
+                        if (file != null) {
+                            scanGallery(mContext,file.getAbsolutePath());
+                            Toasty.success(mContext, "Post saved to gallery", Toast.LENGTH_SHORT,true).show();
+                        } else {
+                            Toasty.error(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT,true).show();
+                        }
+
+                    }
+                });
+
+                otherApps.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar.make(theWholeView,"Attempting to share the post...",Snackbar.LENGTH_LONG).show();
+
+                        try{
+                            File file = saveBitMap(mContext, theWholeView);
+                            MediaScannerConnection.scanFile(mContext,
+                                    new String[] { file.getAbsolutePath() }, null,
+                                    new MediaScannerConnection.OnScanCompletedListener() {
+                                        public void onScanCompleted(String path, Uri uri) {
+                                            Log.d("onScanCompleted", uri.getPath());
+
+                                            Intent shareIntent = new Intent();
+                                            shareIntent.setAction(Intent.ACTION_SEND);
+                                            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : app link goes here");
+                                            shareIntent.setType("image/jpg");
+                                            mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
+                                        }
+                                    });
+                        }catch (Exception e){
+                            Log.d(TAG, "onClick: Exception " + e.getMessage());
+                        }
+                    }
+                });
+
+                shareImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                shareImageDialog.show();
+            }
+        });
+
+
+        likesString1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: navigating to ViewLikesActivity");
+                Intent i = new Intent(mContext, ViewLikesActivity.class);
+                i.putExtra(mContext.getString(R.string.intent_post),post);
+                startActivity(i);
+            }
+        });
+
+        likesString2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: navigating to ViewLikesActivity");
+                Intent i = new Intent(mContext, ViewLikesActivity.class);
+                i.putExtra(mContext.getString(R.string.intent_post),post);
+                i.putExtra("set_to_two",2);
+                startActivity(i);
+            }
+        });
+
+
         final ObjectAnimator animator= ObjectAnimator.ofInt(horizontalScrollView, "scrollX",screenWidth*2 );
         final ObjectAnimator animator2= ObjectAnimator.ofInt(horizontalScrollView, "scrollX",0 );
         animator.setDuration(200);
@@ -285,6 +394,7 @@ public class ViewPostActivity extends AppCompatActivity {
                 mContext.startActivity(i);
             }
         });
+
         comments_list2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -679,6 +789,64 @@ public class ViewPostActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private File saveBitMap(Context context, View drawView){
+        File pictureFileDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Handcare");
+        if (!pictureFileDir.exists()) {
+            boolean isDirectoryCreated = pictureFileDir.mkdirs();
+            if(!isDirectoryCreated)
+                Log.i("ATG", "Can't create directory to save the image");
+            return null;
+        }
+        String filename = pictureFileDir.getPath() +File.separator+ System.currentTimeMillis()+".jpg";
+        File pictureFile = new File(filename);
+        Bitmap bitmap =getBitmapFromView(drawView);
+        try {
+            pictureFile.createNewFile();
+            FileOutputStream oStream = new FileOutputStream(pictureFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, oStream);
+            oStream.flush();
+            oStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.i("TAG", "There was an issue saving the image.");
+        }
+
+        return pictureFile;
+    }
+
+    //create bitmap from view and returns it
+    private Bitmap getBitmapFromView(View view) {
+        //Define a bitmap with the same size as the view
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
+        //Bind a canvas to it
+        Canvas canvas = new Canvas(returnedBitmap);
+        //Get the view's background
+        Drawable bgDrawable =view.getBackground();
+        if (bgDrawable!=null) {
+            //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas);
+        }   else{
+            //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE);
+        }
+        // draw the view on the canvas
+        view.draw(canvas);
+        //return the bitmap
+        return returnedBitmap;
+    }
+
+    // used for scanning gallery
+    private void scanGallery(Context cntx, String path) {
+        try {
+            MediaScannerConnection.scanFile(cntx, new String[] { path },null, new MediaScannerConnection.OnScanCompletedListener() {
+                public void onScanCompleted(String path, Uri uri) {
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

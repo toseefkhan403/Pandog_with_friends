@@ -90,6 +90,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.ExecutionException;
 import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.SlideInRightAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
@@ -535,7 +536,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                                 startActivity(intent);
                                                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
-                                                Toast.makeText(mContext, "Kindly restart the app to see changes.", Toast.LENGTH_SHORT).show();
+                                                Toasty.warning(mContext, "Kindly restart the app to see changes.", Toast.LENGTH_SHORT,true).show();
                                             }
                                         });
 
@@ -869,7 +870,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity.this, available, ERROR_DIALOG_REQUEST);
             dialog.show();
         }else{
-            Toast.makeText(this, "You can't make map requests", Toast.LENGTH_SHORT).show();
+            Toasty.error(this, "You can't make map requests", Toast.LENGTH_SHORT,true).show();
         }
         return false;
     }
