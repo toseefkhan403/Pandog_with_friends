@@ -12,6 +12,7 @@ import com.android.toseefkhan.pandog.Intro.Holder;
 import com.android.toseefkhan.pandog.Map.MapActivity;
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
+import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -101,9 +102,11 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     private FrameLayout root;
     private LayoutInflater inflater;
 
-    //todo optimizing map section - setting levels and creating dynamic markers
+    //todo optimizing map section - setting levels and creating dynamic markers, delete the map (cry emoji)
     //todo fix the trending screen in implementation(my hashtags: their posts)
     //todo clean code (delete unnecessary code from the db and app)
+    //todo add the instagram crop-before-upload thing
+
 
     //todo (Aryal)
     //todo better search, the search should always take the user to the bottom
@@ -200,6 +203,31 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child(getString(R.string.dbname_users))
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+
+                            User user = singleSnapshot.getValue(User.class);
+                            String uid = user.getUser_id();
+
+                            if (uid.contains("something")){
+                                ref.child(getString(R.string.dbname_users)).child(uid).removeValue();
+                            }
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void initImageLoader(){

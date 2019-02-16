@@ -9,6 +9,7 @@
     <com.github.florent37.shapeofview.shapes.RoundRectView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="20dp"
         app:shape_roundRect_borderColor="@color/teal_400"
         app:shape_roundRect_borderWidth="10dp"
         app:shape_roundRect_bottomLeftRadius="60dp"
@@ -25,7 +26,42 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:text="LOSER"
+            android:visibility="gone"
             android:textColor="@color/teal_400"/>
+
+        <RelativeLayout
+            android:layout_width="250dp"
+            android:layout_centerHorizontal="true"
+            android:layout_height="70dp"
+            android:id="@+id/fonts">
+
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupL
+                android:id="@+id/fontViewP"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupO
+                android:id="@+id/fontViewO"
+                android:layout_toRightOf="@+id/fontViewP"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupS
+                android:id="@+id/fontViewS"
+                android:layout_toRightOf="@+id/fontViewO"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+                android:id="@+id/fontViewT"
+                android:layout_toRightOf="@+id/fontViewS"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupR
+                android:id="@+id/fontViewT2"
+                android:layout_toRightOf="@+id/fontViewT"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+
+        </RelativeLayout>
+
 
 
     </com.github.florent37.shapeofview.shapes.RoundRectView>

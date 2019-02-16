@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/white_pink_border_bottom"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/profileToolBar">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/close"
+                    android:src="@drawable/ic_close_black"/>
+
+                <RelativeLayout
+                    android:layout_width="200dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_toEndOf="@+id/close"
+                    android:layout_marginStart="5dp"
+                    android:layout_height="70dp"
+                    android:id="@+id/fonts">
+
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+                        android:id="@+id/fontViewP"
+                        android:layout_width="50dp"
+                        android:layout_height="wrap_content"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupD2
+                        android:id="@+id/fontViewO"
+                        android:layout_toRightOf="@+id/fontViewP"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupI
+                        android:id="@+id/fontViewS"
+                        android:layout_toRightOf="@+id/fontViewO"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"/>
+                    <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupT
+                        android:id="@+id/fontViewT"
+                        android:layout_toRightOf="@+id/fontViewS"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"/>
+                </RelativeLayout>
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="12dp"
+                    android:id="@+id/select"
+                    android:src="@drawable/checkmark"/>
+
+            </RelativeLayout>
+
+
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+</merge>

@@ -72,14 +72,14 @@ public class NextActivity extends AppCompatActivity {
         if (i.hasExtra("challenger_user")){
             Bundle b = i.getExtras();
             if(b!=null){
-               User user = b.getParcelable("challenger_user");
-               Log.d(TAG, "onCreate: user " + user);
-               if (user == null){
-                   setupFriendsList();
-               }else{
-                   mFriendsAdapter = new FriendsAdapter(user,mContext);
-                   friendsListView.setAdapter(mFriendsAdapter);
-               }
+                User user = b.getParcelable("challenger_user");
+                Log.d(TAG, "onCreate: user " + user);
+                if (user == null){
+                    setupFriendsList();
+                }else{
+                    mFriendsAdapter = new FriendsAdapter(user,mContext);
+                    friendsListView.setAdapter(mFriendsAdapter);
+                }
             }
         }else{
             setupFriendsList();

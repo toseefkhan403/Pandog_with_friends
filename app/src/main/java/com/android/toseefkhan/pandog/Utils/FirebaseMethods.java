@@ -468,6 +468,7 @@ public class FirebaseMethods {
 
                     }
                 });
+
         myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
 
     }

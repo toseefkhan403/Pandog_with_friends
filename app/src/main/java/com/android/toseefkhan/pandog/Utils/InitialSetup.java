@@ -62,7 +62,8 @@ public class InitialSetup extends Application {
         mUserList = new ArrayList<>();
         markerOptionsList = new ArrayList<>();
         MapsInitializer.initialize(getApplicationContext());
-        calcUser();
+     //   calcUser();
+        isTaskCompleted = true;
 
     }
 

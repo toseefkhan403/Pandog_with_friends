@@ -95,6 +95,10 @@ dependencies {
     implementation 'com.github.GrenderG:Toasty:1.4.0'
     //calligraphy
     implementation 'uk.co.chrisjenx:calligraphy:2.3.0'
+    //crop-view
+    implementation 'com.fenchtose.nocropper:nocropper:0.3.0'
+    //photo filters
+    implementation 'info.androidhive:imagefilters:1.0.7'
 
     //library for detecting memory leaks : leakcanary
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'

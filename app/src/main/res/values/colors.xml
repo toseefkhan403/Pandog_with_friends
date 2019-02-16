@@ -28,6 +28,8 @@
     <color name="bg_screen4">#c873f4</color>
     <color name="bg_screen5">#a033ff</color>
 
+    <color name="placeholder_background">#222322</color>
+
     <color name="red_400">#EF5350</color>
     <color name="pink_400">#EC407A</color>
     <color name="purple_400">#AB47BC</color>
