@@ -11,7 +11,7 @@
     <item
         android:id="@+id/ic_cloud"
         android:icon="@drawable/ic_cloud"
-        android:title="Map">
+        android:title="Discover">
     </item>
 
     <item

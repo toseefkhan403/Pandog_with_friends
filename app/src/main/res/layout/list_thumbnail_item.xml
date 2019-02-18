@@ -2,22 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/black">
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/filter_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@string/roboto_medium" />
 
     <com.github.florent37.shapeofview.shapes.CircleView
         android:layout_width="wrap_content"
-        app:shape_circle_borderColor="@color/white"
-        app:shape_circle_borderWidth="0.5dp"
-        android:layout_margin="10dp"
         android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/thumbnail"
         android:layout_width="@dimen/thumbnail_size"
         android:layout_height="@dimen/thumbnail_size"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"/>
+        android:scaleType="centerCrop"
+        android:src="@drawable/intro1" />
 
     </com.github.florent37.shapeofview.shapes.CircleView>
 

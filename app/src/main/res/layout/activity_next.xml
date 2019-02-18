@@ -90,42 +90,20 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:id="@+id/i">
 
             <!-- toolbar -->
             <include layout="@layout/snippet_top_edit_screen"/>
 
         </RelativeLayout>
 
-        <com.fenchtose.nocropper.CropperView
-            android:background="#ff282828"
-            android:id="@+id/place_holder_imageview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="50dp"
-            app:nocropper__grid_opacity="0.8"
-            app:nocropper__grid_thickness="0.8dp"
-            android:layout_above="@+id/i"
-            android:layout_marginBottom="50dp"
-            app:nocropper__grid_color="@color/white"
-            app:nocropper__padding_color="#ff282828"/>
-
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:id="@+id/i"
-            android:layout_marginBottom="20dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:background="@color/black">
+            android:layout_height="match_parent"
+            android:layout_below="@+id/i">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/thumbnails"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:clipToPadding="false"/>
+        <include layout="@layout/content_main" />
 
         </RelativeLayout>
 

@@ -1,17 +1,43 @@
 package com.android.toseefkhan.pandog.Share;
 
+import android.Manifest;
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+
+import com.android.toseefkhan.pandog.Utils.BitmapUtils;
+import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
+import com.android.toseefkhan.pandog.Utils.SpacesItemDecoration;
+import com.fenchtose.nocropper.BitmapResult;
+import com.fenchtose.nocropper.CropperCallback;
+import com.fenchtose.nocropper.CropperView;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import es.dmoral.toasty.Toasty;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,6 +49,7 @@ import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.models.User;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,42 +58,58 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.zomato.photofilters.FilterPack;
+import com.zomato.photofilters.imageprocessors.Filter;
+import com.zomato.photofilters.utils.ThumbnailItem;
+import com.zomato.photofilters.utils.ThumbnailsManager;
 
-public class NextActivity extends AppCompatActivity {
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.ThumbnailsAdapterListener {
 
     private static final String TAG = "NextActivity";
     private Context mContext = NextActivity.this;
 
     //firebase
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
-    private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference myRef;
     private FirebaseMethods mFirebaseMethods;
 
     //widgets
     private EditText mCaption;
     private ListView friendsListView;
 
-    //vars
-    private int imageCount = 0;
-    private String imgUrl;
     private Intent intent;
     private ImageView image;
+    private Bitmap finalBitmap;
 
     private FriendsAdapter mFriendsAdapter;
+
+    CropperView imagePreview;
+    Bitmap originalImage;
+    // to backup image with filter applied
+    Bitmap filteredImage;
+
+    // load native image filters library
+    static {
+        System.loadLibrary("NativeImageProcessor");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
 
+        loadEditScreen();
+
         Log.d(TAG, "onCreate: got the chosen image: " + getIntent().getStringExtra(getString(R.string.selected_image)));
         mFirebaseMethods = new FirebaseMethods(NextActivity.this);
         mCaption = findViewById(R.id.caption);
         friendsListView = findViewById(R.id.FriendsListView);
         image = findViewById(R.id.imageShare);
-        setupFirebaseAuth();
 
         Intent i = getIntent();
         if (i.hasExtra("challenger_user")){
@@ -110,6 +153,148 @@ public class NextActivity extends AppCompatActivity {
         }
     }
 
+    private void loadEditScreen() {
+
+        findViewById(R.id.next_activity).setVisibility(View.GONE);
+        findViewById(R.id.r).setVisibility(View.VISIBLE);
+
+        imagePreview = findViewById(R.id.image_preview);
+        RecyclerView recyclerView  = findViewById(R.id.recycler_view);
+
+        loadImage();
+
+        List<ThumbnailItem> thumbnailItemList = new ArrayList<>();
+        ThumbnailAdapter mAdapter = new ThumbnailAdapter(mContext, thumbnailItemList, this);
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        int space = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
+                getResources().getDisplayMetrics());
+        recyclerView.addItemDecoration(new SpacesItemDecoration(space));
+        recyclerView.setAdapter(mAdapter);
+
+        ThumbnailsManager.clearThumbs();
+        thumbnailItemList.clear();
+
+        // add normal bitmap first
+        Log.d(TAG, "loadEditScreen: original image " + originalImage);
+        com.zomato.photofilters.utils.ThumbnailItem thumbnailItem = new com.zomato.photofilters.utils.ThumbnailItem();
+        thumbnailItem.image = originalImage;
+        thumbnailItem.filterName = getString(R.string.filter_normal);
+        ThumbnailsManager.addThumb(thumbnailItem);
+
+        List<Filter> filters = FilterPack.getFilterPack(mContext);
+
+        for (Filter filter : filters) {
+            com.zomato.photofilters.utils.ThumbnailItem tI = new com.zomato.photofilters.utils.ThumbnailItem();
+            tI.image = originalImage;
+            tI.filter = filter;
+            tI.filterName = filter.getName();
+            ThumbnailsManager.addThumb(tI);
+        }
+
+        thumbnailItemList.addAll(ThumbnailsManager.processThumbs(mContext));
+        mAdapter.notifyDataSetChanged();
+
+        findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                finish();
+            }
+        });
+
+        findViewById(R.id.select).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                findViewById(R.id.next_activity).setVisibility(View.VISIBLE);
+                findViewById(R.id.r).animate()
+                        .translationY(findViewById(R.id.r).getHeight())
+                        .alpha(0.0f)
+                        .setDuration(500)
+                        .setListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+                                findViewById(R.id.r).setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
+
+                            }
+                        });
+
+                imagePreview.getCroppedBitmapAsync(new CropperCallback() {
+                    @Override
+                    public void onCropped(Bitmap bitmap) {
+
+                        image.setImageBitmap(bitmap);
+                        finalBitmap = bitmap;
+                    }
+                });
+            }
+        });
+
+        findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.d(TAG, "onClick: changing the rotation");
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                Bitmap bitmap1 = Bitmap.createBitmap(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), matrix, true);
+                imagePreview.setImageBitmap(bitmap1);
+                refreshBitmap();
+            }
+        });
+
+    }
+
+    private void refreshBitmap() {
+
+        imagePreview.getCroppedBitmapAsync(new CropperCallback() {
+            @Override
+            public void onCropped(Bitmap bitmap) {
+                Log.d(TAG, "onCropped: cropped successfully");
+                originalImage = bitmap;
+            }
+        });
+    }
+
+    @Override
+    public void onFilterSelected(Filter filter) {
+
+        //todo filter applying is slow for some images
+        // applying the selected filter
+        filteredImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
+        // preview filtered image
+        imagePreview.setImageBitmap(filter.processFilter(filteredImage));
+
+    }
+
+    private void loadImage() {
+        try {
+            originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(getIntent().getStringExtra(getString(R.string.selected_image))));
+            filteredImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
+            imagePreview.setImageBitmap(originalImage);
+
+        }catch (Exception e){}
+
+    }
+
+
     private void sharePost() {
         Log.d(TAG, "onClick: navigating to the final share screen.");
         //upload the image to firebase
@@ -123,22 +308,22 @@ public class NextActivity extends AppCompatActivity {
         String caption = mCaption.getText().toString();
 
         User selectedUser = (User) mFriendsAdapter.getItem(selectedUserPosition);
-        if (intent.hasExtra(getString(R.string.selected_image))) {
-            intent = getIntent();
-            String image_path = intent.getStringExtra(getString(R.string.selected_image));
-            Uri myUri = Uri.parse(image_path);
-            Log.d(TAG, "onClick: this is the uri from the intent " + myUri);
+        intent = getIntent();
 
-            long timeStamp = System.currentTimeMillis();
-            String imageName = "photo" + timeStamp;
+        //saves the bitmap in memory. Not good
+        Uri myUri = bitmapToUriConverter(finalBitmap);
+        Log.d(TAG, "onClick: this is the uri from the intent " + myUri);
 
-            if (getIntent().hasExtra("post_task")){
-                String challengeKey = getIntent().getStringArrayListExtra("post_task").get(0);
-                mFirebaseMethods.uploadNewPhoto(getString(R.string.post_photo),caption,imageName,null,myUri, selectedUser, challengeKey);
-            }else{
-                mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser);
-            }
+        long timeStamp = System.currentTimeMillis();
+        String imageName = "photo" + timeStamp;
+
+        if (getIntent().hasExtra("post_task")){
+            String challengeKey = getIntent().getStringArrayListExtra("post_task").get(0);
+            mFirebaseMethods.uploadNewPhoto(getString(R.string.post_photo),caption,imageName,null,myUri, selectedUser, challengeKey);
+        }else{
+            mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser);
         }
+
     }
 
     /**
@@ -149,7 +334,8 @@ public class NextActivity extends AppCompatActivity {
         //Image view that is present in the NextActivity
 
         if (intent.hasExtra(getString(R.string.selected_image))) {
-            imgUrl = intent.getStringExtra(getString(R.string.selected_image));
+            //vars
+            String imgUrl = intent.getStringExtra(getString(R.string.selected_image));
             Log.d(TAG, "setImage: got new image uri: " + imgUrl);
 
             ImageLoader imageLoader = ImageLoader.getInstance();
@@ -158,77 +344,19 @@ public class NextActivity extends AppCompatActivity {
     }
 
     private void setupFriendsList() {
-        mFriendsAdapter = new FriendsAdapter(mAuth.getCurrentUser().getUid(), mContext);
+        mFriendsAdapter = new FriendsAdapter(FirebaseAuth.getInstance().getCurrentUser().getUid(), mContext);
         friendsListView.setAdapter(mFriendsAdapter);
     }
 
-
-  /*
-     ------------------------------------ Firebase ---------------------------------------------
-     */
-
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 
-    /**
-     * Setup the firebase auth object
-     */
-    private void setupFirebaseAuth() {
-        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth.");
-        mAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        myRef = mFirebaseDatabase.getReference();
-        Log.d(TAG, "onDataChange: image count: " + imageCount);
-
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-
-
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-                // ...
-            }
-        };
-
-
-        myRef.child(mContext.getString(R.string.dbname_user_photos))
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        imageCount = mFirebaseMethods.getImageCount(dataSnapshot);
-                        Log.d(TAG, "onDataChange: image count: " + imageCount);
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.i("Firebase", databaseError.toString());
-                    }
-                });
-    }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
+    private Uri bitmapToUriConverter(Bitmap mBitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(mContext.getContentResolver(), mBitmap, "CelfieImage", null);
+        return Uri.parse(path);
     }
 }

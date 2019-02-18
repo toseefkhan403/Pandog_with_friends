@@ -44,18 +44,16 @@ dependencies {
 
     implementation 'androidx.multidex:multidex:2.0.0'
 
-
     //  implementation 'com.huangyz0918:androidwm-light:0.1.2'
     implementation 'com.github.DingMouRen:LayoutManagerGroup:1e6f4f96eb'
     implementation 'com.github.florent37:shapeofview:1.3.2'
- //   implementation 'com.instabug.library:instabug:8.0.16'
+    //   implementation 'com.instabug.library:instabug:8.0.16'
     // base module
     implementation 'ru.noties:tumbleweed:1.0.3'
     // android module
     implementation 'ru.noties:tumbleweed-android:1.0.3'
     implementation 'jp.wasabeef:recyclerview-animators:3.0.0'
     implementation 'com.airbnb.android:lottie:3.0.0-beta1'
-
 
     //circle view dependency
     implementation 'de.hdodenhof:circleimageview:2.2.0'
@@ -69,8 +67,8 @@ dependencies {
     //cardview
     implementation 'androidx.cardview:cardview:1.0.0-beta01'
 
-    implementation 'com.google.firebase:firebase-core:16.0.3'	//Analytics
-    implementation 'com.google.firebase:firebase-database:16.0.1'	//Realtime Database
+    implementation 'com.google.firebase:firebase-core:16.0.3'    //Analytics
+    implementation 'com.google.firebase:firebase-database:16.0.1'    //Realtime Database
     implementation 'com.google.firebase:firebase-storage:16.0.1'    //storage
     implementation 'com.google.firebase:firebase-auth:16.0.1'      //auth
 

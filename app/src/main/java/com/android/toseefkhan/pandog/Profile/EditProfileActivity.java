@@ -1,7 +1,10 @@
 package com.android.toseefkhan.pandog.Profile;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
@@ -9,9 +12,17 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.android.toseefkhan.pandog.Share.ThumbnailAdapter;
+import com.android.toseefkhan.pandog.Utils.SpacesItemDecoration;
+import com.fenchtose.nocropper.CropperCallback;
+import com.fenchtose.nocropper.CropperView;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,13 +49,28 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.zomato.photofilters.FilterPack;
+import com.zomato.photofilters.imageprocessors.Filter;
+import com.zomato.photofilters.utils.ThumbnailItem;
+import com.zomato.photofilters.utils.ThumbnailsManager;
 
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-public class EditProfileActivity extends AppCompatActivity {
+public class EditProfileActivity extends AppCompatActivity implements ThumbnailAdapter.ThumbnailsAdapterListener {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     private static final String TAG = "EditProfileFragment";
 
@@ -68,16 +94,23 @@ public class EditProfileActivity extends AppCompatActivity {
     //vars
     private UserSettings mUserSettings;
 
+    CropperView imagePreview;
+    Bitmap originalImage;
+    // to backup image with filter applied
+    Bitmap filteredImage;
+
+    // load native image filters library
+    static {
+        System.loadLibrary("NativeImageProcessor");
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_profile_activity);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            postponeEnterTransition();
-            startPostponedEnterTransition();
-        }
+        postponeEnterTransition();
+        startPostponedEnterTransition();
 
         mProfilePhoto = findViewById(R.id.profile_photo);
         mDisplayName = findViewById(R.id.display_name);
@@ -135,11 +168,6 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
-
     private void getIncomingIntent(){
         Intent intent = getIntent();
 
@@ -147,17 +175,186 @@ public class EditProfileActivity extends AppCompatActivity {
             //if there is an imageUrl attached as an extra, then it was chosen from the gallery/photo fragment
             Log.d(TAG, "getIncomingIntent: New incoming imgUrl");
             if(intent.getStringExtra(getString(R.string.return_to_fragment)).equals(getString(R.string.edit_profile_fragment))){
-                    //set the new profile picture
-                String image_path= intent.getStringExtra(getString(R.string.selected_image));
-                Uri myUri = Uri.parse(image_path);
-                Log.d(TAG, "onClick: this is the uri from the intent "+ myUri);
+                //set the new profile picture
 
-                FirebaseMethods firebaseMethods = new FirebaseMethods(mContext);
-
-                firebaseMethods.uploadNewPhoto(getString(R.string.profile_photo), null, "",
-                        intent.getStringExtra(getString(R.string.selected_image)), myUri);
+                loadEditScreen();
             }
         }
+    }
+
+    private void uploadProfilePhoto(Bitmap bitmap) {
+
+        Uri myUri = bitmapToUriConverter(bitmap);
+        Log.d(TAG, "onClick: this is the uri from the intent "+ myUri);
+
+        FirebaseMethods firebaseMethods = new FirebaseMethods(mContext);
+
+        firebaseMethods.uploadNewPhoto(getString(R.string.profile_photo), null, "",
+                "", myUri);
+    }
+
+    private void loadEditScreen() {
+        findViewById(R.id.next_activity).setVisibility(View.GONE);
+        findViewById(R.id.r).setVisibility(View.VISIBLE);
+
+        imagePreview = findViewById(R.id.image_preview);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+
+        loadImage();
+
+        List<ThumbnailItem> thumbnailItemList = new ArrayList<>();
+        ThumbnailAdapter mAdapter = new ThumbnailAdapter(mContext, thumbnailItemList, this);
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        int space = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8,
+                getResources().getDisplayMetrics());
+        recyclerView.addItemDecoration(new SpacesItemDecoration(space));
+        recyclerView.setAdapter(mAdapter);
+
+        ThumbnailsManager.clearThumbs();
+        thumbnailItemList.clear();
+
+        // add normal bitmap first
+        Log.d(TAG, "loadEditScreen: original image " + originalImage);
+        com.zomato.photofilters.utils.ThumbnailItem thumbnailItem = new com.zomato.photofilters.utils.ThumbnailItem();
+        thumbnailItem.image = originalImage;
+        thumbnailItem.filterName = getString(R.string.filter_normal);
+        ThumbnailsManager.addThumb(thumbnailItem);
+
+        List<Filter> filters = FilterPack.getFilterPack(mContext);
+
+        for (Filter filter : filters) {
+            com.zomato.photofilters.utils.ThumbnailItem tI = new com.zomato.photofilters.utils.ThumbnailItem();
+            tI.image = originalImage;
+            tI.filter = filter;
+            tI.filterName = filter.getName();
+            ThumbnailsManager.addThumb(tI);
+        }
+
+        thumbnailItemList.addAll(ThumbnailsManager.processThumbs(mContext));
+        mAdapter.notifyDataSetChanged();
+
+        findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                findViewById(R.id.next_activity).setVisibility(View.VISIBLE);
+                findViewById(R.id.r).animate()
+                        .translationY(findViewById(R.id.r).getHeight())
+                        .alpha(0.0f)
+                        .setDuration(500)
+                        .setListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+                                findViewById(R.id.r).setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
+
+                            }
+                        });
+            }
+        });
+
+        findViewById(R.id.select).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                findViewById(R.id.next_activity).setVisibility(View.VISIBLE);
+                findViewById(R.id.r).animate()
+                        .translationY(findViewById(R.id.r).getHeight())
+                        .alpha(0.0f)
+                        .setDuration(500)
+                        .setListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animator) {
+                                findViewById(R.id.r).setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animator) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animator) {
+
+                            }
+                        });
+
+                imagePreview.getCroppedBitmapAsync(new CropperCallback() {
+                    @Override
+                    public void onCropped(Bitmap bitmap) {
+
+                        uploadProfilePhoto(bitmap);
+                    }
+                });
+            }
+        });
+
+        findViewById(R.id.rotate_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.d(TAG, "onClick: changing the rotation");
+                Matrix matrix = new Matrix();
+                matrix.postRotate(90);
+                Bitmap bitmap1 = Bitmap.createBitmap(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), matrix, true);
+                imagePreview.setImageBitmap(bitmap1);
+                refreshBitmap();
+            }
+        });
+
+    }
+
+    private void refreshBitmap() {
+
+        imagePreview.getCroppedBitmapAsync(new CropperCallback() {
+            @Override
+            public void onCropped(Bitmap bitmap) {
+                Log.d(TAG, "onCropped: cropped successfully");
+                originalImage = bitmap;
+            }
+        });
+    }
+
+    @Override
+    public void onFilterSelected(Filter filter) {
+
+        //todo filter applying is slow for some images
+        // applying the selected filter
+        filteredImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
+        // preview filtered image
+        imagePreview.setImageBitmap(filter.processFilter(filteredImage));
+
+    }
+
+    private void loadImage() {
+        try {
+            originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(getIntent().getStringExtra(getString(R.string.selected_image))));
+            filteredImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
+            imagePreview.setImageBitmap(originalImage);
+
+        }catch (Exception e){}
+
     }
 
     /**
@@ -328,6 +525,12 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
+    private Uri bitmapToUriConverter(Bitmap mBitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(mContext.getContentResolver(), mBitmap, "CelfieImage", null);
+        return Uri.parse(path);
+    }
 
 
 }

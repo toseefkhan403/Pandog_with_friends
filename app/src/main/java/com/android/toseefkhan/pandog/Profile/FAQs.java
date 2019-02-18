@@ -99,8 +99,6 @@ public class FAQs extends AppCompatActivity{
         List<String> an8 = new ArrayList<>();
         List<String> an9 = new ArrayList<>();
         List<String> an10 = new ArrayList<>();
-        List<String> an11 = new ArrayList<>();
-        List<String> an12 = new ArrayList<>();
 
         an.add(answers_array[0]);
         an2.add(answers_array[1]);
@@ -112,8 +110,6 @@ public class FAQs extends AppCompatActivity{
         an8.add(answers_array[7]);
         an9.add(answers_array[8]);
         an10.add(answers_array[9]);
-        an11.add(answers_array[10]);
-        an12.add(answers_array[11]);
 
         hashMap.put(questions.get(0),an);
         hashMap.put(questions.get(1),an2);
@@ -125,8 +121,6 @@ public class FAQs extends AppCompatActivity{
         hashMap.put(questions.get(7),an8);
         hashMap.put(questions.get(8),an9);
         hashMap.put(questions.get(9),an10);
-        hashMap.put(questions.get(10),an11);
-        hashMap.put(questions.get(11),an12);
 
         ExpandableListViewAdapter adapter = new ExpandableListViewAdapter(questions,hashMap,this);
         expandableListView.setAdapter(adapter);

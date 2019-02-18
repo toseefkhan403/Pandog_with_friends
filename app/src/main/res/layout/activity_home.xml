@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".Home.HomeActivity">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/next_activity">
+
+
     <!-- Top toolbar-->
     <RelativeLayout
         android:layout_width="match_parent"
@@ -15,31 +21,32 @@
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:weightSum="10">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:weightSum="10">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="5"
-            android:id="@+id/homeFrag"
-            android:layout_height="match_parent"
-            android:visibility="invisible"
-            />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:id="@+id/homeFrag"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                />
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_weight="5"
-            android:id="@+id/notifFrag"
-            android:layout_height="match_parent"
-            android:visibility="invisible"
-            />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:id="@+id/notifFrag"
+                android:layout_height="match_parent"
+                android:visibility="invisible"
+                />
 
-    </LinearLayout>
+        </LinearLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:layout_width="match_parent"
+
+        <androidx.viewpager.widget.ViewPager
+            android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/container"
         android:layout_marginTop="55dp"
@@ -49,5 +56,80 @@
     </androidx.viewpager.widget.ViewPager>
     <!--bottom navigation view-->
     <include layout="@layout/layout_bottom_nav_view"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/r"
+        android:visibility="gone"
+        android:layout_height="match_parent"
+        android:background="@color/white">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:scaleType="centerCrop"
+            android:id="@+id/celfie"
+            android:src="@drawable/ic_logo_celfie"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/celfie"
+            android:layout_height="70dp"
+            android:id="@+id/fonts">
+
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupC
+                android:id="@+id/fontViewP"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+                android:id="@+id/fontViewO"
+                android:layout_toRightOf="@+id/fontViewP"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupL
+                android:id="@+id/fontViewS"
+                android:layout_toRightOf="@+id/fontViewO"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupF
+                android:id="@+id/fontViewT"
+                android:layout_toRightOf="@+id/fontViewS"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupI
+                android:id="@+id/fontViewS2"
+                android:layout_toRightOf="@+id/fontViewT"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+                android:id="@+id/fontViewS3"
+                android:layout_toRightOf="@+id/fontViewS2"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="200dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:layout_below="@+id/fonts"
+            android:id="@+id/progress_child"
+            android:layout_height="300dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </RelativeLayout>

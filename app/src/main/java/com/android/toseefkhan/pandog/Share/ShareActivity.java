@@ -17,7 +17,6 @@ import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.android.toseefkhan.pandog.Map.MapActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.Search.SearchActivity;
 import com.google.android.material.snackbar.Snackbar;
@@ -115,7 +114,6 @@ public class ShareActivity extends AppCompatActivity {
             mChosenUser = getUserFromBundle();
             Log.d(TAG, "onCreate: the chosen user " + mChosenUser);
 
-            //todo this user should be automatically selected in the NextActivity
             Toasty.warning(mContext, "Please upload a photo to compete with: " + mChosenUser.getUsername() , Toast.LENGTH_SHORT,true).show();
         }
 

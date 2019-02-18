@@ -1,5 +1,6 @@
 package com.android.toseefkhan.pandog.Home;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,10 +10,10 @@ import android.graphics.drawable.Animatable;
 import androidx.annotation.NonNull;
 
 import com.android.toseefkhan.pandog.Intro.Holder;
-import com.android.toseefkhan.pandog.Map.MapActivity;
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.models.LatLong;
+import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
@@ -25,6 +26,7 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.transition.Slide;
 import android.util.Log;
@@ -66,11 +68,13 @@ import com.takusemba.spotlight.OnTargetStateChangedListener;
 import com.takusemba.spotlight.Spotlight;
 import com.takusemba.spotlight.shape.Circle;
 import com.takusemba.spotlight.target.CustomTarget;
-import com.takusemba.spotlight.target.SimpleTarget;
-import com.takusemba.spotlight.target.Target;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class HomeActivity extends AppCompatActivity implements PostsProfileRVAdapter.OnLoadMoreItemsListener {
 
@@ -88,6 +92,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     private static final String TAG = "HomeActivity";
     private Context mContext=HomeActivity.this;
     private static final int ACTIVITY_NUM = 0;
+    private static int count = 0;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -102,41 +107,31 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     private FrameLayout root;
     private LayoutInflater inflater;
 
-    //todo optimizing map section - setting levels and creating dynamic markers, delete the map (cry emoji)
-    //todo fix the trending screen in implementation(my hashtags: their posts)
-    //todo clean code (delete unnecessary code from the db and app)
-    //todo add the instagram crop-before-upload thing
-
-
     //todo (Aryal)
-    //todo better search, the search should always take the user to the bottom
-    //todo of the list so he can see all the users and not necessarily swipe up for more results.
     //todo delete stuff from user_notif node too (after a challenge is accepted or rejected)
 
     //todo (non-coding stuff)
-    //todo get the maps api key
     //todo a thorough testing of the app and bug fixes
     //todo create dev account on google play; launch the app successfully (*happy emoji)(*another happy emoji)
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
 
-        if (!((InitialSetup)getApplicationContext()).isTaskCompleted)
-        {
-            Intent i = getIntent();
-            if (i.hasExtra("ChallengerUser"))
-            {
-                setContentView(R.layout.activity_home);
-                setupFirebaseAuth();
-                initImageLoader();
-                setupBottomNavigationView();
-                setupViewPager();
-                mViewPager.setCurrentItem(1);
-            }else{
-                setupFirebaseAuth();
-                setContentView(R.layout.progress_anim);
+        Intent intent = getIntent();
+        if (intent.hasExtra("ChallengerUser")) {
+
+            setupFirebaseAuth();
+            initImageLoader();
+            setupBottomNavigationView();
+            setupViewPager();
+            mViewPager.setCurrentItem(1);
+        }else {
+            if (((InitialSetup) getApplicationContext()).isFirstTimeStart) {
+                findViewById(R.id.r).setVisibility(View.VISIBLE);
+                findViewById(R.id.next_activity).setVisibility(View.INVISIBLE);
+
                 SquareDrawable indicator = new BallDrawable(new int[]{getResources().getColor(R.color.deep_purple_400), getResources().getColor(R.color.light_green_400)
                         , getResources().getColor(R.color.deep_orange_400), getResources().getColor(R.color.pink_400)});
 
@@ -147,32 +142,54 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                 child.setBackground(indicator);
                 final Animatable animatable = (Animatable) indicator;
                 animatable.start();
+
+                setupFirebaseAuth();
+                initImageLoader();
+                setupViewPager();
+                setupBottomNavigationView();
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Do something after 6 second
+                        findViewById(R.id.r).animate()
+                                .translationY(findViewById(R.id.r).getHeight())
+                                .alpha(0.0f)
+                                .setDuration(500)
+                                .setListener(new Animator.AnimatorListener() {
+                                    @Override
+                                    public void onAnimationStart(Animator animator) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationEnd(Animator animator) {
+                                        findViewById(R.id.r).setVisibility(View.GONE);
+                                        findViewById(R.id.next_activity).setVisibility(View.VISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onAnimationCancel(Animator animator) {
+
+                                    }
+
+                                    @Override
+                                    public void onAnimationRepeat(Animator animator) {
+
+                                    }
+                                });
+                    }
+                }, 6000);
+                ((InitialSetup) getApplicationContext()).isFirstTimeStart = false;
+            }else{
+                setupFirebaseAuth();
+                initImageLoader();
+                setupBottomNavigationView();
+                setupViewPager();
             }
-        } else {
-            setContentView(R.layout.activity_home);
-            setupFirebaseAuth();
-            initImageLoader();
-            setupBottomNavigationView();
-            setupViewPager();
-
-            Intent intent = getIntent();
-            if (intent.hasExtra("ChallengerUser")) {
-                mViewPager.setCurrentItem(1);
-            }
-
-            mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-            boolean referralScreenShown = mPrefs.getBoolean(referralScreenShownPref, false);
-
-            if (!referralScreenShown) {
-
-                startReferralScreen();
-                SharedPreferences.Editor editor = mPrefs.edit();
-                editor.putBoolean(referralScreenShownPref, true);
-                editor.apply(); // Very important to save the preference
-            }
-
         }
+
+
 
         if (!InternetStatus.getInstance(this).isOnline()) {
 
@@ -187,6 +204,23 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                     .show();
         }
 
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        boolean referralScreenShown = mPrefs.getBoolean(referralScreenShownPref, false);
+
+        if (!referralScreenShown) {
+            Log.d(TAG, "onCreate: referralScreenShown");
+            startReferralScreen();
+            SharedPreferences.Editor editor = mPrefs.edit();
+            if (count == 1) {
+                editor.putBoolean(referralScreenShownPref, true);
+                editor.apply(); // Very important to save the preference
+            }
+            count++;
+        }
+
+        //getTrendingPosts();
+        //setTrendingPosts();
     }
 
     private void setupViewPager() {
@@ -204,30 +238,6 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        ref.child(getString(R.string.dbname_users))
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-
-                            User user = singleSnapshot.getValue(User.class);
-                            String uid = user.getUser_id();
-
-                            if (uid.contains("something")){
-                                ref.child(getString(R.string.dbname_users)).child(uid).removeValue();
-                            }
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
     }
 
     private void initImageLoader(){
@@ -600,8 +610,10 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                                                         editor.putBoolean(tutorialScreenShownPref, true);
                                                         editor.apply(); // Very important to save the preference
                                                     }
-                                                }else
+                                                }else{
                                                     Toasty.error(HomeActivity.this, "You are not eligible for referral bonus", Toast.LENGTH_LONG,true).show();
+                                                    isReferralCorrect = false;
+                                                }
                                             }
 
                                             @Override
@@ -616,7 +628,126 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
                         if (!isReferralCorrect)
                             Toasty.error(mContext, "Incorrect referral code", Toast.LENGTH_LONG,true).show();
+                    }
 
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void getTrendingPosts() {
+
+        ArrayList<String> tagsList = new ArrayList<>();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
+        ref.child("Posts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ss : dataSnapshot.getChildren()){
+
+                            HashMap<String, Object> objectMap = (HashMap<String, Object>) ss.getValue();
+
+                            String tag = objectMap.get("tags").toString();
+                            String tag2 = objectMap.get("tags2").toString();
+
+                            tagsList.add(tag);
+                            tagsList.add(tag2);
+                        }
+
+                        ArrayList<String> wordArrayList = new ArrayList<>();
+
+                        for (int i = 0 ; i<tagsList.size(); i++) {
+                            for (String word : tagsList.get(i).split(",")) {
+                                word = word.replaceAll("\\s+","");
+                                wordArrayList.add(word);
+                            }
+                        }
+
+                        // hashmap to store the frequency of element
+                        Map<String, Integer> hm = new HashMap<String, Integer>();
+
+                        for (String i : wordArrayList) {
+                            Integer j = hm.get(i);
+                            hm.put(i, (j == null) ? 1 : j + 1);
+                        }
+
+                        ArrayList<Map.Entry<String,Integer>> arr = new ArrayList<>();
+                        // displaying the occurrence of elements in the arraylist
+                        for (Map.Entry<String, Integer> val : hm.entrySet()) {
+                            Log.d(TAG, "TAG " + val.getKey() + " : "
+                                    + val.getValue());
+                            arr.add(val);
+                        }
+
+                        Collections.sort(arr, new Comparator<Map.Entry<String, Integer>>() {
+                            @Override
+                            public int compare(Map.Entry<String, Integer> stringIntegerEntry, Map.Entry<String, Integer> t1) {
+                                return t1.getValue().compareTo(stringIntegerEntry.getValue());
+                            }
+                        });
+
+                        for (int i =0 ; i<arr.size(); i++) {
+
+                            Log.d(TAG, "onDataChange: tags " + arr.get(i) + "\n");
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void setTrendingPosts() {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
+        TrendingItem item = new TrendingItem();
+        item.setTitle("#LOL");
+
+        ArrayList<String> postKeysList = new ArrayList<>();
+
+        ref.child("Posts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ss : dataSnapshot.getChildren()){
+
+                            HashMap<String, Object> objectMap = (HashMap<String, Object>) ss.getValue();
+
+                            String tag = objectMap.get("tags").toString();
+                            String tag2 = objectMap.get("tags2").toString();
+
+                            ArrayList<String> wordArrayList = new ArrayList<>();
+
+                            for (String word : tag.split(",")) {
+                                word = word.replaceAll("\\s+","");
+                                wordArrayList.add(word);
+                            }
+
+                            for (String word : tag2.split(",")) {
+                                word = word.replaceAll("\\s+","");
+                                wordArrayList.add(word);
+                            }
+
+                            if (wordArrayList.contains("#LOL")){
+                                //found our post
+                                postKeysList.add(objectMap.get("postKey").toString());
+                            }
+                        }
+
+                        item.setPost_keys_list(postKeysList);
+
+                        ref.child("trending")
+                                .child("LOL")
+                                .setValue(item);
                     }
 
                     @Override

@@ -21,6 +21,8 @@
     <color name="purple">#990099</color>
     <color name="lightgreen">#efbbf9a3</color>
     <color name="background">#E6000000</color>
+    <color name="filter_label_normal">#8A8889</color>
+    <color name="filter_label_selected">#221F20</color>
 
     <color name="bg_screen1">#f64c73</color>
     <color name="bg_screen2">#20d2bb</color>

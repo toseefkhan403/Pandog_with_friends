@@ -3,116 +3,32 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:id="@+id/r">
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="100"
-        android:visibility="visible"
-        android:id="@+id/permission_not_null"
-        android:background="@color/white">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="40"
-            android:id="@+id/user_list_recycler_view">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="60"
-            android:layout_marginBottom="55dp"
-            android:id="@+id/map_container">
-
-            <com.google.android.gms.maps.MapView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/user_list_map" />
-
-            <ImageButton
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/ic_full_screen_black"
-                android:background="@color/white"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="10dp"
-                android:layout_marginEnd="10dp"
-                android:id="@+id/btn_full_screen_map"/>
-
-            <ImageButton
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:src="@drawable/ic_i"
-                android:background="@color/white"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/btn_hide_my_marker"/>
-
-        </RelativeLayout>
-
-
-    </LinearLayout>
-
-    <ProgressBar
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:id="@+id/progressBar"
-        android:layout_centerInParent="true"
-        android:visibility="visible"/>
-
-    <include layout="@layout/layout_bottom_nav_view"/>
-
+    <!-- Top toolbar-->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/permission_null"
-        android:visibility="invisible">
+        android:id="@+id/tabss">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Uh-Oh! Looks like you haven't given the Location Permssion. Enable"
-            android:gravity="center"
-            android:id="@+id/tvNoPerms"
-            android:layout_marginTop="50dp"
-            android:textSize="20sp"/>
+        <include layout="@layout/layout_top_tabs"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" GPS "
-            android:id="@+id/gps"
-            android:textColor="@color/blue"
-            android:layout_below="@+id/tvNoPerms"
-            android:layout_marginStart="50dp"
-            android:textSize="20sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="to continue exploring!"
-            android:layout_toRightOf="@+id/gps"
-            android:layout_below="@+id/tvNoPerms"
-            android:textSize="20sp"/>
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="300dp"
-            android:src="@drawable/heart_red"
-            android:layout_below="@+id/tvNoPerms"
-            android:layout_centerInParent="true"
-            android:padding="10dp"/>
 
     </RelativeLayout>
+
+
+    <androidx.viewpager.widget.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/container"
+        android:layout_below="@+id/tabss"
+        android:layout_marginBottom="60dp">
+
+    </androidx.viewpager.widget.ViewPager>
+
+
+    <include layout="@layout/layout_bottom_nav_view"/>
 
 
 

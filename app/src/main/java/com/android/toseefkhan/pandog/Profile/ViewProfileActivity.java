@@ -346,8 +346,6 @@ public class ViewProfileActivity extends AppCompatActivity {
             }
         });
 
-        //todo set the posts that the user has competed in Ever and display them under his profile
-
     }
 
     private boolean isFollow = false;

@@ -12,9 +12,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,14 +27,34 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MapRecyclerViewAdapter extends RecyclerView.Adapter<MapRecyclerViewAdapter.ViewHolder>{
 
+    public interface OnTopReachedListener {
+
+        void onTopReached(int position);
+    }
+
+    public interface OnScrollDownListener {
+
+        void onScrolledDown();
+    }
+
     private static final String TAG = "MapRecyclerViewAdapter";
     private Context mContext;
     private ArrayList<User> mUserList;
     private String uid;
+    OnTopReachedListener onTopReachedListener;
+    OnScrollDownListener onScrollDownListener;
 
     public MapRecyclerViewAdapter(Context mContext, ArrayList<User> mUserList) {
         this.mContext = mContext;
         this.mUserList = mUserList;
+    }
+
+    public void setOnTopReachedListener(OnTopReachedListener onTopReachedListener){
+        this.onTopReachedListener = onTopReachedListener;
+    }
+
+    public void setOnScrollDownListener(OnScrollDownListener onScrollDownListener){
+        this.onScrollDownListener = onScrollDownListener;
     }
 
     @NonNull
@@ -45,22 +67,24 @@ public class MapRecyclerViewAdapter extends RecyclerView.Adapter<MapRecyclerView
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
 
-        Log.d(TAG, "onBindViewHolder: received user: " + mUserList.get(position));
+        Log.d(TAG, "onBindViewHolder: received user: " + mUserList.get(position).getUser_id());
 
-        //for pp
+        holder.setIsRecyclable(false);
 
         UniversalImageLoader.setImage(mUserList.get(position).getProfile_photo(),holder.pp,null,"",holder.child);
 
         uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
+        holder.bestTag.setVisibility(View.GONE);
+
         if (mUserList.get(position).getLevel().equals("BLACK"))
             holder.bestTag.setVisibility(View.VISIBLE);
 
-        if (mUserList.get(position).getUser_id().equals(uid) )
-            holder.userName.setText(mUserList.get(position).getUsername()+ " (You)");
+        if (mUserList.get(position).getUser_id().equals(uid) ) {
+            holder.userName.setText(mUserList.get(position).getUsername() + " (You)" + "  #"+ String.valueOf(position+1));
+        }
         else
-            holder.userName.setText(mUserList.get(position).getUsername());
-
+            holder.userName.setText(mUserList.get(position).getUsername() + "  #"+ String.valueOf(position+1));
 
         holder.email.setText(mUserList.get(position).getEmail());
 
@@ -79,6 +103,11 @@ public class MapRecyclerViewAdapter extends RecyclerView.Adapter<MapRecyclerView
                 }
             }
         });
+
+        if (position < 10)
+            onTopReachedListener.onTopReached(0);
+        else
+            onScrollDownListener.onScrolledDown();
     }
 
     @Override

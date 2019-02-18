@@ -153,8 +153,6 @@ public class ViewPostActivity extends AppCompatActivity {
 
                         post.setCaption(objectMap.get("caption").toString());
                         post.setCaption2(objectMap.get("caption2").toString());
-                        post.setPhoto_id(objectMap.get("photo_id").toString());
-                        post.setPhoto_id2(objectMap.get("photo_id2").toString());
 
                         post.setTags(objectMap.get("tags").toString());
                         post.setTags2(objectMap.get("tags2").toString());
@@ -214,6 +212,7 @@ public class ViewPostActivity extends AppCompatActivity {
 
     private void setupWidgets() {
         view = findViewById(R.id.view);
+        view.setVisibility(View.INVISIBLE);
         dp1 = findViewById(R.id.profile_photo);
         dp2 = findViewById(R.id.profile_photo2);
         username1 = findViewById(R.id.username);
@@ -263,6 +262,7 @@ public class ViewPostActivity extends AppCompatActivity {
         int time = (int) ((86400000-timediff)/3600000);
         Log.d(TAG, "onBindViewHolder: the values of the hours " + time + " " + timediff);
 
+        view.setVisibility(View.VISIBLE);
         theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth*2,screenHeight));
         cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight));
         cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight));

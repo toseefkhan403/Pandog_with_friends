@@ -24,13 +24,11 @@
                 android:layout_weight="50"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                android:src="@drawable/intro1"
                 android:id="@+id/first_image"/>
 
             <ImageView
                 android:layout_width="0dp"
                 android:layout_weight="50"
-                android:src="@drawable/intro2"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
                 android:id="@+id/second_image"/>

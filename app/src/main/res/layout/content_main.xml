@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <com.fenchtose.nocropper.CropperView
+        android:background="#ff282828"
+        android:id="@+id/image_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:nocropper__grid_opacity="0.8"
+        app:nocropper__grid_thickness="0.8dp"
+        app:nocropper__grid_color="@color/white"
+        app:nocropper__padding_color="#ff282828"/>
+
+    <ImageButton
+        android:id="@+id/rotate_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:padding="8dp"
+        android:layout_margin="16dp"
+        android:layout_alignParentEnd="true"
+        android:background="@color/white"
+        android:scaleType="center"
+        android:src="@drawable/ic_rotate"
+        android:layout_above="@+id/filters"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="1dp"
+        android:layout_below="@+id/image_preview"
+        android:background="@drawable/white_grey_border"
+        android:id="@+id/filters">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="FILTERS"
+            android:layout_centerInParent="true"
+            />
+
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/filters"
+        android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:scrollbars="none" />
+
+
+</RelativeLayout>

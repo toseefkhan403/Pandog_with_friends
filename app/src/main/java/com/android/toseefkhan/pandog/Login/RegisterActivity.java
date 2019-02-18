@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import es.dmoral.toasty.Toasty;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import android.util.Log;
 import android.view.View;
@@ -62,6 +63,11 @@ public class RegisterActivity extends AppCompatActivity {
         init();
     }
 
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     private void init(){
         btnRegister.setOnClickListener(new View.OnClickListener() {

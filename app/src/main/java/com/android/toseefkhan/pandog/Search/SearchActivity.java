@@ -1,15 +1,15 @@
 package com.android.toseefkhan.pandog.Search;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
-import com.android.toseefkhan.pandog.Map.MapActivity;
-import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.Profile.ViewPostsListActivity;
 import com.android.toseefkhan.pandog.Utils.InterceptRelativeLayout;
+import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.dingmouren.layoutmanagergroup.banner.BannerLayoutManager;
 import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
@@ -21,7 +21,6 @@ import androidx.appcompat.widget.SearchView;
 
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,22 +28,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.InternetStatus;
-import com.android.toseefkhan.pandog.Utils.Like;
-import com.android.toseefkhan.pandog.Utils.StringManipulation;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
-import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
-import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -69,10 +61,12 @@ public class SearchActivity extends AppCompatActivity {
     private static final int ACTIVITY_NUM = 3;
     private Context mContext = SearchActivity.this;
     private RecyclerView profilesListView;
-    private ArrayList<Post> mPostList = new ArrayList<>();
+    private RecyclerView vertical;
     private List<ImageView> mImgList = new ArrayList<>();
     private int mLastSelectPosition = 0;
-
+    private TextView textView;
+    private ImageView imageView;
+    private InterceptRelativeLayout mRelaIntercept1;
 
     //for the welcome screen
     SharedPreferences mPrefs;
@@ -83,112 +77,10 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        //setting the banner recycler view on the top
-        InterceptRelativeLayout mRelaIntercept1 = findViewById(R.id.rela_intercept_1);
-        mRelaIntercept1.setIntercept(false);
-        ImageView mImg1 =  findViewById(R.id.img_1);
-        ImageView mImg2 =  findViewById(R.id.img_2);
-        ImageView mImg3 =  findViewById(R.id.img_3);
-        ImageView mImg4 =  findViewById(R.id.img_4);
-        mImgList.add(mImg1);
-        mImgList.add(mImg2);
-        mImgList.add(mImg3);
-        mImgList.add(mImg4);
-
-
-        RecyclerView mRecycler_1 = findViewById(R.id.recycler1);
-        MyAdapter myAdapter = new MyAdapter();
-        BannerLayoutManager bannerLayoutManager = new BannerLayoutManager(this,mRecycler_1,4,OrientationHelper.HORIZONTAL);
-        mRecycler_1.setLayoutManager(bannerLayoutManager);
-        mRecycler_1.setAdapter(myAdapter);
-        bannerLayoutManager.setOnSelectedViewListener(new BannerLayoutManager.OnSelectedViewListener() {
-            @Override
-            public void onSelectedView(View view, int position) {
-                changeUI(position);
-            }
-        });
-        changeUI(0);
-
-        final RecyclerView vertical = findViewById(R.id.holder_vertical);
-        vertical.setLayoutManager(new LinearLayoutManager(mContext));
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-        ref.child("Posts")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
-                            Post post = new Post();
-                            HashMap<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-
-                            post.setImage_url(objectMap.get("image_url").toString());
-                            post.setImage_url2(objectMap.get("image_url2").toString());
-
-                            post.setCaption(objectMap.get("caption").toString());
-                            post.setCaption2(objectMap.get("caption2").toString());
-                            post.setPhoto_id(objectMap.get("photo_id").toString());
-                            post.setPhoto_id2(objectMap.get("photo_id2").toString());
-
-                            post.setTags(objectMap.get("tags").toString());
-                            post.setTags2(objectMap.get("tags2").toString());
-
-                            post.setUser_id(objectMap.get("user_id").toString());
-                            post.setUser_id2(objectMap.get("user_id2").toString());
-
-                            post.setChallenge_id(objectMap.get("challenge_id").toString());
-                            post.setStatus(objectMap.get("status").toString());
-
-                            if (post.getStatus().equals("INACTIVE"))
-                                post.setWinner(objectMap.get("winner").toString());
-
-                            post.setTimeStamp(Long.parseLong(objectMap.get("timeStamp").toString()));
-
-                            post.setPostKey(objectMap.get("postKey").toString());
-
-                            List<Like> likesList = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes").getChildren()) {
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList.add(like);
-                            }
-                            post.setLikes(likesList);
-
-                            List<Like> likesList2 = new ArrayList<Like>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("likes2").getChildren()) {
-                                Like like = new Like();
-                                like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                                likesList2.add(like);
-                            }
-                            post.setLikes2(likesList2);
-
-                            List<Comment> comments = new ArrayList<Comment>();
-                            for (DataSnapshot dSnapshot : singleSnapshot
-                                    .child("comments").getChildren()) {
-                                Comment comment = new Comment();
-                                comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                                comment.setComment(dSnapshot.getValue(Comment.class).getComment());
-                                comments.add(comment);
-                            }
-                            post.setComments(comments);
-
-                            mPostList.add(post);
-                            Log.d(TAG, "onDataChange: singlesnapshot.getValue " + post);
-                        }
-                        VerticalRecyclerViewAdapter adapter = new VerticalRecyclerViewAdapter(mContext, mPostList);
-                        vertical.setAdapter(adapter);
-                 //       ArrayList<ArrayList<String>> arrayLists = new ArrayList<ArrayList<String>>();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+        initBannerRV();
+        initVerticalRV();
 
         SearchView profileSearchView = findViewById(R.id.searchProfiles);
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         profilesListView = findViewById(R.id.ProfileList);
         final SearchAdapter adapter = new SearchAdapter(mContext, user.getUid());
@@ -197,9 +89,9 @@ public class SearchActivity extends AppCompatActivity {
         profilesListView.setAdapter(a);
         profilesListView.setItemAnimator(new SlideInUpAnimator());
 
-        profilesListView.setLayoutManager(new EchelonLayoutManager(mContext));
-        TextView t = findViewById(R.id.t);
-        ImageView i= findViewById(R.id.trending);
+        profilesListView.setLayoutManager(new LinearLayoutManager(mContext));
+        textView = findViewById(R.id.t);
+        imageView = findViewById(R.id.trending);
 
         profileSearchView.setActivated(true);
         profileSearchView.onActionViewExpanded();
@@ -214,10 +106,11 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextChange(String newText) {
                 adapter.filter(newText);
+
                 vertical.setVisibility(View.GONE);
                 profilesListView.setVisibility(View.VISIBLE);
-                t.setVisibility(View.GONE);
-                i.setVisibility(View.GONE);
+                textView.setVisibility(View.GONE);
+                imageView.setVisibility(View.GONE);
                 mRelaIntercept1.setVisibility(View.GONE);
 
                 return true;
@@ -233,8 +126,8 @@ public class SearchActivity extends AppCompatActivity {
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
-        // second argument is the default to use if the preference can't be found
-        Boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefSearch, false);
+        // second argument is the default to use if the preference can'textView be found
+        boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefSearch, false);
 
         if (!welcomeScreenShown) {
 
@@ -244,6 +137,107 @@ public class SearchActivity extends AppCompatActivity {
             editor.apply(); // Very important to save the preference
         }
 
+    }
+
+    private void initBannerRV() {
+
+        //setting the banner recycler view on the top
+        mRelaIntercept1 = findViewById(R.id.rela_intercept_1);
+        mRelaIntercept1.setIntercept(false);
+        ImageView mImg1 =  findViewById(R.id.img_1);
+        ImageView mImg2 =  findViewById(R.id.img_2);
+        ImageView mImg3 =  findViewById(R.id.img_3);
+        ImageView mImg4 =  findViewById(R.id.img_4);
+        mImgList.add(mImg1);
+        mImgList.add(mImg2);
+        mImgList.add(mImg3);
+        mImgList.add(mImg4);
+
+        RecyclerView mRecycler_1 = findViewById(R.id.recycler1);
+        BannerLayoutManager bannerLayoutManager = new BannerLayoutManager(this,mRecycler_1,4,OrientationHelper.HORIZONTAL);
+        mRecycler_1.setLayoutManager(bannerLayoutManager);
+        bannerLayoutManager.setOnSelectedViewListener(new BannerLayoutManager.OnSelectedViewListener() {
+            @Override
+            public void onSelectedView(View view, int position) {
+                changeUI(position);
+            }
+        });
+        changeUI(0);
+
+        ArrayList<String> imgUrls = new ArrayList<>();
+        ArrayList<TrendingItem> trendingItems = new ArrayList<>();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("search_banner")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ss : dataSnapshot.getChildren()){
+
+                            HashMap<String,Object> objectMap = (HashMap<String,Object>) ss.getValue();
+
+                            imgUrls.add(objectMap.get("imageUrl").toString());
+
+                            String trendingTitle = objectMap.get("trending_title").toString();
+
+                            ref.child("trending")
+                                    .child(trendingTitle)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            TrendingItem item = dataSnapshot.getValue(TrendingItem.class);
+                                            trendingItems.add(item);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                        }
+
+                        MyAdapter myAdapter = new MyAdapter(imgUrls,trendingItems);
+                        mRecycler_1.setAdapter(myAdapter);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
+    private void initVerticalRV() {
+
+        vertical = findViewById(R.id.holder_vertical);
+        vertical.setLayoutManager(new LinearLayoutManager(mContext));
+
+        ArrayList<TrendingItem> trendingItemsList = new ArrayList<>();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        reference.child("trending")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ss : dataSnapshot.getChildren()){
+
+                            TrendingItem item = ss.getValue(TrendingItem.class);
+
+                            trendingItemsList.add(item);
+                        }
+
+                        VerticalRecyclerViewAdapter adapter = new VerticalRecyclerViewAdapter(mContext,trendingItemsList);
+                        vertical.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void changeUI(int position){
@@ -285,7 +279,7 @@ public class SearchActivity extends AppCompatActivity {
             searchItemViewHolder.setIsRecyclable(false);
             User user = getItem(i);
 
-            searchItemViewHolder.userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
+            searchItemViewHolder.userNameView.setText(user.getUsername());
             searchItemViewHolder.userEmailView.setText(user.getEmail());
             String PhotoUrl = user.getProfile_photo();
             UniversalImageLoader.setImage(PhotoUrl, searchItemViewHolder.photoView, null, "",
@@ -298,7 +292,20 @@ public class SearchActivity extends AppCompatActivity {
                 Intent intent = new Intent(SearchActivity.this, ViewProfileActivity.class);
                 intent.putExtra(getString(R.string.intent_user), ProfileList.get(i));
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                ProfileList.clear();
                 startActivity(intent);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        vertical.setVisibility(View.VISIBLE);
+                        profilesListView.setVisibility(View.GONE);
+                        textView.setVisibility(View.VISIBLE);
+                        imageView.setVisibility(View.VISIBLE);
+                        mRelaIntercept1.setVisibility(View.VISIBLE);
+                    }
+                },1000);
+
             });
         }
 
@@ -348,7 +355,6 @@ public class SearchActivity extends AppCompatActivity {
             public ProfileFilter() {
             }
 
-
             public void filter(final CharSequence constraint) {
 
                 if (constraint != null && constraint.length() > 0) {
@@ -376,10 +382,15 @@ public class SearchActivity extends AppCompatActivity {
                         }
                     });
 
+                }else{
+                    Log.d(TAG, "filter: list got cleared.");
+//                    ProfileList.clear();
+//                    notifyDataSetChanged();
+                    Intent i = new Intent(mContext,SearchActivity.class);
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                 }
-
             }
-
         }
     }
 
@@ -438,18 +449,12 @@ public class SearchActivity extends AppCompatActivity {
     class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
         private ArrayList<String> mUrls;
-        private ArrayList<String> mTitles;
+        private ArrayList<TrendingItem> mList;
 
-        private int[] imgs = {R.drawable.referandearn,R.drawable.ic_circle,R.drawable.ic_logo_celfie,R.drawable.ic_android};
-
-        public MyAdapter() {
+        public MyAdapter(ArrayList<String> mUrls, ArrayList<TrendingItem> mList) {
+            this.mUrls = mUrls;
+            this.mList = mList;
         }
-
-//        public MyAdapter(Context mContext, ArrayList<String> mUrls, ArrayList<String> mTitles) {
-//            this.mContext = mContext;
-//            this.mUrls = mUrls;
-//            this.mTitles = mTitles;
-//        }
 
         @NonNull
         @Override
@@ -463,29 +468,65 @@ public class SearchActivity extends AppCompatActivity {
         public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
 
             holder.setIsRecyclable(false);
-//            UniversalImageLoader.setImage(mUrls.get(position),holder.img,null,"",null);
-//            holder.text.setText(mTitles.get(position));
-//            holder.img.setImageResource(imgs[position % 4]);
-//            holder.text.
 
-            holder.img.setImageResource(imgs[position%4]);
+            switch (position%4){
 
-            //take to refer screen
-            if (position%4 == 0) {
-                holder.img.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        //take to referral activity
-                        Intent i = new Intent(mContext, ReferActivity.class);
-                        i.putExtra("position", position);
-                        startActivity(i);
-                    }
-                });
-            }else {
-                //take the user to viewPostsListActivity where he can see the trending stuff
-//                Intent i = new Intent(mContext, ViewPostsListActivity.class);
-//                i.putExtra("trending", holder.text.getText().toString());
-//                startActivity(i);
+                case 0:
+                    holder.img.setImageResource(R.drawable.referandearn);
+                    holder.img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //take to referral activity
+                            Intent i = new Intent(mContext, ReferActivity.class);
+                            startActivity(i);
+                        }
+                    });
+                    break;
+
+                case 1:
+                    UniversalImageLoader.setImage(mUrls.get(0),holder.img,null,"",null);
+                    holder.img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                            i.putExtra("post_keys_list",mList.get(0).getPost_keys_list());
+                            i.putExtra("title",mList.get(0).getTitle());
+                            startActivity(i);
+                            overridePendingTransition(R.anim.pull,R.anim.push);
+                        }
+                    });
+
+                    break;
+
+                case 2:
+                    UniversalImageLoader.setImage(mUrls.get(1),holder.img,null,"",null);
+                    holder.img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                            i.putExtra("post_keys_list",mList.get(1).getPost_keys_list());
+                            i.putExtra("title",mList.get(1).getTitle());
+                            startActivity(i);
+                            overridePendingTransition(R.anim.pull,R.anim.push);
+                        }
+                    });
+
+                    break;
+
+                case 3:
+                    UniversalImageLoader.setImage(mUrls.get(2),holder.img,null,"",null);
+                    holder.img.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                            i.putExtra("post_keys_list",mList.get(2).getPost_keys_list());
+                            i.putExtra("title",mList.get(2).getTitle());
+                            startActivity(i);
+                            overridePendingTransition(R.anim.pull,R.anim.push);
+                        }
+                    });
+
+                    break;
             }
 
         }
@@ -497,11 +538,9 @@ public class SearchActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             ImageView img;
-            TextView text;
             public ViewHolder(View itemView) {
                 super(itemView);
                 img = itemView.findViewById(R.id.img);
-                text = itemView.findViewById(R.id.text);
             }
         }
     }

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="wrap_content"
-    tools:ignore="MissingPrefix"
     android:layout_height="wrap_content">
 
 
@@ -23,9 +22,49 @@
             android:layout_height="wrap_content"
             android:textSize="80sp"
             android:padding="25dp"
-            fontPath = "fonts/Comic Neue.ttf"
             android:text="WINNER"
+            android:visibility="gone"
             android:textColor="@color/colorAccent"/>
+
+        <RelativeLayout
+            android:layout_width="300dp"
+            android:layout_centerHorizontal="true"
+            android:layout_height="70dp"
+            android:layout_margin="17dp"
+            android:id="@+id/fonts">
+
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupW
+                android:id="@+id/fontViewP"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupI
+                android:id="@+id/fontViewO"
+                android:layout_toRightOf="@+id/fontViewP"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupN2
+                android:id="@+id/fontViewS"
+                android:layout_toRightOf="@+id/fontViewO"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupN
+                android:id="@+id/fontViewT"
+                android:layout_toRightOf="@+id/fontViewS"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupE
+                android:id="@+id/fontViewT2"
+                android:layout_toRightOf="@+id/fontViewT"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupR
+                android:id="@+id/fontViewT3"
+                android:layout_toRightOf="@+id/fontViewT2"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"/>
+
+        </RelativeLayout>
+
 
 
     </com.github.florent37.shapeofview.shapes.RoundRectView>

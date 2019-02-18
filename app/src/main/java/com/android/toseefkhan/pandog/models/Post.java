@@ -11,14 +11,12 @@ public class Post implements Parcelable{
 
     private String image_url;
     private String caption;
-    private String photo_id;
     private String user_id;
     private String tags;
     private List<Like> likes;
 
     private String image_url2;
     private String caption2;
-    private String photo_id2;
     private String user_id2;
     private String tags2;
     private List<Like> likes2;
@@ -32,16 +30,14 @@ public class Post implements Parcelable{
     public Post() {
     }
 
-    public Post(String image_url, String caption, String photo_id, String user_id, String tags,
-                String image_url2, String caption2, String photo_id2, String user_id2, String tags2) {
+    public Post(String image_url, String caption, String user_id, String tags,
+                String image_url2, String caption2, String user_id2, String tags2) {
         this.image_url = image_url;
         this.caption = caption;
-        this.photo_id = photo_id;
         this.user_id = user_id;
         this.tags = tags;
         this.image_url2 = image_url2;
         this.caption2 = caption2;
-        this.photo_id2 = photo_id2;
         this.user_id2 = user_id2;
         this.tags2 = tags2;
     }
@@ -50,13 +46,11 @@ public class Post implements Parcelable{
     protected Post(Parcel in) {
         image_url = in.readString();
         caption = in.readString();
-        photo_id = in.readString();
         user_id = in.readString();
         tags = in.readString();
         likes = in.createTypedArrayList(Like.CREATOR);
         image_url2 = in.readString();
         caption2 = in.readString();
-        photo_id2 = in.readString();
         user_id2 = in.readString();
         tags2 = in.readString();
         likes2 = in.createTypedArrayList(Like.CREATOR);
@@ -112,14 +106,6 @@ public class Post implements Parcelable{
         this.caption = caption;
     }
 
-    public String getPhoto_id() {
-        return photo_id;
-    }
-
-    public void setPhoto_id(String photo_id) {
-        this.photo_id = photo_id;
-    }
-
     public String getUser_id() {
         return user_id;
     }
@@ -160,14 +146,6 @@ public class Post implements Parcelable{
         this.caption2 = caption2;
     }
 
-    public String getPhoto_id2() {
-        return photo_id2;
-    }
-
-    public void setPhoto_id2(String photo_id2) {
-        this.photo_id2 = photo_id2;
-    }
-
     public String getUser_id2() {
         return user_id2;
     }
@@ -205,13 +183,11 @@ public class Post implements Parcelable{
         return "Post{" +
                 "image_url='" + image_url + '\'' +
                 ", caption='" + caption + '\'' +
-                ", photo_id='" + photo_id + '\'' +
                 ", user_id='" + user_id + '\'' +
                 ", tags='" + tags + '\'' +
                 ", likes=" + likes +
                 ", image_url2='" + image_url2 + '\'' +
                 ", caption2='" + caption2 + '\'' +
-                ", photo_id2='" + photo_id2 + '\'' +
                 ", user_id2='" + user_id2 + '\'' +
                 ", tags2='" + tags2 + '\'' +
                 ", likes2=" + likes2 +
@@ -255,13 +231,11 @@ public class Post implements Parcelable{
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(image_url);
         parcel.writeString(caption);
-        parcel.writeString(photo_id);
         parcel.writeString(user_id);
         parcel.writeString(tags);
         parcel.writeTypedList(likes);
         parcel.writeString(image_url2);
         parcel.writeString(caption2);
-        parcel.writeString(photo_id2);
         parcel.writeString(user_id2);
         parcel.writeString(tags2);
         parcel.writeTypedList(likes2);

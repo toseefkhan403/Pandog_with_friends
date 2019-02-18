@@ -112,7 +112,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     public void onBindViewHolder(@NonNull final ViewHolder holder,final int position) {
 
         final Post post = mPostList.get(position);
-        holder.setIsRecyclable(false);
+        holder.setIsRecyclable(true);
         Log.d(TAG, "onBindViewHolder: postLikes " + post.getLikes());
         Log.d(TAG, "onBindViewHolder: post " + post.getWinner());
 

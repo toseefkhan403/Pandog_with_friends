@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+
+import com.android.toseefkhan.pandog.Map.MapActivity2;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import android.util.Log;
 import android.view.MenuItem;
@@ -49,7 +51,7 @@ public class BottomNavViewHelper {
                         break;
 
                     case R.id.ic_cloud:
-                        Intent intent2  = new Intent(context, MapActivity.class);//ACTIVITY_NUM = 1
+                        Intent intent2  = new Intent(context, MapActivity2.class);//ACTIVITY_NUM = 1
                         context.startActivity(intent2);
                         activity.overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
                         break;

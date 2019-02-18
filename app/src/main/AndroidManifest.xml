@@ -40,6 +40,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".Map.MapActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".Map.MapActivity2"
+            android:screenOrientation="portrait"/>
         <activity android:name=".Profile.ViewPostActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".Profile.ProfileActivity"

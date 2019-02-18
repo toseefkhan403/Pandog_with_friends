@@ -20,15 +20,16 @@
     <string name="db_timestamp">time_stamp</string>
     <string name="dbname_user_account_settings">user_account_settings</string>
     <string name="user_profile_picture">User Profile Picture</string>
-    <string name="dbname_photos">photos</string>
     <string name="db_panda_points">panda_points</string>
-    <string name="dbname_user_photos">user_photos</string>
     <string name="db_level">level</string>
     <string name="field_username">username</string>
     <string name="field_email">email</string>
     <string name="field_display_name">display_name</string>
     <string name="field_description">description</string>
     <string name="field_user_id">user_id</string>
+
+    <string name="roboto_medium">sans-serif-medium</string>
+    <string name="filter_normal">Normal</string>
 
     <!-- Intent Extras -->
     <string name="calling_activity">calling_activity</string>
@@ -62,11 +63,9 @@
         <item>How will I get the results?</item>
         <item>What will I get if I win?</item>
         <item>What are the different levels in the app?</item>
-        <item>What does the Map feature signify in the app?</item>
-        <item>What does the list over the Map mean?</item>
-        <item>Why are there icons of different colors and sizes on the Map?</item>
-        <item>If i manage to get the ultimate black badge, will it always stay a black one?</item>
-        <item>How many people own the ultimate BLACK badge at a time?</item>
+        <item>What does the Discover feature signify in the app?</item>
+        <item>If i manage to get the Black badge, will it always stay a black one?</item>
+        <item>How many people own the BLACK badge at a time?</item>
         <item>How to log out from the app?</item>
     </string-array>
 
@@ -75,35 +74,27 @@
         <item>Celfie is all about giddiness and playfulness along with an awesome opportunity to become popular while having fun.</item>
         <item>The battle section is all heated up with the face-offs of the best pictures of our users. Here you can actually participate or vote for ones you like.</item>
         <item>To start a battle you have to follow the given steps- \n
-1. Follow the person you want to compete with either from the search screen or from the map screen. \n
+1. Follow the person you want to compete with either from the search screen or from the Discover screen. \n
 2. Go to the share screen, upload the photo and select the person you want to compete with.
     (You can select only one person at a time) \n
 3. If he/she accepts your request, your post gets displayed.</item>
         <item>Your post stays for 24 hours in the feed of all of your followers and all of the followers of your friend with whom you have chosen to compete. Whoever gets the maximum
         likes, wins. Both of you will be notified about the results when the duration of your post is over.</item>
-        <item>If you win, you will get the precious flames that determine your visibility on the Map section of the app.
+        <item>If you win, you will get the precious flames that determine your visibility in the Discover section of the app.
         You will get +5 flames if you win a challenge, +1 if you receive a follower, and -2 if you lose a challenge. Flames will determine your popularity in the app,
-        so make sure you win maximum of your battles and gain more followers at the same time.</item>
+        so make sure you win maximum of your battles and gain more followers at the same time!</item>
         <item>The different levels in the app reflect the popularity, wins a person is getting on his/her posts. As your wins per post keep on
-            increasing, then your profile is automatically updated to the next level.</item>
-        <item>Its a unique feature to know the most popular person of your locality or any other place. This keeps on updating depending upon the maximum wins got by a person in a particular locality.</item>
-        <item>This list tells you the top contenders in the Map area that you are viewing.As you zoom out or move the map, new people who are more popular can be seen in
-            the list. The person at the top is the most popular.</item>
-        <item>Initially, when you join the app, you are on level 1 which is a GREY BADGE(the smallest guy). It means that on the Map screen, your location will be shown with a grey coloured marker.
+            increasing, then your profile is automatically updated to the next level. Initially, when you join the app, you are on level 1 which is a GREY BADGE(the smallest guy).
         As you use the app actively and stay updated, get more wins and followers, then you will be updated to level 2 that is a GREEN BADGE.
-        Subsequently, level 3 BLUE BADGE, level 4 PURPLE BADGE and then level 5.. the ultimate BLACK BADGE, which can clearly be seen on the Map as it is the biggest of them all.
-            Of course, if you manage to get the BLACK BADGE, your profile will gain more attention among the audience.
-</item>
+        Subsequently, level 3 is BLUE BADGE, level 4 is PURPLE BADGE and then level 5 is the BLACK BADGE.
+            Of course, if you manage to get the BLACK BADGE, your profile will gain more attention among the audience.</item>
+        <item>It is a leaderboard feature to know the most popular person of your locality or any other place. This keeps on updating depending upon the maximum wins received by a person in a particular locality.</item>
         <item>Unfortunately NO. The badge colour that you own depends upon the current users of the app which keep updating every second. And that is the reason that the battle ground is going to stay heated up every time you show up.
-         This option also provides equal opportunity to everyone using the app. You joined the app today and showed up more often then you may get the ultimate BLACK badge and the guy owning one and not showing up will be replaced.
+         This option also provides equal opportunity to everyone using the app. You joined the app today and showed up more often then you may get the BLACK badge and the guy owning one and not showing up will be replaced.
 </item>
-        <item>The ultimate BLACK badge is owned by the top 20% users of the Celfie app.</item>
+        <item>The BLACK badge is owned by the top 20% users of the Celfie app.</item>
         <item>Click the "EDIT YOUR PROFILE" button, go to the bottom and log out of the app.</item>
     </string-array>
-
-
-
-
 
 
 </resources>

@@ -3,7 +3,6 @@ package com.android.toseefkhan.pandog.models;
 public class Challenge {
     private String challengerUserUid;
     private String challengedUserUid;
-    private String photoKey;
     private String postKey;
     private String status;
     private String challengerName;
@@ -13,10 +12,9 @@ public class Challenge {
     private String caption;
     private String tags;
 
-    public Challenge(String challengerUserUid, String challengedUserUid, String photoKey, String photoUrl, String caption, String tags) {
+    public Challenge(String challengerUserUid, String challengedUserUid, String photoUrl, String caption, String tags) {
         this.challengerUserUid = challengerUserUid;
         this.challengedUserUid = challengedUserUid;
-        this.photoKey = photoKey;
         this.photoUrl = photoUrl;
         this.caption = caption;
         this.tags = tags;
@@ -103,14 +101,6 @@ public class Challenge {
 
     public void setChallengedUserUid(String challengedUserUid) {
         this.challengedUserUid = challengedUserUid;
-    }
-
-    public String getPhotoKey() {
-        return photoKey;
-    }
-
-    public void setPhotoKey(String photoKey) {
-        this.photoKey = photoKey;
     }
 
 }

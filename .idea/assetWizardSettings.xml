@@ -24,6 +24,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
+                                                <entry key="paddingPercent" value="-5" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -34,7 +35,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio1/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_check_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio1/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_arrow_upward_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -44,7 +45,8 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="checkmark" />
+                                      <entry key="outputName" value="ic_up_arrow" />
+                                      <entry key="theme" value="HOLO_DARK" />
                                       <entry key="themeColor" value="d8cdd8" />
                                     </map>
                                   </option>

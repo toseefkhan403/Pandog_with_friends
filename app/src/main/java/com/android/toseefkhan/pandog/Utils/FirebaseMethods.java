@@ -24,7 +24,6 @@ import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.Challenge;
-import com.android.toseefkhan.pandog.models.Photo;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
@@ -423,23 +422,10 @@ public class FirebaseMethods {
         Log.d(TAG, "addPhotoToDatabase: adding photo to database.");
 
         String tags = StringManipulation.getTags(caption);
-        final String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
-        Photo photo = new Photo();
-        photo.setCaption(caption);
-        photo.setDate_created(getTimestamp());
-        photo.setImage_path(url);
-        photo.setTags(tags);
-        photo.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        photo.setPhoto_id(newPhotoKey);
-
-        //insert into database
-        myRef.child(mContext.getString(R.string.dbname_user_photos))
-                .child(FirebaseAuth.getInstance().getCurrentUser()
-                        .getUid()).child(newPhotoKey).setValue(photo);
 
         final String currentUserUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         final String selecteduserUid = mSelectedUser.getUser_id();
-        final Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, newPhotoKey, url,caption,tags);
+        final Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, url,caption,tags);
         mChallenge.setStatus("NOT_DECIDED");
         final String challengedUserName = mSelectedUser.getUsername();
         myRef.child(mContext.getString(R.string.dbname_users))
@@ -459,7 +445,6 @@ public class FirebaseMethods {
                             DatabaseReference challengeReference = myRef.child("User_Challenges");
                             challengeReference.child(currentUserUid).child(challengeKey).setValue(challengeKey);
                             challengeReference.child(selecteduserUid).child(challengeKey).setValue(challengeKey);
-
                         }
                     }
 
@@ -468,30 +453,12 @@ public class FirebaseMethods {
 
                     }
                 });
-
-        myRef.child(mContext.getString(R.string.dbname_photos)).child(newPhotoKey).setValue(photo);
-
     }
-
-    //todo IMPORTANT:: THE PHOTOS AND USER_PHOTOS NODES ARE FUTILE. iNSTEAD MOVED EVERYTHING TO CHALLENGE CLASS.
 
     private void addPhotoToDatabase(final String caption, final String url, final String challengeKey) {
         Log.d(TAG, "addPhotoToDatabase: challenge key " + challengeKey);
 
         final String tags = StringManipulation.getTags(caption);
-        final String newPhotoKey = myRef.child(mContext.getString(R.string.dbname_photos)).push().getKey();
-        Photo photo = new Photo();
-        photo.setCaption(caption);
-        photo.setDate_created(getTimestamp());
-        photo.setImage_path(url);
-        photo.setTags(tags);
-        photo.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        photo.setPhoto_id(newPhotoKey);
-
-        //insert into database
-        myRef.child(mContext.getString(R.string.dbname_user_photos))
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .child(newPhotoKey).setValue(photo);
 
         DatabaseReference dref = FirebaseDatabase.getInstance().getReference();
         dref.child("Challenges").child(challengeKey)
@@ -500,8 +467,8 @@ public class FirebaseMethods {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 Challenge c = dataSnapshot.getValue(Challenge.class);
-                Post post = new Post(c.getPhotoUrl(),c.getCaption(),c.getPhotoKey(),c.getChallengerUserUid(),c.getTags()
-                ,url, caption, newPhotoKey, c.getChallengedUserUid(), tags );
+                Post post = new Post(c.getPhotoUrl(),c.getCaption(),c.getChallengerUserUid(),c.getTags()
+                ,url, caption, c.getChallengedUserUid(), tags );
                 Log.d(TAG, "onDataChange: post " + post);
                 String postKey = myRef.child("Posts").push().getKey();
                 post.setPostKey(postKey);

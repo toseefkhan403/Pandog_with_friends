@@ -144,7 +144,7 @@ public class LoginActivity extends AppCompatActivity {
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // second argument is the default to use if the preference can't be found
-        Boolean welcomeScreenShown = mPrefs.getBoolean(welcomeScreenShownPref, false);
+        boolean welcomeScreenShown = mPrefs.getBoolean(welcomeScreenShownPref, false);
 
         if (!welcomeScreenShown) {
 
@@ -301,6 +301,9 @@ public class LoginActivity extends AppCompatActivity {
 
         DatabaseReference ref1= FirebaseDatabase.getInstance().getReference();
         User user = new User(image, uid,  email,  username );
+        user.setLevel("GREY");
+        user.setPanda_points(0);
+
         ref1.child(mContext.getString(R.string.dbname_users))
                 .child(uid)
                 .setValue(user);

@@ -63,9 +63,13 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mRVPosts = view.findViewById(R.id.posts_recycler_view_list);
+        mRVPosts.setItemViewCacheSize(20);
+        mRVPosts.setDrawingCacheEnabled(true);
+        mRVPosts.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+
         pb = view.findViewById(R.id.pb);
         noPosts = view.findViewById(R.id.no_posts);
-        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(getActivity(), OrientationHelper.VERTICAL));
+        mRVPosts.setLayoutManager(new ViewPagerLayoutManager(getActivity(),OrientationHelper.VERTICAL));
 
         mRVPosts.setVisibility(View.GONE);
         pb.setVisibility(View.VISIBLE);
@@ -165,8 +169,6 @@ public class HomeFragment extends Fragment {
 
                         post.setCaption(objectMap.get("caption").toString());
                         post.setCaption2(objectMap.get("caption2").toString());
-                        post.setPhoto_id(objectMap.get("photo_id").toString());
-                        post.setPhoto_id2(objectMap.get("photo_id2").toString());
 
                         post.setTags(objectMap.get("tags").toString());
                         post.setTags2(objectMap.get("tags2").toString());

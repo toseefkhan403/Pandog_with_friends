@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="JOIN PANDOG: REGISTER HERE"
+            android:text="WELCOME TO THE FAMILY!"
             android:textSize="20sp"
             android:textColor="@color/black"
             android:gravity="center_horizontal"

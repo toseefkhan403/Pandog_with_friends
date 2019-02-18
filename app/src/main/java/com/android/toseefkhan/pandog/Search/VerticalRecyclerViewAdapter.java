@@ -1,18 +1,22 @@
 package com.android.toseefkhan.pandog.Search;
 
+import android.app.Activity;
 import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.toseefkhan.pandog.Profile.ViewPostsListActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.Post;
+import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.android.toseefkhan.pandog.models.User;
 import com.dingmouren.layoutmanagergroup.skidright.SkidRightLayoutManager;
 
@@ -24,12 +28,11 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
 
     private static final String TAG = "VerticalRecyclerViewAda";
     private Context mContext;
-    private ArrayList<Post> mPostList;
-    private RecyclerView mHorizontalRecyclerView;
+    private ArrayList<TrendingItem> mTrendingList;
 
-    public VerticalRecyclerViewAdapter(Context mContext, ArrayList<Post> mPostList) {
+    public VerticalRecyclerViewAdapter(Context mContext, ArrayList<TrendingItem> mTrendingList) {
         this.mContext = mContext;
-        this.mPostList = mPostList;
+        this.mTrendingList = mTrendingList;
     }
 
     @NonNull
@@ -42,34 +45,40 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        Post post = mPostList.get(position);
+        TrendingItem item = mTrendingList.get(position);
         holder.setIsRecyclable(false);
-        //for testing
-   //     holder.hashtag_title.setText("#something");
-        holder.horizontalRecyclerViewAdapter = new HorizontalRecyclerViewAdapter(mContext, mPostList);
-        mHorizontalRecyclerView.setAdapter(holder.horizontalRecyclerViewAdapter);
+
+        holder.hashtag_title.setText(item.getTitle());
+        holder.hashtag_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                i.putExtra("post_keys_list",item.getPost_keys_list());
+                i.putExtra("title",item.getTitle());
+                mContext.startActivity(i);
+                ((Activity)mContext).overridePendingTransition(R.anim.pull,R.anim.push);
+            }
+        });
+
+        holder.mHorizontalRecyclerView.setAdapter(new HorizontalRecyclerViewAdapter(mContext,item.getPost_keys_list()));
+
     }
 
     @Override
     public int getItemCount() {
-        return mPostList.size();
+        return mTrendingList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        CircleImageView for_style;
         TextView hashtag_title;
-        HorizontalRecyclerViewAdapter horizontalRecyclerViewAdapter;
-
+        RecyclerView mHorizontalRecyclerView;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
-            Context context = itemView.getContext();
-            for_style = itemView.findViewById(R.id.just_for_style);
             hashtag_title= itemView.findViewById(R.id.hashtag_title);
             mHorizontalRecyclerView = itemView.findViewById(R.id.horizontal_list);
-            mHorizontalRecyclerView.setHasFixedSize(true);
             mHorizontalRecyclerView.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.HORIZONTAL,false));
         }
     }

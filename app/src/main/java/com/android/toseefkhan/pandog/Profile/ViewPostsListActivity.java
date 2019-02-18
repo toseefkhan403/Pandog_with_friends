@@ -1,11 +1,16 @@
 package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +33,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.takusemba.spotlight.OnSpotlightStateChangedListener;
+import com.takusemba.spotlight.OnTargetStateChangedListener;
+import com.takusemba.spotlight.Spotlight;
+import com.takusemba.spotlight.shape.Circle;
+import com.takusemba.spotlight.target.CustomTarget;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,9 +88,75 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
         });
 
         mRVPosts = findViewById(R.id.posts_recycler_view_list);
+        mRVPosts.setItemViewCacheSize(20);
+        mRVPosts.setDrawingCacheEnabled(true);
+        mRVPosts.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
 
-        getPostKeysOnProfile();
+        if (getIntent().hasExtra("post_keys_list")){
+
+            startSpotlight();
+            mPostKeysList = getIntent().getStringArrayListExtra("post_keys_list");
+            getPhotos();
+        }else{
+            getPostKeysOnProfile();
+        }
+
+    }
+
+    private void startSpotlight() {
+
+        FrameLayout root = new FrameLayout(mContext);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+
+        View first = inflater.inflate(R.layout.overlay_trending, root);
+
+        CustomTarget homeView = new CustomTarget.Builder(this)
+                .setPoint(0f,0f)
+                .setShape(new Circle(0f))
+                .setOverlay(first)
+                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+                    @Override
+                    public void onStarted(CustomTarget target) {
+                        // do something
+                    }
+                    @Override
+                    public void onEnded(CustomTarget target) {
+                        // do something
+                    }
+                })
+                .build();
+
+        TextView trending = first.findViewById(R.id.custom_text);
+        TextView title = first.findViewById(R.id.title);
+        trending.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Cursive.ttf"));
+        title.setText(getIntent().getStringExtra("title"));
+
+        mRVPosts.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mRVPosts.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                Spotlight spotlight = Spotlight.with(ViewPostsListActivity.this)
+                        .setOverlayColor(R.color.background)
+                        .setDuration(1000L)
+                        .setAnimation(new DecelerateInterpolator(2f))
+                        .setTargets(homeView)
+                        .setClosedOnTouchedOutside(true)
+                        .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                            @Override
+                            public void onStarted() {
+
+                            }
+
+                            @Override
+                            public void onEnded() {
+
+                            }
+                        });
+                spotlight.start();
+            }
+        });
+
     }
 
     private void getPostKeysOnProfile() {
@@ -94,7 +170,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found user: " +
+                    Log.d(TAG, "onDataChange: found keys: " +
                             singleSnapshot.getValue(String.class));
 
                     mPostKeysList.add(singleSnapshot.getValue(String.class));
@@ -135,8 +211,6 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
 
                         post.setCaption(objectMap.get("caption").toString());
                         post.setCaption2(objectMap.get("caption2").toString());
-                        post.setPhoto_id(objectMap.get("photo_id").toString());
-                        post.setPhoto_id2(objectMap.get("photo_id2").toString());
 
                         post.setTags(objectMap.get("tags").toString());
                         post.setTags2(objectMap.get("tags2").toString());
