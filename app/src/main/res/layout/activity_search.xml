@@ -3,7 +3,12 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:background="@color/white">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foregroundGravity="center">
     <RelativeLayout
+        android:id="@+id/SearchRelativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="55dp">
@@ -116,6 +121,13 @@
 
     </RelativeLayout>
 
+        <TextView
+            android:id="@+id/EmptySearchTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Users Found"
+            android:visibility="gone"/>
+    </FrameLayout>
     <!--bottom navigation view-->
 
     <include layout="@layout/layout_bottom_nav_view"/>

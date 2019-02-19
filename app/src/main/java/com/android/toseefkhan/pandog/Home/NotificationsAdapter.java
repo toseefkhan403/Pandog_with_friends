@@ -47,6 +47,16 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         this.mContext = ctx;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
     @NonNull
     @Override
     public NotificationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -243,6 +253,10 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         this.challengesList = challengesList;
         Collections.reverse(this.challengesList);
         notifyItemInserted(this.challengesList.indexOf(challenge));
+    }
+
+    public void setEmptyView() {
+
     }
 
     public class NotificationViewHolder extends RecyclerView.ViewHolder {

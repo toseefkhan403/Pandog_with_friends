@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
@@ -67,6 +68,8 @@ public class SearchActivity extends AppCompatActivity {
     private TextView textView;
     private ImageView imageView;
     private InterceptRelativeLayout mRelaIntercept1;
+    private RelativeLayout searchRelativeLayout;
+    private TextView searchEmptyTextView;
 
     //for the welcome screen
     SharedPreferences mPrefs;
@@ -80,6 +83,8 @@ public class SearchActivity extends AppCompatActivity {
         initBannerRV();
         initVerticalRV();
 
+        searchRelativeLayout = findViewById(R.id.SearchRelativeLayout);
+        searchEmptyTextView = findViewById(R.id.EmptySearchTextView);
         SearchView profileSearchView = findViewById(R.id.searchProfiles);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         profilesListView = findViewById(R.id.ProfileList);
@@ -266,6 +271,12 @@ public class SearchActivity extends AppCompatActivity {
             this.userUID = uid;
         }
 
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
         @NonNull
         @Override
         public SearchItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -278,6 +289,7 @@ public class SearchActivity extends AppCompatActivity {
 
             searchItemViewHolder.setIsRecyclable(false);
             User user = getItem(i);
+
 
             searchItemViewHolder.userNameView.setText(user.getUsername());
             searchItemViewHolder.userEmailView.setText(user.getEmail());
@@ -357,6 +369,7 @@ public class SearchActivity extends AppCompatActivity {
 
             public void filter(final CharSequence constraint) {
 
+                removeEmptyView();
                 if (constraint != null && constraint.length() > 0) {
                     final ArrayList<User> users = new ArrayList<>();
                     databaseReference.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -372,6 +385,9 @@ public class SearchActivity extends AppCompatActivity {
                                     }
                                 }
                                 ProfileList = users;
+                                if(ProfileList.size() == 0){
+                                    setEmptyView();
+                                }
                                 notifyDataSetChanged();
                             }
                         }
@@ -392,6 +408,16 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         }
+
+        private void setEmptyView() {
+            searchRelativeLayout.setVisibility(View.GONE);
+            searchEmptyTextView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void removeEmptyView() {
+        searchRelativeLayout.setVisibility(View.VISIBLE);
+        searchEmptyTextView.setVisibility(View.GONE);
     }
 
 

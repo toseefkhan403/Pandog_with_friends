@@ -132,13 +132,13 @@ public class NotificationFragment extends Fragment {
                                             }
                                         }
                                     }
-                                    if (challengesList.isEmpty()) {
-                                        progressBar.setVisibility(View.GONE);
-                                        rel.setVisibility(View.VISIBLE);
-                                    } else {
-                                        rel.setVisibility(View.GONE);
-                                    }
                                 }
+                            }
+                            if (challengesList.isEmpty()) {
+                                progressBar.setVisibility(View.GONE);
+                                rel.setVisibility(View.VISIBLE);
+                            } else {
+                                rel.setVisibility(View.GONE);
                             }
                         }
 
