@@ -1,6 +1,7 @@
 package com.android.toseefkhan.pandog.Map;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import es.dmoral.toasty.Toasty;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.LatLong;
@@ -45,12 +48,15 @@ import java.util.Set;
 public class AroundYouList extends Fragment {
 
     private static final String TAG = "AroundYouList";
+    private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
+
     private MapRecyclerViewAdapter2 mUserRecyclerAdapter;
     private RecyclerView mUserListRecyclerView;
     private ProgressBar mProgressbar;
     private double latitude,longitude;
     private RelativeLayout permsNull;
     private DatabaseReference ref;
+    private TextView gps;
 
     private Context mContext;
     private ArrayList<UserDistance> userList = new ArrayList<>();
@@ -65,6 +71,17 @@ public class AroundYouList extends Fragment {
 
         mProgressbar = view.findViewById(R.id.progressBar);
         mProgressbar.setVisibility(View.VISIBLE);
+
+        gps = view.findViewById(R.id.tvEnableGps);
+
+        gps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+            }
+        });
+
         mContext = view.getContext();
 
         getCurrentUserPosition();
@@ -103,6 +120,15 @@ public class AroundYouList extends Fragment {
                 });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ENABLE_GPS: {
+
+            }
+        }
+    }
 
     private void getDistancesForUsers() {
 

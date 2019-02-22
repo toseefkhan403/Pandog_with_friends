@@ -59,8 +59,7 @@
             android:id="@+id/UserProfilePictureView"
             android:layout_width="460dp"
             android:layout_height="460dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/intro1" />
+            android:scaleType="centerCrop" />
 
         </com.github.florent37.shapeofview.shapes.RoundRectView>
 

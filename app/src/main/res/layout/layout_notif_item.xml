@@ -105,6 +105,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
+            android:layout_gravity="center_horizontal"
             app:shape_roundRect_bottomLeftRadius="20dp"
             app:shape_roundRect_topLeftRadius="20dp"
             app:shape_roundRect_bottomRightRadius="20dp"
@@ -113,9 +114,9 @@
         <ImageView
             android:id="@+id/NotifImagePreView"
             android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
             android:layout_height="350dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/intro1" />
+            android:scaleType="centerCrop" />
 
         </com.github.florent37.shapeofview.shapes.RoundRectView>
 

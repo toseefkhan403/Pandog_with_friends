@@ -25,7 +25,6 @@
             android:textStyle="bold"
             android:layout_toRightOf="@+id/just_for_style"
             android:textSize="18sp"
-            android:text="#OOTD"
             android:layout_marginStart="4dp"
             android:layout_centerVertical="true"
             android:textColor="@color/black"/>

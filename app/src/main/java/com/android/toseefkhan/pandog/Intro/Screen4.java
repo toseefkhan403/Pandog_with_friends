@@ -1,6 +1,7 @@
 package com.android.toseefkhan.pandog.Intro;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +24,13 @@ public class Screen4 extends Fragment {
         View view=inflater.inflate(R.layout.fragment_screen4,container,false);
 
         TextView tvFin = view.findViewById(R.id.tvFinish);
+        TextView des = view.findViewById(R.id.des);
+
+        if (getActivity() != null) {
+            tvFin.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Cursive.ttf"));
+            des.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), "fonts/Comic Neue.ttf"));
+        }
+
         tvFin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

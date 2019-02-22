@@ -93,8 +93,13 @@ public class NotificationsActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        for (DataSnapshot ss : dataSnapshot.getChildren())
+                        for (DataSnapshot ss : dataSnapshot.getChildren()) {
                             count++;
+                        }
+                        if (count == 0){
+                            findViewById(R.id.no_notifs).setVisibility(View.VISIBLE);
+                            return;
+                        }
 
                         for (DataSnapshot ss : dataSnapshot.getChildren()){
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <com.github.florent37.shapeofview.shapes.CircleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:shape_circle_borderColor="@color/teal_400"
+        app:shape_circle_borderWidth="6dp">
+
+        <RelativeLayout
+            android:layout_width="50dp"
+            android:layout_centerHorizontal="true"
+            android:layout_height="50dp"
+            android:layout_margin="17dp"
+            android:id="@+id/fonts">
+
+            <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupL
+                android:id="@+id/fontViewP"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"/>
+
+        </RelativeLayout>
+
+    </com.github.florent37.shapeofview.shapes.CircleView>
+
+</LinearLayout>

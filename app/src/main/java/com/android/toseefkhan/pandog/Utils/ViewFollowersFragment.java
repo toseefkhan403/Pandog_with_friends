@@ -1,10 +1,12 @@
 package com.android.toseefkhan.pandog.Utils;
 
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
@@ -28,9 +30,9 @@ import es.dmoral.toasty.Toasty;
 public class ViewFollowersFragment extends Fragment {
 
     private static final String TAG = "ViewFollowersFragment";
-
     private RecyclerView recyclerView;
     private List<String> userIds = new ArrayList<>();
+    private ProgressBar pb;
 
     @Nullable
     @Override
@@ -39,6 +41,8 @@ public class ViewFollowersFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_likes, container, false);
 
         recyclerView = view.findViewById(R.id.likes1);
+        pb = view.findViewById(R.id.pb);
+        pb.setVisibility(View.VISIBLE);
 
         try {
 
@@ -86,14 +90,16 @@ public class ViewFollowersFragment extends Fragment {
         Log.d(TAG, "initRecyclerView: useridlist " + userIds);
         if (!userIds.isEmpty()) {
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            UserListRVAdapter adapter = new UserListRVAdapter(getActivity(), userIds);
+            UserListRVAdapter adapter = new UserListRVAdapter(getActivity(), userIds,pb);
             recyclerView.setAdapter(adapter);
+
         } else if (userIds.isEmpty()) {
             try {
                 Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), "NO FOLLOWERS FOUND!", Snackbar.LENGTH_LONG).show();
             } catch (NullPointerException e) {
                 Toasty.warning(getActivity(), "NO FOLLOWERS FOUND!", Toast.LENGTH_SHORT,true).show();
             }
+            pb.setVisibility(View.GONE);
         }
 
 

@@ -42,10 +42,14 @@ import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.Utils.ViewWeightAnimationWrapper;
+import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -79,6 +83,7 @@ import com.takusemba.spotlight.target.CustomTarget;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import androidx.annotation.NonNull;
@@ -94,21 +99,25 @@ import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-public class MapActivity2 extends AppCompatActivity {
+public class MapActivity2 extends AppCompatActivity implements OnMapReadyCallback{
 
     private static final String TAG = "MapActivity2";
 
     //constants
     private Context mContext = MapActivity2.this;
     private static final int ACTIVITY_NUM = 1;
+    private static final int ERROR_DIALOG_REQUEST = 9001;
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
+    public static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     private boolean mLocationPermissionGranted = false;
     private FusedLocationProviderClient mFusedLocationClient;
+
     private DatabaseReference myRef;
 
     private LatLng latLng;
+    private MapView mMapView;
 
     private ViewPager mViewPager;
 
@@ -135,18 +144,21 @@ public class MapActivity2 extends AppCompatActivity {
 
         setupViewPager();
 
-
         myRef= FirebaseDatabase.getInstance().getReference();
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mMapView = findViewById(R.id.userListMap);
+        initGoogleMap(savedInstanceState);
 
-        if (mLocationPermissionGranted) {
-            //todo handle events after the request has been granted
-            showLayout();
-            getLastKnownLocation();
+        if (checkMapServices()) {
+            if (mLocationPermissionGranted) {
+                //todo handle events after the request has been granted
+                showLayout();
+                getLastKnownLocation();
             } else {
                 getLocationPermission();
             }
+        }
 
         if (!InternetStatus.getInstance(this).isOnline()) {
 
@@ -187,20 +199,59 @@ public class MapActivity2 extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Location location = task.getResult();
                     try{
-                        //todo fix setting location
-                        //the map does not show when the gps on the device is on(api key issues). Therefore this latlng is always null since i can't
-                        // get the current location of the user from the gps, I am using hard coded coordinates
-                        latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        Log.d(TAG, "onComplete: my current location is: " + latLng);
+                        if(location != null) {
+                            latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                        }
                     }catch (NullPointerException e){
-                        Log.d("Error", "onComplete: NullPointerException " + e.getMessage());
+                        Log.d("Error", "onComplete: NullPointerException" + e.getMessage());
                    //     latLng = new LatLng(28.582986, 77.255820);
                     }
+
                     Log.d(TAG, "onComplete: latlngs are " + latLng);
-                    setLatlongs(latLng);
+                    if (latLng != null)
+                        setLatlongs(latLng);
+                    else{
+                        whetherHardcodedRequired();
+                    }
                 }
             }
         });
+    }
+
+    private void whetherHardcodedRequired() {
+
+        myRef.child(getString(R.string.dbname_users))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        User user = dataSnapshot.getValue(User.class);
+
+                        try{
+                            LatLong latLong = user.getLat_lng();
+
+                            if (latLong == null){
+                                Log.d(TAG, "onDataChange: using hardcoded latlngs");
+                                LatLng latLng = new LatLng(28.582986, 77.255820);
+                                myRef.child(getString(R.string.dbname_users))
+                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                        .child("lat_lng")
+                                        .setValue(latLng);
+                            }
+
+                        }catch (NullPointerException e){
+                            Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
     }
 
     private void showLayout() {
@@ -334,7 +385,6 @@ public class MapActivity2 extends AppCompatActivity {
                    //todo handle events after the request has been granted
                     showLayout();
                     getLastKnownLocation();
-                    
                 }
                 else{
                     getLocationPermission();
@@ -370,6 +420,120 @@ public class MapActivity2 extends AppCompatActivity {
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+    }
+
+    @Override
+    public void onMapReady(final GoogleMap map) {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+//        map.setMyLocationEnabled(true);
+
+    }
+
+    private void initGoogleMap(Bundle savedInstanceState){
+        // *** IMPORTANT ***
+        // MapView requires that the Bundle you pass contain _ONLY_ MapView SDK
+        // objects or sub-Bundles.
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAPVIEW_BUNDLE_KEY);
+        }
+
+        mMapView.onCreate(mapViewBundle);
+
+        mMapView.getMapAsync(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        mMapView.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mMapView.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mMapView.onStop();
+    }
+
+    @Override
+    public void onPause() {
+        mMapView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        mMapView.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
+    }
+
+    private boolean checkMapServices(){
+        if(isServicesOK()){
+            if(isMapsEnabled()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isServicesOK(){
+
+        int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MapActivity2.this);
+
+        if(available == ConnectionResult.SUCCESS){
+            //everything is fine and the user can make map requests
+            return true;
+
+            //todo if the user denies the google's dialog request, the system goes in an infinite loop. Fix that.
+        }
+        else if(GoogleApiAvailability.getInstance().isUserResolvableError(available)){
+            //an error occured but we can resolve it
+            Dialog dialog = GoogleApiAvailability.getInstance().getErrorDialog(MapActivity2.this, available, ERROR_DIALOG_REQUEST);
+            dialog.show();
+        }else{
+            Toasty.error(this, "You can't make map requests", Toast.LENGTH_SHORT,true).show();
+        }
+        return false;
+    }
+
+    public boolean isMapsEnabled(){
+        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            return false;
+        }
+        return true;
     }
 
 }

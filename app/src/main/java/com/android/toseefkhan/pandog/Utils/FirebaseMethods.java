@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
+import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.Challenge;
@@ -602,7 +603,10 @@ public class FirebaseMethods {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful()){
+                                Intent i = new Intent(mContext,LoginActivity.class);
+                                mContext.startActivity(i);
 
+                                Toasty.success(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_LONG,true).show();
                             }else{
                                 Toasty.error(mContext, "Couldn't send verification email", Toast.LENGTH_SHORT,true).show();
                             }
@@ -619,7 +623,7 @@ public class FirebaseMethods {
      * @param description
      * @param profile_photo
      */
-    public void addNewUser(String email, String username, String description, String profile_photo){
+    public void addNewUser(String email, String username,String displayName, String description, String profile_photo){
 
         User user = new User( null,userID,  email,  StringManipulation.condenseUsername(username),"GREY",0 );
 
@@ -629,7 +633,7 @@ public class FirebaseMethods {
 
         UserAccountSettings settings = new UserAccountSettings(
                 description,
-                username,
+                displayName,
                 profile_photo,
                 StringManipulation.condenseUsername(username)
         );

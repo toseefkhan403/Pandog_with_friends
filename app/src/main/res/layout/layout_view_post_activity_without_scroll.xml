@@ -1,38 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/white">
 
-    <!-- ***********************Top Toolbar***************** -->
+    <include layout="@layout/snippet_top_post_bar"/>
+
     <RelativeLayout
-        android:id="@+id/relLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="50dp">
-
-        <include layout="@layout/snippet_top_profile_post_bar" />
-
-    </RelativeLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/posts_recycler_view_list"
-        android:layout_below="@id/relLayout1">
-
-
-    </androidx.recyclerview.widget.RecyclerView>
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="No posts found!"
-        android:textStyle="italic"
-        android:textSize="20sp"
-        android:visibility="gone"
-        android:textColor="@color/purple_400"
-        android:id="@+id/no_posts"/>
+        android:layout_marginTop="50dp">
+
+        <include layout="@layout/layout_mainfeed_listitem2" />
+
+    </RelativeLayout>
 
     <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
         xmlns:rfal="http://schemas.android.com/apk/res-auto"
@@ -50,7 +32,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginRight="5dp"
-            android:layout_marginBottom="70dp"
+            android:layout_marginBottom="40dp"
             android:padding="8dp"
             android:visibility="visible"
             rfab:rfab_size="normal"
@@ -63,10 +45,6 @@
             rfab:rfab_shadow_dy="5dp" />
 
     </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
-
-    <include layout="@layout/layout_bottom_nav_view" />
-
-
 
 
 </RelativeLayout>

@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
@@ -32,10 +34,12 @@ public class UserListRVAdapter extends RecyclerView.Adapter<UserListRVAdapter.Vi
     private static final String TAG = "UserListRVAdapter";
     private Context mContext;
     private List<String> mUserIdList;
+    private ProgressBar mProgressBar;
 
-    public UserListRVAdapter(Context mContext, List<String> mUserIdList) {
+    public UserListRVAdapter(Context mContext, List<String> mUserIdList, ProgressBar pb) {
         this.mContext = mContext;
         this.mUserIdList = mUserIdList;
+        this.mProgressBar = pb;
     }
 
     @NonNull
@@ -51,6 +55,7 @@ public class UserListRVAdapter extends RecyclerView.Adapter<UserListRVAdapter.Vi
 
         holder.setIsRecyclable(false);
 
+        holder.whole.setVisibility(View.INVISIBLE);
         String userId = mUserIdList.get(position);
         Log.d(TAG, "onBindViewHolder: the user Ids who liked the photo " + userId);
 
@@ -166,6 +171,8 @@ public class UserListRVAdapter extends RecyclerView.Adapter<UserListRVAdapter.Vi
 
                                     viewHolder.follow.setVisibility(View.GONE);
                                     viewHolder.unfollow.setVisibility(View.GONE);
+                                    viewHolder.whole.setVisibility(View.VISIBLE);
+                                    mProgressBar.setVisibility(View.GONE);
                                 }
 
                             }
@@ -195,6 +202,9 @@ public class UserListRVAdapter extends RecyclerView.Adapter<UserListRVAdapter.Vi
 
                     setFollowing(viewHolder);
                 }
+                viewHolder.whole.setVisibility(View.VISIBLE);
+                if (mProgressBar.getVisibility() == View.VISIBLE)
+                    mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -228,6 +238,7 @@ public class UserListRVAdapter extends RecyclerView.Adapter<UserListRVAdapter.Vi
         TextView username;
         TextView email;
         TextView follow, unfollow;
+        RelativeLayout whole;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -237,6 +248,7 @@ public class UserListRVAdapter extends RecyclerView.Adapter<UserListRVAdapter.Vi
             email = itemView.findViewById(R.id.UserEmailView);
             follow = itemView.findViewById(R.id.follow);
             unfollow = itemView.findViewById(R.id.unfollow);
+            whole = itemView.findViewById(R.id.whole);
 
         }
     }

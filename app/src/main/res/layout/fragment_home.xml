@@ -27,9 +27,40 @@
         android:layout_centerInParent="true"
         android:text="Follow some people to see their posts here"
         android:textStyle="italic"
+        android:gravity="center"
         android:textSize="20sp"
         android:visibility="gone"
         android:textColor="@color/purple_400"
         android:id="@+id/no_posts"/>
+
+    <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout
+        xmlns:rfal="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/activity_main_rfal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        rfal:rfal_frame_color="#ffffff"
+        rfal:rfal_frame_alpha="0.7"
+        >
+        <com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton
+            xmlns:rfab="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/activity_main_rfab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="20dp"
+            android:padding="8dp"
+            android:visibility="visible"
+            rfab:rfab_size="normal"
+            rfab:rfab_drawable="@mipmap/ic_logo_celfie"
+            rfab:rfab_color_normal="@color/purple_400"
+            rfab:rfab_color_pressed="#263238"
+            rfab:rfab_shadow_radius="7dp"
+            rfab:rfab_shadow_color="#999999"
+            rfab:rfab_shadow_dx="0dp"
+            rfab:rfab_shadow_dy="5dp" />
+
+    </com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout>
 
 </RelativeLayout>

@@ -1,10 +1,13 @@
 package com.android.toseefkhan.pandog.Utils;
 
+import android.graphics.drawable.Animatable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
@@ -27,6 +30,7 @@ public class ViewLikesFragment2 extends Fragment {
     private static final String TAG = "ViewLikesFragment2";
     private RecyclerView recyclerView;
     private List<String> userIds = new ArrayList<>();
+    private ProgressBar pb;
 
     @Nullable
     @Override
@@ -35,6 +39,8 @@ public class ViewLikesFragment2 extends Fragment {
         View view = inflater.inflate(R.layout.fragment_likes, container, false);
 
         recyclerView = view.findViewById(R.id.likes1);
+        pb = view.findViewById(R.id.pb);
+        pb.setVisibility(View.VISIBLE);
 
         try {
             Bundle b = getArguments();
@@ -65,7 +71,7 @@ public class ViewLikesFragment2 extends Fragment {
         if (!userIds.isEmpty()) {
             Collections.reverse(userIds);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            UserListRVAdapter adapter = new UserListRVAdapter(getActivity(), userIds);
+            UserListRVAdapter adapter = new UserListRVAdapter(getActivity(), userIds,pb);
             recyclerView.setAdapter(adapter);
         }else if (userIds.isEmpty()){
             try {
@@ -73,6 +79,7 @@ public class ViewLikesFragment2 extends Fragment {
             }catch (NullPointerException e){
                 Toasty.warning(getActivity(), "NO LIKES FOUND!", Toast.LENGTH_SHORT,true).show();
             }
+            pb.setVisibility(View.GONE);
         }
 
 

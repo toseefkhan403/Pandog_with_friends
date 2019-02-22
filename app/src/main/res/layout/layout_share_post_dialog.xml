@@ -72,7 +72,7 @@
                 android:layout_below="@+id/other_apps"
                 android:text="Cancel"
                 android:textColor="@color/white"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:padding="4dp"
                 android:gravity="center"
                 android:layout_centerHorizontal="true"

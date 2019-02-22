@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import es.dmoral.toasty.Toasty;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
+import com.android.toseefkhan.pandog.Utils.StringManipulation;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -81,7 +83,16 @@ public class RegisterActivity extends AppCompatActivity {
                     mProgressBar.setVisibility(View.VISIBLE);
                     loadingPleaseWait.setVisibility(View.VISIBLE);
 
+                    setupFirebaseAuth();
                     firebaseMethods.registerNewEmail(email, password, username);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mProgressBar.setVisibility(View.GONE);
+                            loadingPleaseWait.setVisibility(View.GONE);
+                        }
+                    },2000);
                 }
             }
         });
@@ -112,33 +123,22 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private boolean isStringNull(String string){
-        Log.d(TAG, "isStringNull: checking string if null.");
-
-        if(string.equals("")){
-            return true;
-        }
-        else{
-            return false;
-        }
-    }
-
      /*
     ------------------------------------ Firebase ---------------------------------------------
      */
 
     /**
-     * Check is @param username already exists in the database
-     * @param username
+     * Check if @param username already exists in the database
+     * @param username1
      */
-    private void checkIfUsernameExists(final String username) {
-        Log.d(TAG, "checkIfUsernameExists: Checking if  " + username + " already exists.");
+    private void checkIfUsernameExists(final String username1) {
+        Log.d(TAG, "checkIfUsernameExists: Checking if  " + username1 + " already exists.");
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         Query query = reference
                 .child(getString(R.string.dbname_users))
                 .orderByChild(getString(R.string.field_username))
-                .equalTo(username);
+                .equalTo(username1);
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -146,20 +146,16 @@ public class RegisterActivity extends AppCompatActivity {
                 for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
                     if (singleSnapshot.exists()){
                         Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + singleSnapshot.getValue(User.class).getUsername());
-                        append = myRef.push().getKey().substring(3,10);
+                        append = myRef.push().getKey().substring(3,7);
                         Log.d(TAG, "onDataChange: username already exists. Appending random string to name: " + append);
                     }
                 }
 
                 String mUsername = "";
-                mUsername = username + append;
+                mUsername = username1 + append;
 
                 //add new user to the database
-                firebaseMethods.addNewUser(email, mUsername, "This is my cool bio", "");
-
-                Toasty.success(mContext, "Signup successful. Sending verification email.", Toast.LENGTH_LONG,true).show();
-
-                mAuth.signOut();
+                firebaseMethods.addNewUser(email, mUsername,username, "This is my cool bio", "");
             }
 
             @Override
@@ -191,7 +187,7 @@ public class RegisterActivity extends AppCompatActivity {
                     myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            checkIfUsernameExists(username);
+                            checkIfUsernameExists(StringManipulation.condenseUsername(username));
                         }
 
                         @Override
@@ -199,8 +195,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                         }
                     });
-
-                    finish();
 
                 } else {
                     // User is signed out

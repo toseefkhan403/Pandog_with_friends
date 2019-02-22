@@ -1,8 +1,11 @@
 package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +27,7 @@ import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
+import com.github.tbouron.shakedetector.library.ShakeDetector;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +42,11 @@ import com.takusemba.spotlight.OnTargetStateChangedListener;
 import com.takusemba.spotlight.Spotlight;
 import com.takusemba.spotlight.shape.Circle;
 import com.takusemba.spotlight.target.CustomTarget;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
+import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
+import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,8 +61,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import es.dmoral.toasty.Toasty;
 
-public class ViewPostsListActivity extends AppCompatActivity implements PostsProfileRVAdapter.OnLoadMoreItemsListener {
+public class ViewPostsListActivity extends AppCompatActivity implements PostsProfileRVAdapter.OnLoadMoreItemsListener , RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
 
     @Override
     public void onLoadMoreItems() {
@@ -72,6 +82,111 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
     private ArrayList<Post> mPaginatedPosts;
     private int mResults;
 
+    private RapidFloatingActionLayout rfaLayout;
+    private RapidFloatingActionButton rfaBtn;
+    private RapidFloatingActionHelper rfabHelper;
+
+    SharedPreferences mPrefs;
+    final String horizontalScreenEnabled = "horizontalScreenEnabled";
+    final String showFloatingButton = "showFloatingButton";
+    boolean horizontalScrollingEnabled;
+    boolean isshowFloatingButton;
+
+    /*
+       The main feed list only displays posts from your following and your posts.
+     */
+
+    @Override
+    public void onRFACItemLabelClick(int position, RFACLabelItem item) {
+
+    }
+
+    @Override
+    public void onRFACItemIconClick(int position, RFACLabelItem item) {
+
+        switch (position){
+
+            case 0:
+                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off.");
+
+                if (horizontalScrollingEnabled) {
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, false);
+                    editor.apply();
+                }else{
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, true);
+                    editor.apply();
+                }
+
+                Intent i = new Intent(mContext,HomeActivity.class);
+                startActivity(i);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                break;
+
+            case 1:
+                mAdapter.sharePost();
+                break;
+
+            case 2:
+                Intent intent = new Intent(this, EditProfileActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.pull,R.anim.push);
+                break;
+
+            case 3:
+                spotlight();
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(showFloatingButton, false);
+                editor.apply();
+                rfaBtn.setVisibility(View.GONE);
+
+                break;
+        }
+
+        rfabHelper.toggleContent();
+    }
+
+    private void spotlight() {
+
+        View first = LayoutInflater.from(mContext).inflate(R.layout.overlay_shake_device, new FrameLayout(mContext));
+
+        CustomTarget homeView = new CustomTarget.Builder(this)
+                .setPoint(0f,0f)
+                .setShape(new Circle(0f))
+                .setOverlay(first)
+                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+                    @Override
+                    public void onStarted(CustomTarget target) {
+                        // do something
+                    }
+                    @Override
+                    public void onEnded(CustomTarget target) {
+                        // do something
+                    }
+                })
+                .build();
+
+        Spotlight spotlight = Spotlight.with(ViewPostsListActivity.this)
+                .setOverlayColor(R.color.background)
+                .setDuration(1000L)
+                .setAnimation(new DecelerateInterpolator(2f))
+                .setTargets(homeView)
+                .setClosedOnTouchedOutside(true)
+                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                    @Override
+                    public void onStarted() {
+
+                    }
+
+                    @Override
+                    public void onEnded() {
+
+                    }
+                });
+        spotlight.start();
+
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,10 +203,12 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
         });
 
         mRVPosts = findViewById(R.id.posts_recycler_view_list);
-        mRVPosts.setItemViewCacheSize(20);
-        mRVPosts.setDrawingCacheEnabled(true);
-        mRVPosts.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
         mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
+        rfaLayout = findViewById(R.id.activity_main_rfal);
+        rfaBtn = findViewById(R.id.activity_main_rfab);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        horizontalScrollingEnabled = mPrefs.getBoolean(horizontalScreenEnabled, true);
+        isshowFloatingButton = mPrefs.getBoolean(showFloatingButton,true);
 
         if (getIntent().hasExtra("post_keys_list")){
 
@@ -101,6 +218,91 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
         }else{
             getPostKeysOnProfile();
         }
+
+        if (isshowFloatingButton)
+            setupFloatingButton();
+        else
+            rfaBtn.setVisibility(View.GONE);
+
+        ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
+            @Override
+            public void OnShake() {
+                Log.d(TAG, "OnShake: called");
+                Toasty.success(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT,false).show();
+
+                mPrefs.getBoolean(showFloatingButton,true);
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(showFloatingButton, true);
+                editor.apply();
+
+                Intent i = new Intent(mContext,HomeActivity.class);
+                startActivity(i);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+            }
+        });
+        ShakeDetector.updateConfiguration(2.0f,3);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ShakeDetector.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ShakeDetector.destroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ShakeDetector.stop();
+    }
+
+    private void setupFloatingButton() {
+
+
+        RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(mContext);
+        rfaContent.setOnRapidFloatingActionContentLabelListListener(this);
+        List<RFACLabelItem> items = new ArrayList<>();
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Toggle Horizontal Scrolling")
+                .setDrawable(mContext.getResources().getDrawable(R.drawable.ic_flip))
+                .setIconNormalColor(0xffd84315)
+                .setIconPressedColor(0xffbf360c)
+                .setWrapper(0)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Share this post")
+                .setDrawable(mContext.getResources().getDrawable(R.drawable.ic_share))
+                .setIconNormalColor(0xff4e342e)
+                .setIconPressedColor(0xff3e2723)
+                .setWrapper(1)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Edit Your Profile")
+                .setDrawable(getResources().getDrawable(R.drawable.ic_face))
+                .setIconNormalColor(getResources().getColor(R.color.white))
+                .setIconPressedColor(0xff0d5302)
+                .setLabelColor(0xff056f00)
+                .setWrapper(2)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Disable this button")
+                .setDrawable(getResources().getDrawable(R.drawable.ic_close))
+                .setIconNormalColor(getResources().getColor(R.color.light_blue_400))
+                .setIconPressedColor(0xff1a237e)
+                .setLabelColor(0xff283593)
+                .setWrapper(3)
+        );
+
+        rfaContent
+                .setItems(items)
+                .setIconShadowColor(0xff888888);
+
+        rfabHelper = new RapidFloatingActionHelper(mContext,rfaLayout,rfaBtn,rfaContent).build();
 
     }
 
@@ -175,8 +377,13 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
 
                     mPostKeysList.add(singleSnapshot.getValue(String.class));
                 }
-                //get the photos
-                getPhotos();
+
+                if (mPostKeysList.isEmpty()){
+                    findViewById(R.id.no_posts).setVisibility(View.VISIBLE);
+                }else{
+                    //get the photos
+                    getPhotos();
+                }
             }
 
             @Override
@@ -297,9 +504,13 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                     mPaginatedPosts.add(mPostList.get(i));
                 }
 
-                mAdapter = new PostsProfileRVAdapter(mContext, mPaginatedPosts);
-                mRVPosts.setAdapter(mAdapter);
-                Log.d(TAG, "displayPhotos: i am making it this far and let's see what paginated posts has " + mPaginatedPosts.size());
+                if (horizontalScrollingEnabled) {
+                    mAdapter = new PostsProfileRVAdapter(mContext, mPaginatedPosts);
+                    mRVPosts.setAdapter(mAdapter);
+                }else{
+                    mAdapter = new PostsProfileRVAdapter(mContext, mPaginatedPosts, true);
+                    mRVPosts.setAdapter(mAdapter);
+                }
 
             }catch (NullPointerException e){
                 Log.e(TAG, "displayPhotos: NullPointerException: " + e.getMessage() );

@@ -15,6 +15,7 @@ import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.android.toseefkhan.pandog.models.User;
+import com.github.tbouron.shakedetector.library.ShakeDetector;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
@@ -75,9 +76,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.facebook.FacebookSdk.getApplicationContext;
+
 
 public class HomeActivity extends AppCompatActivity implements PostsProfileRVAdapter.OnLoadMoreItemsListener {
-
 
     @Override
     public void onLoadMoreItems() {
@@ -107,11 +109,15 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     private FrameLayout root;
     private LayoutInflater inflater;
 
+    final String showFloatingButton = "showFloatingButton";
+
     //todo (Aryal)
     //todo delete stuff from user_notif node too (after a challenge is accepted or rejected)
+    //todo fix notif fragment
 
-    //todo (non-coding stuff)
     //todo a thorough testing of the app and bug fixes
+    // adding button to shrink view
+    //fixing search screen
     //todo create dev account on google play; launch the app successfully (*happy emoji)(*another happy emoji)
 
     @Override
@@ -152,35 +158,40 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                     @Override
                     public void run() {
                         //Do something after 6 second
-                        findViewById(R.id.r).animate()
-                                .translationY(findViewById(R.id.r).getHeight())
-                                .alpha(0.0f)
-                                .setDuration(500)
-                                .setListener(new Animator.AnimatorListener() {
-                                    @Override
-                                    public void onAnimationStart(Animator animator) {
+                        RelativeLayout r = findViewById(R.id.r);
 
-                                    }
+                        if (r != null) {
+                            r.animate()
+                                    .translationY(findViewById(R.id.r).getHeight())
+                                    .alpha(0.0f)
+                                    .setDuration(500)
+                                    .setListener(new Animator.AnimatorListener() {
+                                        @Override
+                                        public void onAnimationStart(Animator animator) {
 
-                                    @Override
-                                    public void onAnimationEnd(Animator animator) {
-                                        findViewById(R.id.r).setVisibility(View.GONE);
-                                        findViewById(R.id.next_activity).setVisibility(View.VISIBLE);
-                                    }
+                                        }
 
-                                    @Override
-                                    public void onAnimationCancel(Animator animator) {
+                                        @Override
+                                        public void onAnimationEnd(Animator animator) {
+                                            findViewById(R.id.r).setVisibility(View.GONE);
+                                            findViewById(R.id.next_activity).setVisibility(View.VISIBLE);
+                                        }
 
-                                    }
+                                        @Override
+                                        public void onAnimationCancel(Animator animator) {
 
-                                    @Override
-                                    public void onAnimationRepeat(Animator animator) {
+                                        }
 
-                                    }
-                                });
+                                        @Override
+                                        public void onAnimationRepeat(Animator animator) {
+
+                                        }
+                                    });
+                        }
                     }
                 }, 6000);
                 ((InitialSetup) getApplicationContext()).isFirstTimeStart = false;
+
             }else{
                 setupFirebaseAuth();
                 initImageLoader();
@@ -204,23 +215,38 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                     .show();
         }
 
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
+            @Override
+            public void OnShake() {
+                Log.d(TAG, "OnShake: called");
+                Toasty.success(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT,false).show();
 
-        boolean referralScreenShown = mPrefs.getBoolean(referralScreenShownPref, false);
+                mPrefs.getBoolean(showFloatingButton,true);
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(showFloatingButton, true);
+                editor.apply();
 
-        if (!referralScreenShown) {
-            Log.d(TAG, "onCreate: referralScreenShown");
-            startReferralScreen();
-            SharedPreferences.Editor editor = mPrefs.edit();
-            if (count == 1) {
-                editor.putBoolean(referralScreenShownPref, true);
-                editor.apply(); // Very important to save the preference
+                Intent i = new Intent(mContext,HomeActivity.class);
+                startActivity(i);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
             }
-            count++;
-        }
+        });
+        ShakeDetector.updateConfiguration(2.0f,3);
 
         //getTrendingPosts();
         //setTrendingPosts();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ShakeDetector.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ShakeDetector.destroy();
     }
 
     private void setupViewPager() {
@@ -235,9 +261,8 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_logo);
+        tabLayout.getTabAt(0).setIcon(R.drawable.ic_flm);
         tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
-
     }
 
     private void initImageLoader(){
@@ -282,6 +307,20 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         }
         else{
             addTokenToDatabase();
+            mPrefs = PreferenceManager.getDefaultSharedPreferences(HomeActivity.this);
+
+            boolean referralScreenShown = mPrefs.getBoolean(referralScreenShownPref, false);
+
+            if (!referralScreenShown) {
+                Log.d(TAG, "onCreate: referralScreenShown");
+                startReferralScreen();
+                SharedPreferences.Editor editor = mPrefs.edit();
+                if (count == 1) {
+                    editor.putBoolean(referralScreenShownPref, true);
+                    editor.apply(); // Very important to save the preference
+                }
+                count++;
+            }
         }
     }
 
@@ -333,6 +372,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     @Override
     public void onStop() {
         super.onStop();
+        ShakeDetector.stop();
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }

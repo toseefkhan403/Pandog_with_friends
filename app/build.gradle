@@ -97,6 +97,10 @@ dependencies {
     implementation 'com.fenchtose.nocropper:nocropper:0.3.0'
     //photo filters
     implementation 'info.androidhive:imagefilters:1.0.7'
+    //rapid floating action button
+    implementation 'com.github.wangjiegulu:rfab:2.0.0'
+    implementation 'com.github.tbouron.shakedetector:library:1.0.0@aar'
+
 
     //library for detecting memory leaks : leakcanary
 //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'

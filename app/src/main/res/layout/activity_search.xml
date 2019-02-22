@@ -33,6 +33,17 @@
             android:layout_below="@+id/searchProfiles"
             android:visibility="invisible"/>
 
+        <TextView
+            android:id="@+id/EmptySearchTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Users Found"
+            android:layout_marginTop="80dp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/searchProfiles"
+            android:textColor="@color/white"
+            android:visibility="gone"/>
+
         <com.android.toseefkhan.pandog.Utils.InterceptRelativeLayout
             android:id="@+id/rela_intercept_1"
             android:layout_width="match_parent"
@@ -117,16 +128,8 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-
-
     </RelativeLayout>
 
-        <TextView
-            android:id="@+id/EmptySearchTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No Users Found"
-            android:visibility="gone"/>
     </FrameLayout>
     <!--bottom navigation view-->
 

@@ -40,7 +40,6 @@
 
         <ImageView
             android:id="@+id/profile_photo"
-            android:src="@drawable/intro1"
             android:focusedByDefault="true"
             android:focusableInTouchMode="true"
             android:transitionName="user_pp"
@@ -77,7 +76,6 @@
             android:id="@+id/display_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Toseef"
             android:layout_below="@id/profile_photo_arc"
             android:layout_marginTop="10dp"
             android:textAlignment="center"
@@ -104,7 +102,6 @@
             android:layout_below="@id/challenge_me"
             android:layout_marginStart="15dp"
             android:layout_marginTop="5dp"
-            android:text="I am gonna build this app for whatever"
             android:textColor="@color/black"
             android:textSize="16sp" />
 

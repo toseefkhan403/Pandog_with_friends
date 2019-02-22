@@ -37,12 +37,24 @@
             android:layout_marginTop="50dp"
             android:textSize="20sp"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click here to enable GPS"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/tvNoPerms"
+            android:padding="5dp"
+            android:id="@+id/tvEnableGps"
+            android:textColor="@color/blue_400"
+            android:textSize="20sp"/>
+
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="300dp"
             android:src="@drawable/heart_red"
-            android:layout_below="@+id/tvNoPerms"
+            android:layout_below="@+id/tvEnableGps"
             android:layout_centerInParent="true"
             android:padding="10dp"/>
 

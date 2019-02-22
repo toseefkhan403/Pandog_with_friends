@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,15 +17,21 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.Utils.Heart;
 import com.android.toseefkhan.pandog.Utils.ViewLikesActivity;
+import com.github.tbouron.shakedetector.library.ShakeDetector;
+import com.google.android.gms.common.api.Api;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
@@ -50,6 +57,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.takusemba.spotlight.OnSpotlightStateChangedListener;
+import com.takusemba.spotlight.OnTargetStateChangedListener;
+import com.takusemba.spotlight.Spotlight;
+import com.takusemba.spotlight.shape.Circle;
+import com.takusemba.spotlight.target.CustomTarget;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionButton;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionHelper;
+import com.wangjie.rapidfloatingactionbutton.RapidFloatingActionLayout;
+import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RFACLabelItem;
+import com.wangjie.rapidfloatingactionbutton.contentimpl.labellist.RapidFloatingActionContentLabelList;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -62,7 +79,7 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
-public class ViewPostActivity extends AppCompatActivity {
+public class ViewPostActivity extends AppCompatActivity implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
 
     private static final String TAG = "ViewPostActivity";
 
@@ -76,7 +93,7 @@ public class ViewPostActivity extends AppCompatActivity {
     private int likesCount2 = 0;
     private TextView comments_list,comments_list2;
     private TextView caption1,caption2,timeRemaining;
-    private ImageView heartWhite,heartWhite2,heartRed,heartRed2,shareIcon;
+    private ImageView heartWhite,heartWhite2,heartRed,heartRed2;
     private HorizontalScrollView horizontalScrollView;
     private LinearLayout theWholeView;
     private CardView cardView1;
@@ -88,6 +105,108 @@ public class ViewPostActivity extends AppCompatActivity {
 
     private Context mContext = ViewPostActivity.this;
 
+    private RapidFloatingActionLayout rfaLayout;
+    private RapidFloatingActionButton rfaBtn;
+    private RapidFloatingActionHelper rfabHelper;
+
+    SharedPreferences mPrefs;
+    final String horizontalScreenEnabled = "horizontalScreenEnabled";
+    final String showFloatingButton = "showFloatingButton";
+    boolean horizontalScrollingEnabled;
+    boolean isshowFloatingButton;
+
+
+    @Override
+    public void onRFACItemLabelClick(int position, RFACLabelItem item) {
+
+    }
+
+    @Override
+    public void onRFACItemIconClick(int position, RFACLabelItem item) {
+
+        switch (position){
+
+            case 0:
+                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off.");
+
+                if (horizontalScrollingEnabled) {
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, false);
+                    editor.apply();
+                }else{
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, true);
+                    editor.apply();
+                }
+
+                Intent i = new Intent(mContext, HomeActivity.class);
+                startActivity(i);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                break;
+
+            case 1:
+                sharePost();
+                break;
+
+            case 2:
+                Intent intent = new Intent(this, EditProfileActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.pull,R.anim.push);
+                break;
+
+            case 3:
+                spotlight();
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(showFloatingButton, false);
+                editor.apply();
+                rfaBtn.setVisibility(View.GONE);
+
+                break;
+        }
+
+        rfabHelper.toggleContent();
+    }
+
+    private void spotlight() {
+
+        View first = LayoutInflater.from(mContext).inflate(R.layout.overlay_shake_device, new FrameLayout(mContext));
+
+        CustomTarget homeView = new CustomTarget.Builder(this)
+                .setPoint(0f,0f)
+                .setShape(new Circle(0f))
+                .setOverlay(first)
+                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+                    @Override
+                    public void onStarted(CustomTarget target) {
+                        // do something
+                    }
+                    @Override
+                    public void onEnded(CustomTarget target) {
+                        // do something
+                    }
+                })
+                .build();
+
+        Spotlight spotlight = Spotlight.with(ViewPostActivity.this)
+                .setOverlayColor(R.color.background)
+                .setDuration(1000L)
+                .setAnimation(new DecelerateInterpolator(2f))
+                .setTargets(homeView)
+                .setClosedOnTouchedOutside(true)
+                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                    @Override
+                    public void onStarted() {
+
+                    }
+
+                    @Override
+                    public void onEnded() {
+
+                    }
+                });
+        spotlight.start();
+
+    }
 
     /*
       pass to this activity either the post or the post_key as intent extra. It will show the post itself.
@@ -97,7 +216,19 @@ public class ViewPostActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.layout_view_post_activity);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+        horizontalScrollingEnabled = mPrefs.getBoolean(horizontalScreenEnabled, true);
+        isshowFloatingButton = mPrefs.getBoolean(showFloatingButton,true);
+        if (horizontalScrollingEnabled) {
+            //do the horizontal
+            setContentView(R.layout.layout_view_post_activity);
+            screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+        }else{
+            //do normal
+            setContentView(R.layout.layout_view_post_activity_without_scroll);
+            screenWidth = mContext.getResources().getDisplayMetrics().widthPixels/2;
+        }
+
         setupWidgets();
         ImageView back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -106,8 +237,10 @@ public class ViewPostActivity extends AppCompatActivity {
                 finish();
             }
         });
-        screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
         screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
+
+        rfaLayout = findViewById(R.id.activity_main_rfal);
+        rfaBtn = findViewById(R.id.activity_main_rfab);
 
         Post post = getPostFromIntent();
 
@@ -134,7 +267,94 @@ public class ViewPostActivity extends AppCompatActivity {
         if (!InternetStatus.getInstance(this).isOnline()) {
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
+
+        if (isshowFloatingButton)
+            setupFloatingButton();
+        else
+            rfaBtn.setVisibility(View.GONE);
+
+        ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
+            @Override
+            public void OnShake() {
+                Log.d(TAG, "OnShake: called");
+                Toasty.success(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT,false).show();
+
+                mPrefs.getBoolean(showFloatingButton,true);
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(showFloatingButton, true);
+                editor.apply();
+
+                Intent i = new Intent(mContext,HomeActivity.class);
+                startActivity(i);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+            }
+        });
+        ShakeDetector.updateConfiguration(2.0f,3);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ShakeDetector.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ShakeDetector.destroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ShakeDetector.stop();
+    }
+
+    private void setupFloatingButton() {
+
+        RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(mContext);
+        rfaContent.setOnRapidFloatingActionContentLabelListListener(this);
+        List<RFACLabelItem> items = new ArrayList<>();
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Toggle Horizontal Scrolling")
+                .setDrawable(mContext.getResources().getDrawable(R.drawable.ic_flip))
+                .setIconNormalColor(0xffd84315)
+                .setIconPressedColor(0xffbf360c)
+                .setWrapper(0)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Share this post")
+                .setDrawable(mContext.getResources().getDrawable(R.drawable.ic_share))
+                .setIconNormalColor(0xff4e342e)
+                .setIconPressedColor(0xff3e2723)
+                .setWrapper(1)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Edit Your Profile")
+                .setDrawable(getResources().getDrawable(R.drawable.ic_face))
+                .setIconNormalColor(getResources().getColor(R.color.white))
+                .setIconPressedColor(0xff0d5302)
+                .setLabelColor(0xff056f00)
+                .setWrapper(2)
+        );
+        items.add(new RFACLabelItem<Integer>()
+                .setLabel("Disable this button")
+                .setDrawable(getResources().getDrawable(R.drawable.ic_close))
+                .setIconNormalColor(getResources().getColor(R.color.light_blue_400))
+                .setIconPressedColor(0xff1a237e)
+                .setLabelColor(0xff283593)
+                .setWrapper(3)
+        );
+
+        rfaContent
+                .setItems(items)
+                .setIconShadowColor(0xff888888);
+
+        rfabHelper = new RapidFloatingActionHelper(mContext,rfaLayout,rfaBtn,rfaContent).build();
+
+    }
+
+
 
     private void getPostFromPostKey(String postKey) {
 
@@ -210,6 +430,68 @@ public class ViewPostActivity extends AppCompatActivity {
                 });
     }
 
+    private void sharePost(){
+        Log.d(TAG, "onLongClick: attempting to share the post ");
+
+        Dialog shareImageDialog = new Dialog(mContext);
+        shareImageDialog.setContentView(R.layout.layout_share_post_dialog);
+        TextView saveGallery = shareImageDialog.findViewById(R.id.save_to_gallery);
+        TextView otherApps = shareImageDialog.findViewById(R.id.other_apps);
+        TextView cancel = shareImageDialog.findViewById(R.id.cancel);
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareImageDialog.dismiss();
+            }
+        });
+
+        saveGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                File file = saveBitMap(mContext, theWholeView);    //which view you want to pass that view as parameter
+                if (file != null) {
+                    scanGallery(mContext,file.getAbsolutePath());
+                    Toasty.success(mContext, "Post saved to gallery", Toast.LENGTH_SHORT,true).show();
+                } else {
+                    Toasty.error(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT,true).show();
+                }
+
+            }
+        });
+
+        otherApps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(theWholeView,"Attempting to share the post...",Snackbar.LENGTH_LONG).show();
+
+                try{
+                    File file = saveBitMap(mContext, theWholeView);
+                    MediaScannerConnection.scanFile(mContext,
+                            new String[] { file.getAbsolutePath() }, null,
+                            new MediaScannerConnection.OnScanCompletedListener() {
+                                public void onScanCompleted(String path, Uri uri) {
+                                    Log.d("onScanCompleted", uri.getPath());
+
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : app link goes here");
+                                    shareIntent.setType("image/jpg");
+                                    mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
+                                }
+                            });
+                }catch (Exception e){
+                    Log.d(TAG, "onClick: Exception " + e.getMessage());
+                }
+            }
+        });
+
+        shareImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        shareImageDialog.show();
+    }
+
     private void setupWidgets() {
         view = findViewById(R.id.view);
         view.setVisibility(View.INVISIBLE);
@@ -229,7 +511,6 @@ public class ViewPostActivity extends AppCompatActivity {
         heartWhite2 = findViewById(R.id.image_heart_white2);
         heartRed = findViewById(R.id.image_heart_red);
         heartRed2 = findViewById(R.id.image_heart_red2);
-        shareIcon = findViewById(R.id.shareIcon);
         horizontalScrollView = findViewById(R.id.horizontal_scroll_view);
         theWholeView = findViewById(R.id.theWholeView);
         cardView1 = findViewById(R.id.user1_card_view);
@@ -268,72 +549,6 @@ public class ViewPostActivity extends AppCompatActivity {
         cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight));
 
         setTopToolbar(post);
-
-        shareIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onLongClick: attempting to share the post ");
-
-                Dialog shareImageDialog = new Dialog(mContext);
-                shareImageDialog.setContentView(R.layout.layout_share_post_dialog);
-                TextView saveGallery = shareImageDialog.findViewById(R.id.save_to_gallery);
-                TextView otherApps = shareImageDialog.findViewById(R.id.other_apps);
-                TextView cancel = shareImageDialog.findViewById(R.id.cancel);
-
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        shareImageDialog.dismiss();
-                    }
-                });
-
-                saveGallery.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        File file = saveBitMap(mContext, theWholeView);    //which view you want to pass that view as parameter
-                        if (file != null) {
-                            scanGallery(mContext,file.getAbsolutePath());
-                            Toasty.success(mContext, "Post saved to gallery", Toast.LENGTH_SHORT,true).show();
-                        } else {
-                            Toasty.error(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT,true).show();
-                        }
-
-                    }
-                });
-
-                otherApps.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Snackbar.make(theWholeView,"Attempting to share the post...",Snackbar.LENGTH_LONG).show();
-
-                        try{
-                            File file = saveBitMap(mContext, theWholeView);
-                            MediaScannerConnection.scanFile(mContext,
-                                    new String[] { file.getAbsolutePath() }, null,
-                                    new MediaScannerConnection.OnScanCompletedListener() {
-                                        public void onScanCompleted(String path, Uri uri) {
-                                            Log.d("onScanCompleted", uri.getPath());
-
-                                            Intent shareIntent = new Intent();
-                                            shareIntent.setAction(Intent.ACTION_SEND);
-                                            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : app link goes here");
-                                            shareIntent.setType("image/jpg");
-                                            mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
-                                        }
-                                    });
-                        }catch (Exception e){
-                            Log.d(TAG, "onClick: Exception " + e.getMessage());
-                        }
-                    }
-                });
-
-                shareImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                shareImageDialog.show();
-            }
-        });
-
 
         likesString1.setOnClickListener(new View.OnClickListener() {
             @Override

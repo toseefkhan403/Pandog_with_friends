@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
@@ -68,7 +69,7 @@ public class SearchActivity extends AppCompatActivity {
     private TextView textView;
     private ImageView imageView;
     private InterceptRelativeLayout mRelaIntercept1;
-    private RelativeLayout searchRelativeLayout;
+//    private RelativeLayout searchRelativeLayout;
     private TextView searchEmptyTextView;
 
     //for the welcome screen
@@ -83,8 +84,9 @@ public class SearchActivity extends AppCompatActivity {
         initBannerRV();
         initVerticalRV();
 
-        searchRelativeLayout = findViewById(R.id.SearchRelativeLayout);
+  //      searchRelativeLayout = findViewById(R.id.SearchRelativeLayout);
         searchEmptyTextView = findViewById(R.id.EmptySearchTextView);
+        searchEmptyTextView.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Comic Neue.ttf"));
         SearchView profileSearchView = findViewById(R.id.searchProfiles);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         profilesListView = findViewById(R.id.ProfileList);
@@ -94,12 +96,12 @@ public class SearchActivity extends AppCompatActivity {
         profilesListView.setAdapter(a);
         profilesListView.setItemAnimator(new SlideInUpAnimator());
 
-        profilesListView.setLayoutManager(new LinearLayoutManager(mContext));
+        profilesListView.setLayoutManager(new EchelonLayoutManager(mContext));
         textView = findViewById(R.id.t);
         imageView = findViewById(R.id.trending);
 
         profileSearchView.setActivated(true);
-        profileSearchView.onActionViewExpanded();
+   //     profileSearchView.onActionViewExpanded();
         profileSearchView.setQueryHint("Search here...");
 
         profileSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -141,7 +143,6 @@ public class SearchActivity extends AppCompatActivity {
             editor.putBoolean(tutorialScreenShownPrefSearch, true);
             editor.apply(); // Very important to save the preference
         }
-
     }
 
     private void initBannerRV() {
@@ -271,7 +272,6 @@ public class SearchActivity extends AppCompatActivity {
             this.userUID = uid;
         }
 
-
         @Override
         public int getItemViewType(int position) {
             return position;
@@ -289,7 +289,6 @@ public class SearchActivity extends AppCompatActivity {
 
             searchItemViewHolder.setIsRecyclable(false);
             User user = getItem(i);
-
 
             searchItemViewHolder.userNameView.setText(user.getUsername());
             searchItemViewHolder.userEmailView.setText(user.getEmail());
@@ -354,6 +353,7 @@ public class SearchActivity extends AppCompatActivity {
             public SearchItemViewHolder(@NonNull View itemView) {
                 super(itemView);
                 this.mView = itemView;
+
                 userNameView = itemView.findViewById(R.id.UserNameView);
                 userEmailView = itemView.findViewById(R.id.UserEmailView);
                 photoView = itemView.findViewById(R.id.UserProfilePictureView);
@@ -410,15 +410,24 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         private void setEmptyView() {
-            searchRelativeLayout.setVisibility(View.GONE);
+            profilesListView.removeAllViews();
+            //searchRelativeLayout.setVisibility(View.GONE);
             searchEmptyTextView.setVisibility(View.VISIBLE);
         }
+
     }
 
     private void removeEmptyView() {
-        searchRelativeLayout.setVisibility(View.VISIBLE);
-        searchEmptyTextView.setVisibility(View.GONE);
+       // mViewHolder.userNameView.setVisibility(View.GONE);
+        //  searchRelativeLayout.setVisibility(View.VISIBLE);
+        try {
+            searchEmptyTextView.setVisibility(View.GONE);
+        }catch (NullPointerException e){
+            Log.d(TAG, "removeEmptyView: NullPointerException " + e.getMessage());
+        }
     }
+
+
 
 
     /**

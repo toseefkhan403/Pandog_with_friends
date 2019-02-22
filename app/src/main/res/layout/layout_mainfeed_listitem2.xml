@@ -14,6 +14,7 @@
                 android:id="@+id/horizontal_scroll_view"
                 android:nestedScrollingEnabled="true">
 
+
                 <LinearLayout
                     android:layout_width="800dp"
                     android:layout_height="match_parent"
@@ -67,11 +68,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
-                                android:rotation="-20"
                                 android:id="@+id/tvWinner"
                                 android:visibility="gone">
 
-                            <include layout="@layout/text_view_winner"/>
+                            <include layout="@layout/text_view_winner_smaller"/>
 
                             </RelativeLayout>
 
@@ -79,11 +79,10 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerInParent="true"
-                                android:rotation="-20"
                                 android:id="@+id/tvLoser"
                                 android:visibility="gone">
 
-                            <include layout="@layout/text_view_loser"/>
+                            <include layout="@layout/text_view_loser_smaller"/>
 
                             </RelativeLayout>
 
@@ -92,7 +91,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="20dp"
-                                android:textSize="16sp"
+                                android:textSize="13sp"
                                 android:background="@color/black"
                                 android:gravity="center"
                                 android:alpha="0.35"
@@ -120,7 +119,6 @@
                                     android:layout_centerInParent="true"
                                     android:id="@+id/heart_holder">
 
-
                                 <ImageView
                                     android:id="@+id/image_heart_red"
                                     android:layout_width="45dp"
@@ -144,10 +142,11 @@
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
                                     android:id="@+id/timeRemaining"
-                                    android:layout_marginEnd="4dp"
+                                    android:layout_toRightOf="@+id/heart_holder"
                                     android:textColor="@color/black"
                                     android:textStyle="bold"
-                                    android:layout_centerInParent="true"/>
+                                    android:textSize="12sp"
+                                    android:layout_centerVertical="true"/>
 
                             </RelativeLayout>
 
@@ -170,7 +169,7 @@
                                 android:layout_marginEnd="14dp"
                                 android:layout_centerInParent="true"
                                 android:layout_centerHorizontal="true"
-                                android:textSize="18sp" />
+                                android:textSize="13sp" />
 
                             <View
                                 android:layout_width="1.2dp"
@@ -188,20 +187,20 @@
                                 android:layout_marginStart="14dp"
                                 android:layout_toEndOf="@+id/vieww"
                                 android:textColor="@color/darkgrey"
-                                android:textSize="18sp" />
+                                android:textSize="13sp" />
 
                             <RelativeLayout
                                 android:id="@+id/relLayoutToolbar"
                                 android:layout_width="wrap_content"
-                                android:layout_height="35dp"
+                                android:layout_height="25dp"
                                 android:gravity="center"
                                 android:layout_centerInParent="true"
                                 android:layout_below="@+id/comments_link">
 
                                 <de.hdodenhof.circleimageview.CircleImageView
                                     android:id="@+id/profile_photo"
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
                                     android:transitionName="user_pp"
                                     app:civ_border_color="@color/black"
                                     android:src="@color/beige"
@@ -216,7 +215,7 @@
                                     android:layout_marginTop="-1.5dp"
                                     android:layout_toRightOf="@+id/profile_photo"
                                     android:textColor="@color/black"
-                                    android:textSize="20sp" />
+                                    android:textSize="13sp" />
 
                             </RelativeLayout>
 
@@ -230,7 +229,6 @@
 
 
                 </androidx.cardview.widget.CardView>
-
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="400dp"
@@ -273,11 +271,10 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:rotation="-20"
                                     android:id="@+id/tvWinner2"
                                     android:visibility="gone">
 
-                                    <include layout="@layout/text_view_winner"/>
+                                    <include layout="@layout/text_view_winner_smaller"/>
 
                                 </RelativeLayout>
 
@@ -285,11 +282,10 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerInParent="true"
-                                    android:rotation="-20"
                                     android:id="@+id/tvLoser2"
                                     android:visibility="gone">
 
-                                    <include layout="@layout/text_view_loser"/>
+                                    <include layout="@layout/text_view_loser_smaller"/>
 
                                 </RelativeLayout>
 
@@ -298,7 +294,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginBottom="20dp"
-                                    android:textSize="16sp"
+                                    android:textSize="13sp"
                                     android:background="@color/black"
                                     android:gravity="center"
                                     android:alpha="0.35"
@@ -364,7 +360,7 @@
                                     android:layout_marginEnd="14dp"
                                     android:layout_centerInParent="true"
                                     android:layout_centerHorizontal="true"
-                                    android:textSize="18sp" />
+                                    android:textSize="13sp" />
 
                                 <View
                                     android:layout_width="1.2dp"
@@ -382,21 +378,21 @@
                                     android:layout_marginStart="14dp"
                                     android:layout_toEndOf="@+id/vieww2"
                                     android:textColor="@color/darkgrey"
-                                    android:textSize="18sp" />
+                                    android:textSize="13sp" />
 
 
                                 <RelativeLayout
                                     android:id="@+id/relLayoutToolbar2"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="35dp"
+                                    android:layout_height="25dp"
                                     android:layout_centerInParent="true"
                                     android:gravity="center"
                                     android:layout_below="@+id/comments_link2">
 
                                     <de.hdodenhof.circleimageview.CircleImageView
                                         android:id="@+id/profile_photo2"
-                                        android:layout_width="30dp"
-                                        android:layout_height="30dp"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
                                         android:src="@color/beige"
                                         android:transitionName="user_pp"
                                         app:civ_border_color="@color/black"
@@ -411,7 +407,7 @@
                                         android:transitionName="username"
                                         android:layout_marginTop="-1.5dp"
                                         android:textColor="@color/black"
-                                        android:textSize="20sp" />
+                                        android:textSize="13sp" />
 
                                 </RelativeLayout>
 
@@ -422,9 +418,6 @@
 
 
                     </androidx.cardview.widget.CardView>
-
-
-
 
                 </LinearLayout>
 

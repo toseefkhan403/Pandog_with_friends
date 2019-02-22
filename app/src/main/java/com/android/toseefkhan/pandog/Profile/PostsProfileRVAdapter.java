@@ -1,8 +1,6 @@
 package com.android.toseefkhan.pandog.Profile;
 
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.app.ActivityOptions;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +11,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -45,23 +42,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.ShareCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 
 public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAdapter.ViewHolder>{
-
 
     public interface OnLoadMoreItemsListener{
         void onLoadMoreItems();
@@ -75,15 +67,24 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     private boolean mLikedbyCurrentUser2 = false;
     private int likesCount1 = 0;
     private int likesCount2 = 0;
-
     private int screenWidth;
     private int screenHeight;
+    private ViewHolder mViewHolder;
+    private boolean withoutScroll = false;
 
     public PostsProfileRVAdapter(Context mContext, ArrayList<Post> mPostList) {
         this.mContext = mContext;
         this.mPostList = mPostList;
         screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
         screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
+    }
+
+    public PostsProfileRVAdapter(Context mContext, ArrayList<Post> mPostList,boolean sth) {
+        this.mContext = mContext;
+        this.mPostList = mPostList;
+        screenWidth = mContext.getResources().getDisplayMetrics().widthPixels/2;
+        screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
+        withoutScroll = sth;
     }
 
     public PostsProfileRVAdapter(Context mContext) {
@@ -103,18 +104,24 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_mainfeed_listitem, parent, false);
 
-        return new ViewHolder(view);
+        if (withoutScroll){
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_mainfeed_listitem2, parent, false);
+
+            return new ViewHolder(view);
+        }else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_mainfeed_listitem, parent, false);
+
+            return new ViewHolder(view);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder,final int position) {
+        Log.d(TAG, "onBindViewHolder: called.");
 
         final Post post = mPostList.get(position);
         holder.setIsRecyclable(true);
-        Log.d(TAG, "onBindViewHolder: postLikes " + post.getLikes());
-        Log.d(TAG, "onBindViewHolder: post " + post.getWinner());
 
         long timediff = System.currentTimeMillis() - post.getTimeStamp();
         int time = (int) ((86400000 - timediff) / 3600000);
@@ -124,74 +131,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         holder.theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth * 2, screenHeight - bottomHeight));
         holder.cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - bottomHeight));
         holder.cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - bottomHeight));
-
-        holder.shareIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "onLongClick: attempting to share the post ");
-
-                Dialog shareImageDialog = new Dialog(mContext);
-                shareImageDialog.setContentView(R.layout.layout_share_post_dialog);
-                TextView saveGallery = shareImageDialog.findViewById(R.id.save_to_gallery);
-                TextView otherApps = shareImageDialog.findViewById(R.id.other_apps);
-                TextView cancel = shareImageDialog.findViewById(R.id.cancel);
-
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        shareImageDialog.dismiss();
-                    }
-                });
-
-                saveGallery.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        File file = saveBitMap(mContext, holder.theWholeView);    //which view you want to pass that view as parameter
-                        if (file != null) {
-                            scanGallery(mContext,file.getAbsolutePath());
-                            Toasty.success(mContext, "Post saved to gallery", Toast.LENGTH_SHORT,true).show();
-                        } else {
-                            Toasty.error(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT,true).show();
-                        }
-
-                    }
-                });
-
-                otherApps.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Snackbar.make(holder.theWholeView,"Attempting to share the post...",Snackbar.LENGTH_LONG).show();
-
-                        try{
-                            File file = saveBitMap(mContext, holder.theWholeView);
-                            MediaScannerConnection.scanFile(mContext,
-                                    new String[] { file.getAbsolutePath() }, null,
-                                    new MediaScannerConnection.OnScanCompletedListener() {
-                                        public void onScanCompleted(String path, Uri uri) {
-                                            Log.d("onScanCompleted", uri.getPath());
-
-                                            Intent shareIntent = new Intent();
-                                            shareIntent.setAction(Intent.ACTION_SEND);
-                                            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                                            shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : app link goes here");
-                                            shareIntent.setType("image/jpg");
-                                            mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
-                                        }
-                                    });
-                        }catch (NullPointerException e){
-                            Log.d(TAG, "onClick: Exception " + e.getMessage());
-                        }catch (IllegalStateException e){
-                            Log.d(TAG, "onClick: Exception " + e.getMessage());
-                        }
-                    }
-                });
-
-                shareImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                shareImageDialog.show();
-
-            }
-        });
 
         final ObjectAnimator animator = ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX", screenWidth * 2);
         final ObjectAnimator animator2 = ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX", 0);
@@ -270,6 +209,16 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             }
         });
 
+        setTimeAndCalculateResults(holder, time, post);
+
+        if(reachedEndOfList(position)){
+            loadMoreData();
+        }
+
+    }
+
+    private void setTimeAndCalculateResults(ViewHolder holder, int time, Post post) {
+
         holder.timeRemaining.setText(String.valueOf(time) + " hr remaining");
 
         if (!post.getStatus().equals("INACTIVE")) {
@@ -283,7 +232,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                             .child("status")
                             .setValue("AWAITING_RESULT");
                     Log.d(TAG, "onBindViewHolder: i am setting the status to AWAITING_RESULT");
-
 
                     holder.heartHolder.setVisibility(View.GONE);
                     holder.heartHolder2.setVisibility(View.GONE);
@@ -347,11 +295,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                         });
             }
         }
-
-        if(reachedEndOfList(position)){
-            loadMoreData();
-        }
-
     }
 
     private boolean reachedEndOfList(int position){
@@ -688,7 +631,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         TextView likesString1,likesString2;
         TextView comments_list,comments_list2;
         TextView caption1,caption2,timeRemaining;
-        ImageView heartWhite,heartWhite2,heartRed,heartRed2,shareIcon;
+        ImageView heartWhite,heartWhite2,heartRed,heartRed2;
         HorizontalScrollView horizontalScrollView;
         LinearLayout theWholeView;
         CardView cardView1;
@@ -701,7 +644,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
             dp1 = itemView.findViewById(R.id.profile_photo);
             dp2 = itemView.findViewById(R.id.profile_photo2);
-            shareIcon = itemView.findViewById(R.id.shareIcon);
             username1 = itemView.findViewById(R.id.username);
             username2 = itemView.findViewById(R.id.username2);
             image1 = itemView.findViewById(R.id.post_image);
@@ -797,4 +739,77 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+
+        mViewHolder = holder;
+    }
+
+    public void sharePost() {
+        Log.d(TAG, "onLongClick: attempting to share the post ");
+
+        Dialog shareImageDialog = new Dialog(mContext);
+        shareImageDialog.setContentView(R.layout.layout_share_post_dialog);
+        TextView saveGallery = shareImageDialog.findViewById(R.id.save_to_gallery);
+        TextView otherApps = shareImageDialog.findViewById(R.id.other_apps);
+        TextView cancel = shareImageDialog.findViewById(R.id.cancel);
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                shareImageDialog.dismiss();
+            }
+        });
+
+        saveGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                File file = saveBitMap(mContext, mViewHolder.theWholeView);    //which view you want to pass that view as parameter
+                if (file != null) {
+                    scanGallery(mContext,file.getAbsolutePath());
+                    Toasty.success(mContext, "Post saved to gallery", Toast.LENGTH_SHORT,true).show();
+                } else {
+                    Toasty.error(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT,true).show();
+                }
+
+            }
+        });
+
+        otherApps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(mViewHolder.theWholeView,"Attempting to share the post...",Snackbar.LENGTH_LONG).show();
+
+                try{
+                    File file = saveBitMap(mContext, mViewHolder.theWholeView);
+                    MediaScannerConnection.scanFile(mContext,
+                            new String[] { file.getAbsolutePath() }, null,
+                            new MediaScannerConnection.OnScanCompletedListener() {
+                                public void onScanCompleted(String path, Uri uri) {
+                                    Log.d("onScanCompleted", uri.getPath());
+
+                                    Intent shareIntent = new Intent();
+                                    shareIntent.setAction(Intent.ACTION_SEND);
+                                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : app link goes here");
+                                    shareIntent.setType("image/jpg");
+                                    mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
+                                }
+                            });
+                }catch (NullPointerException e){
+                    Log.d(TAG, "onClick: Exception " + e.getMessage());
+                }catch (IllegalStateException e){
+                    Log.d(TAG, "onClick: Exception " + e.getMessage());
+                }
+            }
+        });
+
+        shareImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        shareImageDialog.show();
+    }
+
+
 }

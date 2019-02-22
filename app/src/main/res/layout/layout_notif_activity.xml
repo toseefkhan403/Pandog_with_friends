@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/top_bar"
         android:background="@drawable/white_pink_border_bottom"
         >
 
@@ -75,9 +77,20 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/top_bar"
         android:background="@color/white"
         android:id="@+id/recycler_view_list_notifs">
 
     </androidx.recyclerview.widget.RecyclerView>
 
-</LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:textColor="@color/black"
+        android:id="@+id/no_notifs"
+        android:visibility="gone"
+        android:textSize="26sp"
+        android:text="No notifications found!"/>
+
+</RelativeLayout>

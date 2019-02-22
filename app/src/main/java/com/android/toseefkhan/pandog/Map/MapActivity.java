@@ -1,5 +1,7 @@
 package com.android.toseefkhan.pandog.Map;
-//
+
+import androidx.appcompat.app.AppCompatActivity;
+
 //import android.Manifest;
 //import android.animation.ObjectAnimator;
 //import android.app.AlertDialog;
@@ -100,18 +102,15 @@ package com.android.toseefkhan.pandog.Map;
 //public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //    , View.OnClickListener{
 //
-
-import androidx.appcompat.app.AppCompatActivity;
-
 public class MapActivity extends AppCompatActivity {}
-
 //    private static final String TAG = "MapActivity";
 //
 //    //constants
 //    private Context mContext = MapActivity.this;
 //    private static final int ACTIVITY_NUM = 1;
 //    private static final int ERROR_DIALOG_REQUEST = 9001;
-//    private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
+//    private static final int PERMISSIONS_REQUEST_E
+// NABLE_GPS = 9002;
 //    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 9003;
 //    public static final String MAPVIEW_BUNDLE_KEY = "MapViewBundleKey";
 //    private static final int MAP_LAYOUT_STATE_CONTRACTED = 0;
@@ -153,43 +152,43 @@ public class MapActivity extends AppCompatActivity {}
 //
 //        myRef= FirebaseDatabase.getInstance().getReference();
 //        relativeLayout = findViewById(R.id.permission_null);
-//        linearLayout = findViewById(R.id.permission_not_null);
-//        mMapContainer = findViewById(R.id.map_container);
-//        gps = findViewById(R.id.gps);
-//        findViewById(R.id.btn_full_screen_map).setOnClickListener(this);
-//        findViewById(R.id.btn_hide_my_marker).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//               AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-//                       .setCancelable(true)
-//                       .setMessage("Your position will not be displayed on the map.\nBut if you do so, you won't be able to use the map feature.")
-//                       .setPositiveButton("HIDE ME", new DialogInterface.OnClickListener() {
-//                           @Override
-//                           public void onClick(DialogInterface dialogInterface, int i) {
-//
-//                               myRef.child(getString(R.string.dbname_users))
-//                                       .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                                       .child("hide_position")
-//                                       .setValue("true");
-//
-//                               Intent intent = new Intent(mContext,MapActivity.class);
-//                               startActivity(intent);
-//                               overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-//                           }
-//                       });
-//
-//               AlertDialog alertDialog = builder.create();
-//               alertDialog.setTitle("Hide my Position");
-//               alertDialog.show();
-//            }
-//        });
+////        linearLayout = findViewById(R.id.permission_not_null);
+////        mMapContainer = findViewById(R.id.map_container);
+////        gps = findViewById(R.id.gps);
+////        findViewById(R.id.btn_full_screen_map).setOnClickListener(this);
+////        findViewById(R.id.btn_hide_my_marker).setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View view) {
+////
+////               AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+////                       .setCancelable(true)
+////                       .setMessage("Your position will not be displayed on the map.\nBut if you do so, you won't be able to use the map feature.")
+////                       .setPositiveButton("HIDE ME", new DialogInterface.OnClickListener() {
+////                           @Override
+////                           public void onClick(DialogInterface dialogInterface, int i) {
+////
+////                               myRef.child(getString(R.string.dbname_users))
+////                                       .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+////                                       .child("hide_position")
+////                                       .setValue("true");
+////
+////                               Intent intent = new Intent(mContext,MapActivity.class);
+////                               startActivity(intent);
+////                               overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+////                           }
+////                       });
+////
+////               AlertDialog alertDialog = builder.create();
+////               alertDialog.setTitle("Hide my Position");
+////               alertDialog.show();
+////            }
+////        });
 //
 //        gpsDialog = new Dialog(mContext);
-//        mProgressbar = findViewById(R.id.progressBar);
-//        mProgressbar.setVisibility(View.VISIBLE);
+////        mProgressbar = findViewById(R.id.progressBar);
+////        mProgressbar.setVisibility(View.VISIBLE);
 //        mUserListRecyclerView = findViewById(R.id.user_list_recycler_view);
-//        mMapView = findViewById(R.id.user_list_map);
+//   //     mMapView = findViewById(R.id.user_list_map);
 //        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 //        initGoogleMap(savedInstanceState);
 //
@@ -197,7 +196,7 @@ public class MapActivity extends AppCompatActivity {}
 //            if (mLocationPermissionGranted) {
 //                gpsDialog.dismiss();
 //                //todo handle events after the request has been granted
-//                showLayout();
+//           //     showLayout();
 //                getLastKnownLocation();
 //                //getUsersFromArea();
 //            } else {
@@ -240,7 +239,7 @@ public class MapActivity extends AppCompatActivity {}
 //
 //                    }catch (NullPointerException e){
 //                        Log.d("Error", "onComplete: NullPointerException " + e.getMessage());
-//                        latLng = new LatLng(28.582985, 77.255820);
+//                    //    latLng = new LatLng(28.582985, 77.255820);
 //                    }
 //
 //                    setLatlongs(latLng);
@@ -269,12 +268,12 @@ public class MapActivity extends AppCompatActivity {}
 //            }
 //            if (!show){
 //                mUserListRecyclerView.setVisibility(View.INVISIBLE);
-//                Snackbar snackbar= Snackbar.make(mMapView,"Uh-oh! Looks like no one interesting lives here",Snackbar.LENGTH_SHORT);
-//                snackbar.show();
+//          //      Snackbar snackbar= Snackbar.make(mMapView,"Uh-oh! Looks like no one interesting lives here",Snackbar.LENGTH_SHORT);
+//           //     snackbar.show();
 //            }
 //
 //            if (!mUserListViewable.isEmpty()){
-//                initUserListRecyclerView(sortList(mUserListViewable));
+//                ///initUserListRecyclerView(sortList(mUserListViewable));
 //            }
 //        }
 //    }
@@ -404,7 +403,7 @@ public class MapActivity extends AppCompatActivity {}
 //            }//just some styling stuff
 //            mMap=map;
 //
-//            setMarkersOnMap(((InitialSetup)getApplicationContext()).mUserList,((InitialSetup)getApplicationContext()).markerOptionsList);
+//       //     setMarkersOnMap(((InitialSetup)getApplicationContext()).mUserList,((InitialSetup)getApplicationContext()).markerOptionsList);
 //
 //            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter(){
 //
@@ -464,182 +463,182 @@ public class MapActivity extends AppCompatActivity {}
 //     --------------------------------------------------Permissions and stuff that no one should care about--------------------------------------------------------------
 //     */
 //
-//    private void showLayout() {
-//        relativeLayout.setVisibility(View.GONE);
-//        linearLayout.setVisibility(View.VISIBLE);
-//        mProgressbar.setVisibility(View.GONE);
+////    private void showLayout() {
+////        relativeLayout.setVisibility(View.GONE);
+////        linearLayout.setVisibility(View.VISIBLE);
+////        mProgressbar.setVisibility(View.GONE);
+////
+////        myRef.child(getString(R.string.dbname_users))
+////                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+////                .child("hide_position")
+////                .addListenerForSingleValueEvent(new ValueEventListener() {
+////                    @Override
+////                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+////                        String isPositionHidden = dataSnapshot.getValue(String.class);
+////
+////                        try{
+////
+////                            if (isPositionHidden.equals("true")){
+////
+////                                FrameLayout root = new FrameLayout(mContext);
+////                                LayoutInflater inflater = LayoutInflater.from(mContext);
+////
+////                                View first = inflater.inflate(R.layout.overlay_hidden_position, root);
+////
+////                                CustomTarget homeView = new CustomTarget.Builder(MapActivity.this)
+////                                        .setPoint(0f,0f)
+////                                        .setShape(new Circle(0f))
+////                                        .setOverlay(first)
+////                                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+////                                            @Override
+////                                            public void onStarted(CustomTarget target) {
+////                                                // do something
+////                                            }
+////                                            @Override
+////                                            public void onEnded(CustomTarget target) {
+////                                                // do something
+////                                            }
+////                                        })
+////                                        .build();
+////
+////
+////                                TextView Yes = first.findViewById(R.id.yes);
+////                                TextView No = first.findViewById(R.id.no);
+////
+////                                linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+////                                    @Override
+////                                    public void onGlobalLayout() {
+////                                        linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+////                                        Spotlight spotlight = Spotlight.with(MapActivity.this)
+////                                                .setOverlayColor(R.color.background)
+////                                                .setDuration(1000L)
+////                                                .setAnimation(new DecelerateInterpolator(2f))
+////                                                .setTargets(homeView)
+////                                                .setClosedOnTouchedOutside(false)
+////                                                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+////                                                    @Override
+////                                                    public void onStarted() {
+////
+////                                                    }
+////
+////                                                    @Override
+////                                                    public void onEnded() {
+////                                                    }
+////                                                });
+////                                        spotlight.start();
+////
+////                                        Yes.setOnClickListener(new View.OnClickListener() {
+////                                            @Override
+////                                            public void onClick(View view) {
+////
+////                                                myRef.child(getString(R.string.dbname_users))
+////                                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+////                                                        .child("hide_position")
+////                                                        .removeValue();
+////
+////                                                Intent intent = new Intent(mContext, MapActivity.class);
+////                                                startActivity(intent);
+////                                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+////
+////                                                Toasty.warning(mContext, "Kindly restart the app to see changes.", Toast.LENGTH_SHORT,true).show();
+////                                            }
+////                                        });
+////
+////                                        No.setOnClickListener(new View.OnClickListener() {
+////                                            @Override
+////                                            public void onClick(View view) {
+////
+////                                                Intent intent = new Intent(mContext, HomeActivity.class);
+////                                                startActivity(intent);
+////                                            }
+////                                        });
+////
+////                                    }
+////                                });
+////                            }
+////                        }catch (NullPointerException e){
+////                            Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+////                        }
+////                    }
+////
+////                    @Override
+////                    public void onCancelled(@NonNull DatabaseError databaseError) {
+////
+////                    }
+////                });
+////
+////
+////
+////
+////        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+////
+////        // second argument is the default to use if the preference can't be found
+////        boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefMap, false);
+////
+////        if (!welcomeScreenShown) {
+////
+////            startTutorial();
+////            SharedPreferences.Editor editor = mPrefs.edit();
+////            editor.putBoolean(tutorialScreenShownPrefMap, true);
+////            editor.apply(); // Very important to save the preference
+////        }
+////
+////    }
 //
-//        myRef.child(getString(R.string.dbname_users))
-//                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                .child("hide_position")
-//                .addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        String isPositionHidden = dataSnapshot.getValue(String.class);
-//
-//                        try{
-//
-//                            if (isPositionHidden.equals("true")){
-//
-//                                FrameLayout root = new FrameLayout(mContext);
-//                                LayoutInflater inflater = LayoutInflater.from(mContext);
-//
-//                                View first = inflater.inflate(R.layout.overlay_hidden_position, root);
-//
-//                                CustomTarget homeView = new CustomTarget.Builder(MapActivity.this)
-//                                        .setPoint(0f,0f)
-//                                        .setShape(new Circle(0f))
-//                                        .setOverlay(first)
-//                                        .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
-//                                            @Override
-//                                            public void onStarted(CustomTarget target) {
-//                                                // do something
-//                                            }
-//                                            @Override
-//                                            public void onEnded(CustomTarget target) {
-//                                                // do something
-//                                            }
-//                                        })
-//                                        .build();
-//
-//
-//                                TextView Yes = first.findViewById(R.id.yes);
-//                                TextView No = first.findViewById(R.id.no);
-//
-//                                linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//                                    @Override
-//                                    public void onGlobalLayout() {
-//                                        linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                                        Spotlight spotlight = Spotlight.with(MapActivity.this)
-//                                                .setOverlayColor(R.color.background)
-//                                                .setDuration(1000L)
-//                                                .setAnimation(new DecelerateInterpolator(2f))
-//                                                .setTargets(homeView)
-//                                                .setClosedOnTouchedOutside(false)
-//                                                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
-//                                                    @Override
-//                                                    public void onStarted() {
-//
-//                                                    }
-//
-//                                                    @Override
-//                                                    public void onEnded() {
-//                                                    }
-//                                                });
-//                                        spotlight.start();
-//
-//                                        Yes.setOnClickListener(new View.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(View view) {
-//
-//                                                myRef.child(getString(R.string.dbname_users))
-//                                                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-//                                                        .child("hide_position")
-//                                                        .removeValue();
-//
-//                                                Intent intent = new Intent(mContext, MapActivity.class);
-//                                                startActivity(intent);
-//                                                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-//
-//                                                Toasty.warning(mContext, "Kindly restart the app to see changes.", Toast.LENGTH_SHORT,true).show();
-//                                            }
-//                                        });
-//
-//                                        No.setOnClickListener(new View.OnClickListener() {
-//                                            @Override
-//                                            public void onClick(View view) {
-//
-//                                                Intent intent = new Intent(mContext, HomeActivity.class);
-//                                                startActivity(intent);
-//                                            }
-//                                        });
-//
-//                                    }
-//                                });
-//                            }
-//                        }catch (NullPointerException e){
-//                            Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
-//
-//
-//
-//
-//        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-//
-//        // second argument is the default to use if the preference can't be found
-//        boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefMap, false);
-//
-//        if (!welcomeScreenShown) {
-//
-//            startTutorial();
-//            SharedPreferences.Editor editor = mPrefs.edit();
-//            editor.putBoolean(tutorialScreenShownPrefMap, true);
-//            editor.apply(); // Very important to save the preference
-//        }
-//
-//    }
-//
-//    private void startTutorial() {
-//
-//        Log.d(TAG, "startTutorial: starting the tutorial");
-//
-//        FrameLayout root = new FrameLayout(mContext);
-//        LayoutInflater inflater = LayoutInflater.from(mContext);
-//
-//        View first = inflater.inflate(R.layout.overlay_map_tutorial, root);
-//
-//        CustomTarget homeView = new CustomTarget.Builder(this)
-//                .setPoint(0f,0f)
-//                .setShape(new Circle(0f))
-//                .setOverlay(first)
-//                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
-//                    @Override
-//                    public void onStarted(CustomTarget target) {
-//                        // do something
-//                    }
-//                    @Override
-//                    public void onEnded(CustomTarget target) {
-//                        // do something
-//                    }
-//                })
-//                .build();
-//
-//        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-//                Spotlight spotlight = Spotlight.with(MapActivity.this)
-//                        .setOverlayColor(R.color.background)
-//                        .setDuration(1000L)
-//                        .setAnimation(new DecelerateInterpolator(2f))
-//                        .setTargets(homeView)
-//                        .setClosedOnTouchedOutside(true)
-//                        .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
-//                            @Override
-//                            public void onStarted() {
-//
-//                            }
-//
-//                            @Override
-//                            public void onEnded() {
-//                                Log.d(TAG, "onEnded: spotlight ended navigating to usual stuff");
-//                                Intent i = new Intent(mContext,MapActivity.class);
-//                                startActivity(i);
-//                                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-//                            }
-//                        });
-//                spotlight.start();
-//            }
-//        });
-//
-//    }
+////    private void startTutorial() {
+////
+////        Log.d(TAG, "startTutorial: starting the tutorial");
+////
+////        FrameLayout root = new FrameLayout(mContext);
+////        LayoutInflater inflater = LayoutInflater.from(mContext);
+////
+////        View first = inflater.inflate(R.layout.overlay_map_tutorial, root);
+////
+////        CustomTarget homeView = new CustomTarget.Builder(this)
+////                .setPoint(0f,0f)
+////                .setShape(new Circle(0f))
+////                .setOverlay(first)
+////                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+////                    @Override
+////                    public void onStarted(CustomTarget target) {
+////                        // do something
+////                    }
+////                    @Override
+////                    public void onEnded(CustomTarget target) {
+////                        // do something
+////                    }
+////                })
+////                .build();
+////
+////        linearLayout.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+////            @Override
+////            public void onGlobalLayout() {
+////                linearLayout.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+////                Spotlight spotlight = Spotlight.with(MapActivity.this)
+////                        .setOverlayColor(R.color.background)
+////                        .setDuration(1000L)
+////                        .setAnimation(new DecelerateInterpolator(2f))
+////                        .setTargets(homeView)
+////                        .setClosedOnTouchedOutside(true)
+////                        .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+////                            @Override
+////                            public void onStarted() {
+////
+////                            }
+////
+////                            @Override
+////                            public void onEnded() {
+////                                Log.d(TAG, "onEnded: spotlight ended navigating to usual stuff");
+////                                Intent i = new Intent(mContext,MapActivity.class);
+////                                startActivity(i);
+////                                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+////                            }
+////                        });
+////                spotlight.start();
+////            }
+////        });
+////
+////    }
 //
 //
 //    @Override
@@ -649,9 +648,9 @@ public class MapActivity extends AppCompatActivity {}
 //            if(mLocationPermissionGranted){
 //                gpsDialog.dismiss();
 //                //todo handle events after the request has been granted
-//                showLayout();
+//            //    showLayout();
 //                getLastKnownLocation();
-//                initGoogleMap(mSavedInstanceState);
+//           //     initGoogleMap(mSavedInstanceState);
 //            }
 //            else{
 //                getLocationPermission();
@@ -660,43 +659,43 @@ public class MapActivity extends AppCompatActivity {}
 //
 //    }
 //
-//    private void expandMapAnimation(){
-//        ViewWeightAnimationWrapper mapAnimationWrapper = new ViewWeightAnimationWrapper(mMapContainer);
-//        ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
-//                "weight",
-//                60,
-//                100);
-//        mapAnimation.setDuration(800);
+////    private void expandMapAnimation(){
+////        ViewWeightAnimationWrapper mapAnimationWrapper = new ViewWeightAnimationWrapper(mMapContainer);
+////        ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
+////                "weight",
+////                60,
+////                100);
+////        mapAnimation.setDuration(800);
+////
+////        ViewWeightAnimationWrapper recyclerAnimationWrapper = new ViewWeightAnimationWrapper(mUserListRecyclerView);
+////        ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
+////                "weight",
+////                40,
+////                0);
+////        recyclerAnimation.setDuration(800);
+////
+////        recyclerAnimation.start();
+////        mapAnimation.start();
+////    }
 //
-//        ViewWeightAnimationWrapper recyclerAnimationWrapper = new ViewWeightAnimationWrapper(mUserListRecyclerView);
-//        ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
-//                "weight",
-//                40,
-//                0);
-//        recyclerAnimation.setDuration(800);
-//
-//        recyclerAnimation.start();
-//        mapAnimation.start();
-//    }
-//
-//    private void contractMapAnimation(){
-//        ViewWeightAnimationWrapper mapAnimationWrapper = new ViewWeightAnimationWrapper(mMapContainer);
-//        ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
-//                "weight",
-//                100,
-//                60);
-//        mapAnimation.setDuration(800);
-//
-//        ViewWeightAnimationWrapper recyclerAnimationWrapper = new ViewWeightAnimationWrapper(mUserListRecyclerView);
-//        ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
-//                "weight",
-//                0,
-//                40);
-//        recyclerAnimation.setDuration(800);
-//
-//        recyclerAnimation.start();
-//        mapAnimation.start();
-//    }
+////    private void contractMapAnimation(){
+////        ViewWeightAnimationWrapper mapAnimationWrapper = new ViewWeightAnimationWrapper(mMapContainer);
+////        ObjectAnimator mapAnimation = ObjectAnimator.ofFloat(mapAnimationWrapper,
+////                "weight",
+////                100,
+////                60);
+////        mapAnimation.setDuration(800);
+////
+////        ViewWeightAnimationWrapper recyclerAnimationWrapper = new ViewWeightAnimationWrapper(mUserListRecyclerView);
+////        ObjectAnimator recyclerAnimation = ObjectAnimator.ofFloat(recyclerAnimationWrapper,
+////                "weight",
+////                0,
+////                40);
+////        recyclerAnimation.setDuration(800);
+////
+////        recyclerAnimation.start();
+////        mapAnimation.start();
+////    }
 //
 //    private void setLatlongs(LatLng latlng){
 //
@@ -725,104 +724,104 @@ public class MapActivity extends AppCompatActivity {}
 //
 //        mMapView.getMapAsync(this);
 //    }
-//
-//    private void initUserListRecyclerView(ArrayList<User> users) {
-//        mProgressbar.setVisibility(View.GONE);
-////        dialogProgressbar.setVisibility(View.GONE);
-//        mUserRecyclerAdapter = new MapRecyclerViewAdapter(mContext , users);
-//        AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(mUserRecyclerAdapter);
-//        a.setDuration(1750);
-//        a.setInterpolator(new OvershootInterpolator());
-//        mUserListRecyclerView.setAdapter(a);
-//        mUserListRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-//    }
-//
-//
-//    @Override
-//    public void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
-//        if (mapViewBundle == null) {
-//            mapViewBundle = new Bundle();
-//            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
-//        }
-//
-//        mMapView.onSaveInstanceState(mapViewBundle);
-//    }
-//
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        mMapView.onStart();
-//    }
-//
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        mMapView.onStop();
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        mMapView.onPause();
-//        super.onPause();
-//    }
-//
-//    @Override
-//    public void onDestroy() {
-//        mMapView.onDestroy();
-//        super.onDestroy();
-//    }
-//
-//    @Override
-//    public void onLowMemory() {
-//        super.onLowMemory();
-//        mMapView.onLowMemory();
-//    }
-//
-//    private void buildAlertMessageNoGps() {
-//        gpsDialog.setContentView(R.layout.layout_gps_dialog_box);
-//        ImageView cancelDialog = gpsDialog.findViewById(R.id.cancel_dialog);
-//        TextView yesDialog= gpsDialog.findViewById(R.id.enable_text);
-//        dialogProgressbar = gpsDialog.findViewById(R.id.dialogProgressBar);
-//        dialogProgressbar.setVisibility(View.VISIBLE);
-//
-//        cancelDialog.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                gpsDialog.dismiss();
-//                Intent intent= new Intent(mContext, HomeActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-//
-//        yesDialog.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
-//            }
-//        });
-//
-//        gps.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
-//            }
-//        });
-//
-//        gpsDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        gpsDialog.show();
-//
-//    }
+////
+////    private void initUserListRecyclerView(ArrayList<User> users) {
+////        mProgressbar.setVisibility(View.GONE);
+//////        dialogProgressbar.setVisibility(View.GONE);
+////        mUserRecyclerAdapter = new MapRecyclerViewAdapter(mContext , users);
+////        AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(mUserRecyclerAdapter);
+////        a.setDuration(1750);
+////        a.setInterpolator(new OvershootInterpolator());
+////        mUserListRecyclerView.setAdapter(a);
+////        mUserListRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+////    }
+////
+////
+////    @Override
+////    public void onSaveInstanceState(Bundle outState) {
+////        super.onSaveInstanceState(outState);
+////
+////        Bundle mapViewBundle = outState.getBundle(MAPVIEW_BUNDLE_KEY);
+////        if (mapViewBundle == null) {
+////            mapViewBundle = new Bundle();
+////            outState.putBundle(MAPVIEW_BUNDLE_KEY, mapViewBundle);
+////        }
+////
+////        mMapView.onSaveInstanceState(mapViewBundle);
+////    }
+////
+////    @Override
+////    public void onStart() {
+////        super.onStart();
+////        mMapView.onStart();
+////    }
+////
+////    @Override
+////    public void onStop() {
+////        super.onStop();
+////        mMapView.onStop();
+////    }
+////
+////    @Override
+////    public void onPause() {
+////        mMapView.onPause();
+////        super.onPause();
+////    }
+////
+////    @Override
+////    public void onDestroy() {
+////        mMapView.onDestroy();
+////        super.onDestroy();
+////    }
+////
+////    @Override
+////    public void onLowMemory() {
+////        super.onLowMemory();
+////        mMapView.onLowMemory();
+////    }
+////
+////    private void buildAlertMessageNoGps() {
+////        gpsDialog.setContentView(R.layout.layout_gps_dialog_box);
+////        ImageView cancelDialog = gpsDialog.findViewById(R.id.cancel_dialog);
+////        TextView yesDialog= gpsDialog.findViewById(R.id.enable_text);
+////        dialogProgressbar = gpsDialog.findViewById(R.id.dialogProgressBar);
+////        dialogProgressbar.setVisibility(View.VISIBLE);
+////
+////        cancelDialog.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View v) {
+////                gpsDialog.dismiss();
+////                Intent intent= new Intent(mContext, HomeActivity.class);
+////                startActivity(intent);
+////            }
+////        });
+////
+////        yesDialog.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View v) {
+////                Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+////                startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+////            }
+////        });
+////
+////        gps.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View v) {
+////                Intent enableGpsIntent = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+////                startActivityForResult(enableGpsIntent, PERMISSIONS_REQUEST_ENABLE_GPS);
+////            }
+////        });
+////
+////        gpsDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+////        gpsDialog.show();
+////
+////    }
 //
 //    public boolean isMapsEnabled(){
 //        final LocationManager manager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 //
 //        if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
-//            buildAlertMessageNoGps();
+//       //     buildAlertMessageNoGps();
 //            return false;
 //        }
 //        return true;
@@ -839,7 +838,7 @@ public class MapActivity extends AppCompatActivity {}
 //                == PackageManager.PERMISSION_GRANTED) {
 //            mLocationPermissionGranted = true;
 //            //todo handle events after the request has been granted
-//            showLayout();
+//       //     showLayout();
 //            getLastKnownLocation();
 //
 //
@@ -888,7 +887,7 @@ public class MapActivity extends AppCompatActivity {}
 //                if(mLocationPermissionGranted){
 //                    gpsDialog.dismiss();
 //                   //todo handle events after the request has been granted
-//                    showLayout();
+//              //      showLayout();
 //                    getLastKnownLocation();
 //
 //                }
@@ -919,17 +918,17 @@ public class MapActivity extends AppCompatActivity {}
 //    @Override
 //    public void onClick(View v) {
 //        switch (v.getId()) {
-//            case R.id.btn_full_screen_map: {
-//
-//                if (mMapLayoutState == MAP_LAYOUT_STATE_CONTRACTED) {
-//                    mMapLayoutState = MAP_LAYOUT_STATE_EXPANDED;
-//                    expandMapAnimation();
-//                } else if (mMapLayoutState == MAP_LAYOUT_STATE_EXPANDED) {
-//                    mMapLayoutState = MAP_LAYOUT_STATE_CONTRACTED;
-//                    contractMapAnimation();
-//                }
-//                break;
-//            }
+////            case R.id.btn_full_screen_map: {
+////
+////                if (mMapLayoutState == MAP_LAYOUT_STATE_CONTRACTED) {
+////                    mMapLayoutState = MAP_LAYOUT_STATE_EXPANDED;
+////                    expandMapAnimation();
+////                } else if (mMapLayoutState == MAP_LAYOUT_STATE_EXPANDED) {
+////                    mMapLayoutState = MAP_LAYOUT_STATE_CONTRACTED;
+////                    contractMapAnimation();
+////                }
+////                break;
+////            }
 //        }
 //    }
 //

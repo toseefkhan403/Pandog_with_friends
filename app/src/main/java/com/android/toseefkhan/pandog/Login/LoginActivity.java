@@ -175,7 +175,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    private String uid,name,email,image;
+    private String uid,name,email;
 
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
@@ -194,14 +194,12 @@ public class LoginActivity extends AppCompatActivity {
                             uid=task.getResult().getUser().getUid();
                             name=task.getResult().getUser().getDisplayName();
                             email=task.getResult().getUser().getEmail();
-                            image=task.getResult().getUser().getPhotoUrl().toString();
 
                             mUsername = StringManipulation.condenseUsername(name);
 
                             Log.d(TAG, "onComplete: value obtained from facebook profile " + uid);
                             Log.d(TAG, "onComplete: value obtained from facebook profile " + name);
                             Log.d(TAG, "onComplete: value obtained from facebook profile " + email);
-                            Log.d(TAG, "onComplete: value obtained from facebook profile " + image);
 
                             try{
 
@@ -278,7 +276,7 @@ public class LoginActivity extends AppCompatActivity {
                 for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
                     if (singleSnapshot.exists()){
                         Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + singleSnapshot.getValue(User.class).getUsername());
-                        append = myRef.push().getKey().substring(3,10);
+                        append = myRef.push().getKey().substring(3,7);
                         Log.d(TAG, "onDataChange: username already exists. Appending random string to name: " + append);
                     }
                 }
@@ -287,7 +285,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 Log.d(TAG, "onDataChange: final username " + appendedUsername);
 
-                addNewFbUser(image,name,uid,email,appendedUsername);
+                addNewFbUser("",name,uid,email,appendedUsername);
             }
 
             @Override
@@ -300,7 +298,7 @@ public class LoginActivity extends AppCompatActivity {
     private void addNewFbUser(String image,String name, String uid, String email, String username) {
 
         DatabaseReference ref1= FirebaseDatabase.getInstance().getReference();
-        User user = new User(image, uid,  email,  username );
+        User user = new User(image, uid,  email,  username);
         user.setLevel("GREY");
         user.setPanda_points(0);
 
@@ -350,12 +348,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if (currentUser != null){
-            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            startActivity(intent);
-            finish();
-        }
     }
 
 
@@ -414,7 +406,6 @@ public class LoginActivity extends AppCompatActivity {
                                     // signed in user can be handled in the listener.
                                     if (!task.isSuccessful()) {
                                         Log.w(TAG, "signInWithEmail:failed", task.getException());
-
                                         Toasty.error(LoginActivity.this, "Wrong email/password combination",
                                                 Toast.LENGTH_SHORT,true).show();
                                         mProgressBar.setVisibility(View.GONE);
@@ -426,6 +417,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 Log.d(TAG, "onComplete: success. email is verified.");
                                                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                                                 startActivity(intent);
+                                                finish();
                                             }else{
                                                 Toasty.warning(mContext, "Email is not verified \n check your email inbox.", Toast.LENGTH_SHORT,true).show();
                                                 mProgressBar.setVisibility(View.GONE);
@@ -491,11 +483,12 @@ public class LoginActivity extends AppCompatActivity {
          /*
          If the user is logged in then navigate to HomeActivity and call 'finish()'
           */
-        if(mAuth.getCurrentUser() != null){
-            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            startActivity(intent);
-            finish();
-        }
+
+//        if(mAuth.getCurrentUser() != null){
+//            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
     }
 
 

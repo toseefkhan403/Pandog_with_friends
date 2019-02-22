@@ -35,7 +35,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio1/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_arrow_upward_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio1/plugins/android/lib/android.jar!/images/material_design_icons/notification/ic_vibration_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -45,9 +45,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_up_arrow" />
+                                      <entry key="outputName" value="ic_vibrate" />
                                       <entry key="theme" value="HOLO_DARK" />
-                                      <entry key="themeColor" value="d8cdd8" />
+                                      <entry key="themeColor" value="d8d322" />
                                     </map>
                                   </option>
                                 </PersistentState>

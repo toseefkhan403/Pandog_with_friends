@@ -53,7 +53,6 @@ public class NotificationFragment extends Fragment {
             Log.d(TAG, "onCreateView: " + e.getMessage());
         }
 
-
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         mDatabaseReference.child(getString(R.string.db_user_challenges))
@@ -135,7 +134,8 @@ public class NotificationFragment extends Fragment {
                                 }
                             }
                             if (challengesList.isEmpty()) {
-                                progressBar.setVisibility(View.GONE);
+                                if (progressBar != null)
+                                    progressBar.setVisibility(View.GONE);
                                 rel.setVisibility(View.VISIBLE);
                             } else {
                                 rel.setVisibility(View.GONE);
