@@ -111,13 +111,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
     final String showFloatingButton = "showFloatingButton";
 
-    //todo (Aryal)
-    //todo delete stuff from user_notif node too (after a challenge is accepted or rejected)
-    //todo fix notif fragment
-
     //todo a thorough testing of the app and bug fixes
-    // adding button to shrink view
-    //fixing search screen
     //todo create dev account on google play; launch the app successfully (*happy emoji)(*another happy emoji)
 
     @Override
@@ -677,6 +671,9 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                 });
     }
 
+    /*
+       provides you a list of all hashtags used in the posts in the descending order
+     */
     private void getTrendingPosts() {
 
         ArrayList<String> tagsList = new ArrayList<>();
@@ -744,12 +741,17 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                 });
     }
 
+    /*
+       lets you set trending posts by just specifying the name of the hashtag.
+     */
     private void setTrendingPosts() {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
 
         TrendingItem item = new TrendingItem();
-        item.setTitle("#LOL");
+
+        String title = "LOL";                       //the only field that needs to be set manually
+        item.setTitle("#" + title);
 
         ArrayList<String> postKeysList = new ArrayList<>();
 
@@ -777,7 +779,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                                 wordArrayList.add(word);
                             }
 
-                            if (wordArrayList.contains("#LOL")){
+                            if (wordArrayList.contains("#" + title)){
                                 //found our post
                                 postKeysList.add(objectMap.get("postKey").toString());
                             }
@@ -786,7 +788,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                         item.setPost_keys_list(postKeysList);
 
                         ref.child("trending")
-                                .child("LOL")
+                                .child(title)
                                 .setValue(item);
                     }
 
