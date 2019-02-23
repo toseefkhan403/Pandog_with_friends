@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 
@@ -179,8 +180,15 @@ public class FriendsAdapter extends BaseAdapter {
         CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
         ProgressBar pb = convertView.findViewById(R.id.pb);
         View child = convertView.findViewById(R.id.progress_child);
+
+        initImageLoader();
         UniversalImageLoader.setImage(PhotoUrl, photoView, null, "",child);
 
         return convertView;
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 }

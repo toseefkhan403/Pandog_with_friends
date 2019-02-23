@@ -23,6 +23,7 @@ import com.android.toseefkhan.pandog.Home.HomeFragment;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.Like;
+import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
@@ -37,6 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.takusemba.spotlight.OnSpotlightStateChangedListener;
 import com.takusemba.spotlight.OnTargetStateChangedListener;
 import com.takusemba.spotlight.Spotlight;
@@ -99,6 +101,11 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
     @Override
     public void onRFACItemLabelClick(int position, RFACLabelItem item) {
 
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
     @Override
@@ -193,6 +200,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_profile_posts_list);
         setupBottomNavigationView();
+        initImageLoader();
 
         ImageView back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
@@ -259,6 +267,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
     protected void onStop() {
         super.onStop();
         ShakeDetector.stop();
+
     }
 
     private void setupFloatingButton() {

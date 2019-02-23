@@ -57,6 +57,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.takusemba.spotlight.OnSpotlightStateChangedListener;
 import com.takusemba.spotlight.OnTargetStateChangedListener;
 import com.takusemba.spotlight.Spotlight;
@@ -119,6 +120,11 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
     @Override
     public void onRFACItemLabelClick(int position, RFACLabelItem item) {
 
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
     @Override
@@ -230,6 +236,8 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
         }
 
         setupWidgets();
+        initImageLoader();
+
         ImageView back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override

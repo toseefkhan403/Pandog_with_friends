@@ -61,7 +61,13 @@
         <activity android:name=".Profile.ViewProfileActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".Share.NextActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="image/*"/>
+            </intent-filter>
+        </activity>
         <activity android:name=".Intro.Holder"
             android:screenOrientation="portrait"/>
         <activity android:name=".Profile.FAQs"

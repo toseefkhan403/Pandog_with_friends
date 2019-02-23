@@ -49,6 +49,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -93,6 +94,8 @@ public class ViewProfileActivity extends AppCompatActivity {
         Log.d(TAG, "onCreate: started.");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_activity_profile);
+
+        initImageLoader();
         mButtonChallenge = findViewById(R.id.challenge_me);
         relativeLayout = findViewById(R.id.reltohide);
         relativeLayout.setVisibility(View.INVISIBLE);
@@ -254,6 +257,11 @@ public class ViewProfileActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
     private void setProfileColor(String level){

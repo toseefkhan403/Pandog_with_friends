@@ -64,8 +64,7 @@ public class UniversalImageLoader {
     public static void setImage(String imgURL, ImageView image, final ProgressBar mProgressBar, String append,View child) {
 
         ImageLoader imageLoader = ImageLoader.getInstance();
-        if (imageLoader != null)
-            imageLoader.handleSlowNetwork(true);
+        imageLoader.handleSlowNetwork(true);
 
         int padding = r.getDimensionPixelSize(R.dimen.progress_padding);
         SquareDrawable indicator = new ClockDrawable(padding,r.getColor(R.color.blue_400), r.getColor(R.color.light_green_400)

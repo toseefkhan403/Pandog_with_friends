@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.Search.SearchActivity;
+import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.RequiresApi;
@@ -96,6 +97,7 @@ public class ShareActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
         setupBottomNavigationView();
+        initImageLoader();
 
         gridView = findViewById(R.id.gridView);
         mOpenGalleryImage= findViewById(R.id.gallery_button);
@@ -219,6 +221,11 @@ public class ShareActivity extends AppCompatActivity {
 
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
     private User getUserFromBundle(){

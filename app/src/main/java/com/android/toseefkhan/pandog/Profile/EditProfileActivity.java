@@ -49,6 +49,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.zomato.photofilters.FilterPack;
 import com.zomato.photofilters.imageprocessors.Filter;
 import com.zomato.photofilters.utils.ThumbnailItem;
@@ -104,6 +105,11 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
         System.loadLibrary("NativeImageProcessor");
     }
 
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,6 +131,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
 
         //setProfileImage();
         setupFirebaseAuth();
+        initImageLoader();
 
         //log out the user
         mLogOut.setOnClickListener(new View.OnClickListener() {

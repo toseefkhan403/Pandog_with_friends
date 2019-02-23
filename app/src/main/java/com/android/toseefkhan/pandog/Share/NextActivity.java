@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import com.android.toseefkhan.pandog.Utils.BitmapUtils;
 import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.SpacesItemDecoration;
+import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.fenchtose.nocropper.BitmapResult;
 import com.fenchtose.nocropper.CropperCallback;
 import com.fenchtose.nocropper.CropperView;
@@ -103,6 +104,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
 
+        initImageLoader();
         loadEditScreen();
 
         Log.d(TAG, "onCreate: got the chosen image: " + getIntent().getStringExtra(getString(R.string.selected_image)));
@@ -151,6 +153,11 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
     private void loadEditScreen() {
@@ -252,6 +259,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
             public void onClick(View view) {
 
                 Log.d(TAG, "onClick: changing the rotation");
+                imagePreview.fitToCenter();
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
                 Bitmap bitmap1 = Bitmap.createBitmap(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), matrix, true);
@@ -286,7 +294,12 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
     private void loadImage() {
         try {
-            originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(getIntent().getStringExtra(getString(R.string.selected_image))));
+            if (getIntent().hasExtra(getString(R.string.selected_image))) {
+                originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(getIntent().getStringExtra(getString(R.string.selected_image))));
+            }else if (Intent.ACTION_SEND.equals(getIntent().getAction()) && getIntent().getType() != null) {
+                Log.d(TAG, "loadImage: image coming from gallery");
+                originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
+            }
             filteredImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
             imagePreview.setImageBitmap(originalImage);
 

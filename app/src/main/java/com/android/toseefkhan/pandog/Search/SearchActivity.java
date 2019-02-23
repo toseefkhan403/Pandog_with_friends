@@ -47,6 +47,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,6 +82,7 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        initImageLoader();
         initBannerRV();
         initVerticalRV();
 
@@ -101,6 +103,12 @@ public class SearchActivity extends AppCompatActivity {
         imageView = findViewById(R.id.trending);
 
         profileSearchView.setActivated(true);
+        profileSearchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                profileSearchView.onActionViewExpanded();
+            }
+        });
    //     profileSearchView.onActionViewExpanded();
         profileSearchView.setQueryHint("Search here...");
 
@@ -143,6 +151,11 @@ public class SearchActivity extends AppCompatActivity {
             editor.putBoolean(tutorialScreenShownPrefSearch, true);
             editor.apply(); // Very important to save the preference
         }
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
     private void initBannerRV() {
@@ -402,9 +415,11 @@ public class SearchActivity extends AppCompatActivity {
                     Log.d(TAG, "filter: list got cleared.");
 //                    ProfileList.clear();
 //                    notifyDataSetChanged();
-                    Intent i = new Intent(mContext,SearchActivity.class);
-                    startActivity(i);
-                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+//                    Intent i = new Intent(mContext,SearchActivity.class);
+//                    startActivity(i);
+//                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+//                    Log.d(TAG, "filter: clearing the views");
+//                    profilesListView.removeAllViews();
                 }
             }
         }
@@ -465,7 +480,7 @@ public class SearchActivity extends AppCompatActivity {
                                     .setAutoDismiss(false)
                                     .setBackButtonDismissEnabled(false)
                                     .setPrimaryText("Introducing")
-                                    .setSecondaryText("Maps to find awesome people living near you!")
+                                    .setSecondaryText("Discover section to find awesome people living near you!")
                                     .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                                         @Override
                                         public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {

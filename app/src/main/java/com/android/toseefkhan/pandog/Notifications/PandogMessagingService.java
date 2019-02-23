@@ -267,7 +267,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        builder.setSmallIcon(R.drawable.ic_logo)
+        builder.setSmallIcon(R.mipmap.ic_logo_celfie)
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentTitle(notificationTitle)
                 .setColor(Color.RED)
