@@ -33,7 +33,7 @@
                         android:layout_marginStart="10dp"
                         android:id="@+id/fonts">
 
-                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupR
+                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupR2
                             android:id="@+id/fontViewP"
                             android:layout_width="50dp"
                             android:layout_height="wrap_content"/>
@@ -52,7 +52,7 @@
                             android:layout_toRightOf="@+id/fontViewS"
                             android:layout_width="50dp"
                             android:layout_height="match_parent"/>
-                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupR
+                        <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupR2
                             android:id="@+id/fontViewT2"
                             android:layout_toRightOf="@+id/fontViewT"
                             android:layout_width="50dp"

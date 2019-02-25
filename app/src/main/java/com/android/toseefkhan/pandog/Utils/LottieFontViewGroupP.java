@@ -19,7 +19,6 @@ import java.util.Map;
 
 public class LottieFontViewGroupP extends FrameLayout {
     private static final String TAG = "LottieFontViewGroup";
-    private final Map<String, LottieComposition> compositionMap = new HashMap<>();
     private final List<View> views = new ArrayList<>();
 
 
@@ -57,7 +56,6 @@ public class LottieFontViewGroupP extends FrameLayout {
                     }
                 };
 
-        LottieComposition.Factory.fromAssetFileName(getContext(), "Mobilo/P.json", c);
         LottieComposition.Factory.fromAssetFileName(getContext(), "Mobilo/P.json", c);
     }
 

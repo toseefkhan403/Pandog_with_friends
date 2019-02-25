@@ -42,7 +42,6 @@ import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.InternetStatus;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
-import com.android.toseefkhan.pandog.Utils.ViewWeightAnimationWrapper;
 import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.android.gms.common.ConnectionResult;
@@ -81,13 +80,6 @@ import com.takusemba.spotlight.OnTargetStateChangedListener;
 import com.takusemba.spotlight.Spotlight;
 import com.takusemba.spotlight.shape.Circle;
 import com.takusemba.spotlight.target.CustomTarget;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Locale;
-import java.util.concurrent.ExecutionException;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -428,6 +420,7 @@ public class MapActivity2 extends AppCompatActivity implements OnMapReadyCallbac
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+        menuItem.setEnabled(false);
     }
 
     @Override

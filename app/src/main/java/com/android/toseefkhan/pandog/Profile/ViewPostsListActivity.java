@@ -76,6 +76,9 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
 
     private static final String TAG = "ViewPostsListActivity";
 
+    private DatabaseReference reference;
+    private ValueEventListener v1;
+
     private Context mContext = ViewPostsListActivity.this;
     private RecyclerView mRVPosts;
     private ArrayList<String> mPostKeysList = new ArrayList<>();
@@ -94,9 +97,6 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
     boolean horizontalScrollingEnabled;
     boolean isshowFloatingButton;
 
-    /*
-       The main feed list only displays posts from your following and your posts.
-     */
 
     @Override
     public void onRFACItemLabelClick(int position, RFACLabelItem item) {
@@ -202,6 +202,32 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
         setupBottomNavigationView();
         initImageLoader();
 
+
+        reference = FirebaseDatabase.getInstance().getReference();
+        v1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found keys: " +
+                            singleSnapshot.getValue(String.class));
+
+                    mPostKeysList.add(singleSnapshot.getValue(String.class));
+                }
+
+                if (mPostKeysList.isEmpty()){
+                    findViewById(R.id.no_posts).setVisibility(View.VISIBLE);
+                }else{
+                    //get the photos
+                    getPhotos();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
         ImageView back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -249,25 +275,6 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
             }
         });
         ShakeDetector.updateConfiguration(2.0f,3);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ShakeDetector.start();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ShakeDetector.destroy();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        ShakeDetector.stop();
-
     }
 
     private void setupFloatingButton() {
@@ -373,38 +380,15 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
     private void getPostKeysOnProfile() {
         Log.d(TAG, "getPostsOnProfile: getting posts." + getIntent().getExtras().getString("uid"));
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         Query query = reference
                 .child("user_posts")
                 .child(getIntent().getExtras().getString("uid"));
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found keys: " +
-                            singleSnapshot.getValue(String.class));
-
-                    mPostKeysList.add(singleSnapshot.getValue(String.class));
-                }
-
-                if (mPostKeysList.isEmpty()){
-                    findViewById(R.id.no_posts).setVisibility(View.VISIBLE);
-                }else{
-                    //get the photos
-                    getPhotos();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        query.addListenerForSingleValueEvent(v1);
     }
 
     private void getPhotos(){
         Log.d(TAG, "getPhotos: getting photos");
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
         for(int i = 0; i < mPostKeysList.size(); i++){
             final int count = i;
             Query query = reference
@@ -568,6 +552,50 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(4);
         menuItem.setChecked(true);
+        menuItem.setEnabled(false);
     }
+
+
+    /*
+     ---------------------------------LIFECYCLE METHODS-----------------------------------------
+     */
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ShakeDetector.start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ShakeDetector.destroy();
+
+        reference.removeEventListener(v1);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        ShakeDetector.stop();
+
+        reference.removeEventListener(v1);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        reference.removeEventListener(v1);
+    }
+
+
+
 
 }

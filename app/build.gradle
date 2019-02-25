@@ -100,6 +100,10 @@ dependencies {
     //rapid floating action button
     implementation 'com.github.wangjiegulu:rfab:2.0.0'
     implementation 'com.github.tbouron.shakedetector:library:1.0.0@aar'
+    //cat loading
+    implementation 'com.roger.catloadinglibrary:catloadinglibrary:1.0.4'
+    //pull to refresh
+    implementation 'com.yalantis:phoenix:1.2.3'
 
 
     //library for detecting memory leaks : leakcanary

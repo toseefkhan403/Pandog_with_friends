@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
 
 import androidx.annotation.NonNull;
@@ -111,7 +112,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
     final String showFloatingButton = "showFloatingButton";
 
-    //todo a thorough testing of the app and bug fixes
+    //todo a thorough testing of the app and bug fixes, memory management!
     //todo create dev account on google play; launch the app successfully (*happy emoji)(*another happy emoji)
 
     @Override
@@ -213,23 +214,23 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
             @Override
             public void OnShake() {
                 Log.d(TAG, "OnShake: called");
-                Toasty.success(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT,false).show();
+                Toasty.success(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT, false).show();
 
                 mPrefs.getBoolean(showFloatingButton,true);
                 SharedPreferences.Editor editor = mPrefs.edit();
                 editor.putBoolean(showFloatingButton, true);
                 editor.apply();
 
-                Intent i = new Intent(mContext,HomeActivity.class);
+                Intent i = new Intent(mContext, HomeActivity.class);
                 startActivity(i);
-                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
         });
-        ShakeDetector.updateConfiguration(2.0f,3);
+        ShakeDetector.updateConfiguration(2.0f, 3);
 
-        //getTrendingPosts();
-        //setTrendingPosts();
-    }
+    //getTrendingPosts();
+    //setTrendingPosts();
+}
 
     @Override
     protected void onResume() {
@@ -275,6 +276,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+        menuItem.setEnabled(false);
     }
 
     @Override

@@ -17,6 +17,7 @@ import com.android.toseefkhan.pandog.Share.ThumbnailAdapter;
 import com.android.toseefkhan.pandog.Utils.SpacesItemDecoration;
 import com.fenchtose.nocropper.CropperCallback;
 import com.fenchtose.nocropper.CropperView;
+import com.github.tbouron.shakedetector.library.ShakeDetector;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -83,7 +84,6 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
     private FirebaseMethods mFirebaseMethods;
     private String userID;
 
-
     //EditProfile Fragment widgets
     private EditText mDisplayName, mUsername, mDescription;
     private TextView mChangeProfilePhoto;
@@ -138,8 +138,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: signing out the user");
-                DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-                databaseReference.child("token").child(userID).removeValue();
+                myRef.child("token").child(userID).removeValue();
                 mAuth.signOut();
                 LoginManager.getInstance().logOut();
                 Intent i = new Intent(mContext, LoginActivity.class);
@@ -404,8 +403,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
     private void checkIfUsernameExists(final String username) {
         Log.d(TAG, "checkIfUsernameExists: Checking if  " + username + " already exists.");
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference
+        Query query = myRef
                 .child(getString(R.string.dbname_users))
                 .orderByChild(getString(R.string.field_username))
                 .equalTo(username);
@@ -517,6 +515,18 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
         });
     }
 
+    private Uri bitmapToUriConverter(Bitmap mBitmap) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(mContext.getContentResolver(), mBitmap, "CelfieImage", null);
+        return Uri.parse(path);
+    }
+
+
+     /*
+     ---------------------------------LIFECYCLE METHODS-----------------------------------------
+     */
+
 
     @Override
     public void onStart() {
@@ -532,11 +542,23 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
         }
     }
 
-    private Uri bitmapToUriConverter(Bitmap mBitmap) {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-        String path = MediaStore.Images.Media.insertImage(mContext.getContentResolver(), mBitmap, "CelfieImage", null);
-        return Uri.parse(path);
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
     }
 
 

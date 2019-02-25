@@ -30,6 +30,7 @@ import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.Like;
+import com.android.toseefkhan.pandog.Utils.PullToRefreshView;
 import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
@@ -91,104 +92,25 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
        The main feed list only displays posts from your following and your posts.
      */
 
-    @Override
-    public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-
-    }
-
-    @Override
-    public void onRFACItemIconClick(int position, RFACLabelItem item) {
-
-        switch (position){
-
-            case 0:
-                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off.");
-
-                if (horizontalScrollingEnabled) {
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putBoolean(horizontalScreenEnabled, false);
-                    editor.apply();
-                }else{
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putBoolean(horizontalScreenEnabled, true);
-                    editor.apply();
-                }
-
-                Intent i = new Intent(getActivity(),HomeActivity.class);
-                getActivity().startActivity(i);
-                getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-                    break;
-
-            case 1:
-                mAdapter.sharePost();
-                break;
-
-            case 2:
-                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
-                getActivity().startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.pull,R.anim.push);
-                break;
-
-            case 3:
-                spotlight();
-                SharedPreferences.Editor editor = mPrefs.edit();
-                editor.putBoolean(showFloatingButton, false);
-                editor.apply();
-                rfaBtn.setVisibility(View.GONE);
-
-                break;
-        }
-
-        rfabHelper.toggleContent();
-    }
-
-    private void spotlight() {
-
-        View first = LayoutInflater.from(getActivity()).inflate(R.layout.overlay_shake_device, new FrameLayout(getActivity()));
-
-        CustomTarget homeView = new CustomTarget.Builder(getActivity())
-                .setPoint(0f,0f)
-                .setShape(new Circle(0f))
-                .setOverlay(first)
-                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
-                    @Override
-                    public void onStarted(CustomTarget target) {
-                        // do something
-                    }
-                    @Override
-                    public void onEnded(CustomTarget target) {
-                        // do something
-                    }
-                })
-                .build();
-
-        Spotlight spotlight = Spotlight.with(getActivity())
-                .setOverlayColor(R.color.background)
-                .setDuration(1000L)
-                .setAnimation(new DecelerateInterpolator(2f))
-                .setTargets(homeView)
-                .setClosedOnTouchedOutside(true)
-                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
-                    @Override
-                    public void onStarted() {
-
-                    }
-
-                    @Override
-                    public void onEnded() {
-
-                    }
-                });
-        spotlight.start();
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mRVPosts = view.findViewById(R.id.posts_recycler_view_list);
+
+        PullToRefreshView mPullToRefreshView = view.findViewById(R.id.pull_to_refresh);
+
+        mPullToRefreshView.setOnRefreshListener(() -> mPullToRefreshView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPullToRefreshView.setRefreshing(false);
+                Intent i = new Intent(getActivity(),HomeActivity.class);
+                startActivity(i);
+                getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+            }
+        }, 1000));
+
 
         rfaLayout = view.findViewById(R.id.activity_main_rfal);
         rfaBtn = view.findViewById(R.id.activity_main_rfab);
@@ -500,6 +422,99 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
             Log.e(TAG, "displayPhotos: IndexOutOfBoundsException: " + e.getMessage() );
         }
     }
+
+    @Override
+    public void onRFACItemLabelClick(int position, RFACLabelItem item) {
+
+    }
+
+    @Override
+    public void onRFACItemIconClick(int position, RFACLabelItem item) {
+
+        switch (position){
+
+            case 0:
+                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off.");
+
+                if (horizontalScrollingEnabled) {
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, false);
+                    editor.apply();
+                }else{
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, true);
+                    editor.apply();
+                }
+
+                Intent i = new Intent(getActivity(),HomeActivity.class);
+                getActivity().startActivity(i);
+                getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                break;
+
+            case 1:
+                mAdapter.sharePost();
+                break;
+
+            case 2:
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+                getActivity().startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.pull,R.anim.push);
+                break;
+
+            case 3:
+                spotlight();
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(showFloatingButton, false);
+                editor.apply();
+                rfaBtn.setVisibility(View.GONE);
+
+                break;
+        }
+
+        rfabHelper.toggleContent();
+    }
+
+    private void spotlight() {
+
+        View first = LayoutInflater.from(getActivity()).inflate(R.layout.overlay_shake_device, new FrameLayout(getActivity()));
+
+        CustomTarget homeView = new CustomTarget.Builder(getActivity())
+                .setPoint(0f,0f)
+                .setShape(new Circle(0f))
+                .setOverlay(first)
+                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+                    @Override
+                    public void onStarted(CustomTarget target) {
+                        // do something
+                    }
+                    @Override
+                    public void onEnded(CustomTarget target) {
+                        // do something
+                    }
+                })
+                .build();
+
+        Spotlight spotlight = Spotlight.with(getActivity())
+                .setOverlayColor(R.color.background)
+                .setDuration(1000L)
+                .setAnimation(new DecelerateInterpolator(2f))
+                .setTargets(homeView)
+                .setClosedOnTouchedOutside(true)
+                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                    @Override
+                    public void onStarted() {
+
+                    }
+
+                    @Override
+                    public void onEnded() {
+
+                    }
+                });
+        spotlight.start();
+
+    }
+
 
     private String getEmojiByUnicode(int unicode){
         return new String(Character.toChars(unicode));

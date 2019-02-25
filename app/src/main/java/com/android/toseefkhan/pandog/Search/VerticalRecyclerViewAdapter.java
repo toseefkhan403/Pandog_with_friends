@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.Profile.ViewPostsListActivity;
@@ -52,6 +53,7 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
         holder.hashtag_title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard();
                 Intent i = new Intent(mContext, ViewPostsListActivity.class);
                 i.putExtra("post_keys_list",item.getPost_keys_list());
                 i.putExtra("title",item.getTitle());
@@ -82,4 +84,15 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
             mHorizontalRecyclerView.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.HORIZONTAL,false));
         }
     }
+
+    private void hideKeyboard(){
+
+        Activity activity = (Activity) mContext;
+        InputMethodManager imm =(InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+
+        if (activity.getCurrentFocus() != null && imm != null)
+            imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(),0);
+    }
+
+
 }

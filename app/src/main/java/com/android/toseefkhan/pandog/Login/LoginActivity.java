@@ -53,6 +53,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.roger.catloadinglibrary.CatLoadingView;
 
 import java.util.Arrays;
 
@@ -67,14 +68,13 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private Context mContext;
-    private ProgressBar mProgressBar;
     private EditText mEmail, mPassword;
-    private TextView mPleaseWait;
     private Button mFbButton;
     private RelativeLayout rel;
     private DatabaseReference myRef;
     private String append = "";
     private String mUsername;
+    private CatLoadingView mCatLoadingView;
 
     //for the welcome screen
     SharedPreferences mPrefs;
@@ -86,17 +86,16 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         rel = findViewById(R.id.loginActivity);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
-        mPleaseWait = (TextView) findViewById(R.id.pleaseWait);
+        mCatLoadingView = new CatLoadingView();
+        mCatLoadingView.setText("Logging You in");
+        mCatLoadingView.setCanceledOnTouchOutside(false);
+
         mEmail = (EditText) findViewById(R.id.input_email);
         mPassword = (EditText) findViewById(R.id.input_password);
         mContext = LoginActivity.this;
         mAuth = FirebaseAuth.getInstance();
         myRef = FirebaseDatabase.getInstance().getReference();
         Log.d(TAG, "onCreate: started.");
-
-        mPleaseWait.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.GONE);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
@@ -113,8 +112,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 mFbButton.setEnabled(false);
-                mProgressBar.setVisibility(View.VISIBLE);
-                mPleaseWait.setVisibility(View.VISIBLE);
+                mCatLoadingView.show(getSupportFragmentManager(),"");
 
                 LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("email", "public_profile"));
                 LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
@@ -138,7 +136,6 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         });
-
 
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -167,8 +164,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onBackPressed();
 
         Log.d(TAG, "onBackPressed: back button pressed");
-        mPleaseWait.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.GONE);
         Intent i = new Intent(Intent.ACTION_MAIN);
         i.addCategory(Intent.CATEGORY_HOME);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -188,8 +183,8 @@ public class LoginActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            mProgressBar.setVisibility(View.GONE);
-                            mPleaseWait.setVisibility(View.GONE);
+                            if (mCatLoadingView != null)
+                            mCatLoadingView.dismiss();
 
                             uid=task.getResult().getUser().getUid();
                             name=task.getResult().getUser().getDisplayName();
@@ -244,8 +239,8 @@ public class LoginActivity extends AppCompatActivity {
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            mProgressBar.setVisibility(View.GONE);
-                            mPleaseWait.setVisibility(View.GONE);
+                            if (mCatLoadingView != null)
+                            mCatLoadingView.dismiss();
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Snackbar snackbar= Snackbar.make(rel, "Authentication failed" , Snackbar.LENGTH_SHORT);
                             snackbar.show();
@@ -391,8 +386,9 @@ public class LoginActivity extends AppCompatActivity {
                 if(isStringNull(email) || isStringNull(password)){
                     Toasty.info(mContext, "You must fill out all the fields", Toast.LENGTH_SHORT,true).show();
                 }else{
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    mPleaseWait.setVisibility(View.VISIBLE);
+                    mCatLoadingView.show(getSupportFragmentManager(),"");
+//                    mProgressBar.setVisibility(View.VISIBLE);
+//                    mPleaseWait.setVisibility(View.VISIBLE);
 
                     mAuth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
@@ -408,8 +404,8 @@ public class LoginActivity extends AppCompatActivity {
                                         Log.w(TAG, "signInWithEmail:failed", task.getException());
                                         Toasty.error(LoginActivity.this, "Wrong email/password combination",
                                                 Toast.LENGTH_SHORT,true).show();
-                                        mProgressBar.setVisibility(View.GONE);
-                                        mPleaseWait.setVisibility(View.GONE);
+                                        if (mCatLoadingView != null)
+                                        mCatLoadingView.dismiss();
                                     }
                                     else{
                                         try{
@@ -420,8 +416,8 @@ public class LoginActivity extends AppCompatActivity {
                                                 finish();
                                             }else{
                                                 Toasty.warning(mContext, "Email is not verified \n check your email inbox.", Toast.LENGTH_SHORT,true).show();
-                                                mProgressBar.setVisibility(View.GONE);
-                                                mPleaseWait.setVisibility(View.GONE);
+                                                if (mCatLoadingView != null)
+                                                mCatLoadingView.dismiss();
                                                 mAuth.signOut();
                                             }
                                         }catch (NullPointerException e){
@@ -480,15 +476,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-         /*
-         If the user is logged in then navigate to HomeActivity and call 'finish()'
-          */
-
-//        if(mAuth.getCurrentUser() != null){
-//            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
     }
 
 

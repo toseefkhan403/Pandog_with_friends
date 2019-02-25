@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -72,6 +73,7 @@ public class SearchActivity extends AppCompatActivity {
     private InterceptRelativeLayout mRelaIntercept1;
 //    private RelativeLayout searchRelativeLayout;
     private TextView searchEmptyTextView;
+    private SearchView profileSearchView;
 
     //for the welcome screen
     SharedPreferences mPrefs;
@@ -89,7 +91,7 @@ public class SearchActivity extends AppCompatActivity {
   //      searchRelativeLayout = findViewById(R.id.SearchRelativeLayout);
         searchEmptyTextView = findViewById(R.id.EmptySearchTextView);
         searchEmptyTextView.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Comic Neue.ttf"));
-        SearchView profileSearchView = findViewById(R.id.searchProfiles);
+        profileSearchView = findViewById(R.id.searchProfiles);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         profilesListView = findViewById(R.id.ProfileList);
         final SearchAdapter adapter = new SearchAdapter(mContext, user.getUid());
@@ -318,6 +320,7 @@ public class SearchActivity extends AppCompatActivity {
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 ProfileList.clear();
                 startActivity(intent);
+                profileSearchView.setQuery("",false);
 
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -456,6 +459,7 @@ public class SearchActivity extends AppCompatActivity {
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+        menuItem.setEnabled(false);
     }
 
 
@@ -538,6 +542,7 @@ public class SearchActivity extends AppCompatActivity {
                     holder.img.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            hideKeyboard();
                             Intent i = new Intent(mContext, ViewPostsListActivity.class);
                             i.putExtra("post_keys_list",mList.get(0).getPost_keys_list());
                             i.putExtra("title",mList.get(0).getTitle());
@@ -553,6 +558,7 @@ public class SearchActivity extends AppCompatActivity {
                     holder.img.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            hideKeyboard();
                             Intent i = new Intent(mContext, ViewPostsListActivity.class);
                             i.putExtra("post_keys_list",mList.get(1).getPost_keys_list());
                             i.putExtra("title",mList.get(1).getTitle());
@@ -568,6 +574,7 @@ public class SearchActivity extends AppCompatActivity {
                     holder.img.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            hideKeyboard();
                             Intent i = new Intent(mContext, ViewPostsListActivity.class);
                             i.putExtra("post_keys_list",mList.get(2).getPost_keys_list());
                             i.putExtra("title",mList.get(2).getTitle());
@@ -594,5 +601,16 @@ public class SearchActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    private void hideKeyboard(){
+
+        InputMethodManager imm =(InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+
+        if (getCurrentFocus() != null && imm != null)
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),0);
+    }
+
+
 
 }

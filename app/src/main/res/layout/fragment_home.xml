@@ -3,6 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.android.toseefkhan.pandog.Utils.PullToRefreshView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/pull_to_refresh">
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
@@ -12,6 +16,10 @@
         android:background="@color/white">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    </com.android.toseefkhan.pandog.Utils.PullToRefreshView>
+
+
 
     <ProgressBar
         android:layout_width="wrap_content"

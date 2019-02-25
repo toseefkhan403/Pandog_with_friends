@@ -121,16 +121,15 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         Log.d(TAG, "onBindViewHolder: called.");
 
         final Post post = mPostList.get(position);
-        holder.setIsRecyclable(true);
 
         long timediff = System.currentTimeMillis() - post.getTimeStamp();
         int time = (int) ((86400000 - timediff) / 3600000);
 
-        int bottomHeight = 60 * (mContext.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+    //    int bottomHeight = 60 * (mContext.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
 
-        holder.theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth * 2, screenHeight - bottomHeight));
-        holder.cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - bottomHeight));
-        holder.cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - bottomHeight));
+        holder.theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth * 2, screenHeight));
+        holder.cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - (int)mContext.getResources().getDimension(R.dimen.bottom_view)));
+        holder.cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - (int)mContext.getResources().getDimension(R.dimen.bottom_view)));
 
         final ObjectAnimator animator = ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX", screenWidth * 2);
         final ObjectAnimator animator2 = ObjectAnimator.ofInt(holder.horizontalScrollView, "scrollX", 0);
@@ -223,7 +222,19 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
         if (!post.getStatus().equals("INACTIVE")) {
 
+            holder.heartHolder.setVisibility(View.VISIBLE);
+            holder.heartHolder2.setVisibility(View.VISIBLE);
+
             if (post.getStatus().equals("ACTIVE") || post.getStatus().equals("AWAITING_RESULT")) {
+
+                holder.image1.setAlpha(1f);
+                holder.image2.setAlpha(1f);
+
+                holder.tvWinner.setVisibility(View.GONE);
+                holder.tvWinner2.setVisibility(View.GONE);
+                holder.tvLoser.setVisibility(View.GONE);
+                holder.tvLoser2.setVisibility(View.GONE);
+
                 if (time <= 0) {
                     holder.timeRemaining.setText("Awaiting result");
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
@@ -243,6 +254,11 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
             holder.heartHolder.setVisibility(View.GONE);
             holder.heartHolder2.setVisibility(View.GONE);
+
+            holder.tvWinner.setVisibility(View.GONE);
+            holder.tvWinner2.setVisibility(View.GONE);
+            holder.tvLoser.setVisibility(View.GONE);
+            holder.tvLoser2.setVisibility(View.GONE);
 
             holder.image1.setAlpha(0.5f);
             holder.image2.setAlpha(0.5f);

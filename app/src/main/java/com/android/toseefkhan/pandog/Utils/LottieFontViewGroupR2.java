@@ -12,29 +12,27 @@ import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.OnCompositionLoadedListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
-public class LottieFontViewGroupF extends FrameLayout {
+public class LottieFontViewGroupR2 extends FrameLayout {
     private static final String TAG = "LottieFontViewGroup";
     private final List<View> views = new ArrayList<>();
 
 
-    public LottieFontViewGroupF(Context context) {
+    public LottieFontViewGroupR2(Context context) {
         super(context);
         Log.d(TAG, "LottieFontViewGroup: hey m called context");
     //    init();
     }
 
-    public LottieFontViewGroupF(Context context, AttributeSet attrs) {
+    public LottieFontViewGroupR2(Context context, AttributeSet attrs) {
         super(context, attrs);
         Log.d(TAG, "LottieFontViewGroup: hey m called context attr");
         init();
     }
 
-    public LottieFontViewGroupF(Context context, AttributeSet attrs, int defStyleAttr) {
+    public LottieFontViewGroupR2(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         Log.d(TAG, "LottieFontViewGroup: hey m called context attr defstyel");
     //    init();
@@ -52,11 +50,12 @@ public class LottieFontViewGroupF extends FrameLayout {
                         ));
                         cursorView.setComposition(composition);
                         cursorView.playAnimation();
+                        cursorView.loop(true);
                         addView(cursorView);
                     }
                 };
 
-        LottieComposition.Factory.fromAssetFileName(getContext(), "Mobilo/F.json", c);
+        LottieComposition.Factory.fromAssetFileName(getContext(), "Mobilo/R.json", c);
     }
 
     @Override

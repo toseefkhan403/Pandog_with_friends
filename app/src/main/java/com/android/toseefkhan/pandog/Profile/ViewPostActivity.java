@@ -553,9 +553,8 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
 
         view.setVisibility(View.VISIBLE);
         theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth*2,screenHeight));
-        cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight));
-        cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth,screenHeight));
-
+        cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - (int)mContext.getResources().getDimension(R.dimen.bottom_view)));
+        cardView2.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - (int)mContext.getResources().getDimension(R.dimen.bottom_view)));
         setTopToolbar(post);
 
         likesString1.setOnClickListener(new View.OnClickListener() {

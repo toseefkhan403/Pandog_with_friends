@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:id="@+id/loginActivity">
 
@@ -11,6 +17,7 @@
         android:orientation="vertical"
         android:paddingTop="300dp"
         android:paddingLeft="25dp"
+        android:paddingBottom="30dp"
         android:paddingRight="25dp">
 
 
@@ -97,8 +104,8 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_height="50dp"
         android:layout_marginTop="235dp"
+        android:layout_height="50dp"
         android:id="@+id/fonts">
 
         <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupC
@@ -130,27 +137,12 @@
             android:layout_toRightOf="@+id/fontViewS2"
             android:layout_width="50dp"
             android:layout_height="50dp"/>
+
     </RelativeLayout>
 
-    <ProgressBar
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:id="@+id/progressBar"
-        android:layout_centerInParent="true"/>
-
-    <TextView
-        android:id="@+id/pleaseWait"
-        android:layout_width="128dp"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/progressBar"
-        android:layout_alignLeft="@+id/progressBar"
-        android:layout_alignRight="@+id/progressBar"
-        android:layout_marginRight="-28dp"
-        android:text="Please Wait"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
-
 </RelativeLayout>
+
+</ScrollView>
 
 
 

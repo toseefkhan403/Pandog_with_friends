@@ -12,6 +12,7 @@
             android:layout_height="match_parent"
             android:id="@+id/bottomNavViewBar"
             app:itemTextColor="@color/black"
+            app:itemIconTint="@drawable/bottom_nav_selector"
             app:elevation="25dp"
             android:background="#02ffffff"
             app:itemBackground="@color/white"

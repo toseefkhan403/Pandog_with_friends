@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:id="@+id/view"
-    android:background="@color/black">
+    android:background="@color/white">
 
             <HorizontalScrollView
                 android:layout_width="wrap_content"
@@ -23,20 +23,19 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="400dp"
                     android:layout_height="400dp"
-                    app:cardElevation="8dp"
+                    app:cardElevation="4dp"
                     android:id="@+id/user1_card_view"
-                    app:cardMaxElevation="20dp">
+                    android:paddingBottom="5dp"
+                    app:cardMaxElevation="8dp">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:weightSum="10">
+                        android:layout_height="match_parent">
 
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="7">
+                            android:layout_above="@+id/bottomView"
+                            android:layout_height="match_parent">
 
                             <LinearLayout
                                 android:layout_width="250dp"
@@ -101,12 +100,11 @@
 
                         </RelativeLayout>
 
-
-
                         <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="3">
+                            android:id="@+id/bottomView"
+                            android:layout_alignParentBottom="true"
+                            android:layout_height="@dimen/bottom_view">
 
                             <RelativeLayout
                                 android:id="@+id/heartLayout"
@@ -150,7 +148,6 @@
                                     android:layout_centerInParent="true"/>
 
                             </RelativeLayout>
-
 
                             <View
                                 android:layout_width="match_parent"
@@ -222,12 +219,7 @@
 
                         </RelativeLayout>
 
-
-
-
-
-                    </LinearLayout>
-
+                    </RelativeLayout>
 
                 </androidx.cardview.widget.CardView>
 
@@ -235,20 +227,19 @@
                     <androidx.cardview.widget.CardView
                         android:layout_width="400dp"
                         android:layout_height="400dp"
-                        app:cardElevation="8dp"
+                        app:cardElevation="4dp"
                         android:id="@+id/user2_card_view"
-                        app:cardMaxElevation="20dp">
+                        android:paddingBottom="5dp"
+                        app:cardMaxElevation="8dp">
 
-                        <LinearLayout
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:weightSum="10">
+                            android:layout_height="match_parent">
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="7">
+                                android:layout_height="match_parent"
+                                android:layout_above="@id/bottomView2">
 
                                 <LinearLayout
                                     android:layout_width="250dp"
@@ -307,11 +298,11 @@
 
                             </RelativeLayout>
 
-
                             <RelativeLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="0dp"
-                                android:layout_weight="3">
+                                android:id="@+id/bottomView2"
+                                android:layout_alignParentBottom="true"
+                                android:layout_height="@dimen/bottom_view">
 
                                 <RelativeLayout
                                     android:id="@+id/heartLayout2"
@@ -418,7 +409,7 @@
                             </RelativeLayout>
 
 
-                        </LinearLayout>
+                        </RelativeLayout>
 
 
                     </androidx.cardview.widget.CardView>

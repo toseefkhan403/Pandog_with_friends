@@ -91,10 +91,10 @@
         android:layout_height="wrap_content"
         android:text="Please wait..."
         android:textColor="@color/black"
+        android:gravity="center"
         android:textSize="20sp"
-        android:layout_alignBottom="@+id/progressBar"
-        android:layout_alignRight="@+id/progressBar"
-        android:layout_alignLeft="@+id/progressBar"
+        android:layout_below="@+id/progressBar"
+        android:layout_centerHorizontal="true"
         android:id="@+id/loadingPleaseWait"/>
 
 </RelativeLayout>

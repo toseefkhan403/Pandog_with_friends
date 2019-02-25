@@ -19,7 +19,6 @@ import java.util.Map;
 
 public class LottieFontViewGroupR extends FrameLayout {
     private static final String TAG = "LottieFontViewGroup";
-    private final Map<String, LottieComposition> compositionMap = new HashMap<>();
     private final List<View> views = new ArrayList<>();
 
 
@@ -52,13 +51,11 @@ public class LottieFontViewGroupR extends FrameLayout {
                                 ViewGroup.LayoutParams.WRAP_CONTENT
                         ));
                         cursorView.setComposition(composition);
-                        cursorView.loop(true);
                         cursorView.playAnimation();
                         addView(cursorView);
                     }
                 };
 
-        LottieComposition.Factory.fromAssetFileName(getContext(), "Mobilo/R.json", c);
         LottieComposition.Factory.fromAssetFileName(getContext(), "Mobilo/R.json", c);
     }
 
