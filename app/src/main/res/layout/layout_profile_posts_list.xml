@@ -14,14 +14,19 @@
 
     </RelativeLayout>
 
+    <com.android.toseefkhan.pandog.Utils.PullToRefreshView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pull_to_refresh"
+        android:layout_below="@id/relLayout1">
+
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/posts_recycler_view_list"
-        android:layout_below="@id/relLayout1">
+        android:id="@+id/posts_recycler_view_list" />
 
+    </com.android.toseefkhan.pandog.Utils.PullToRefreshView>
 
-    </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
         android:layout_width="wrap_content"

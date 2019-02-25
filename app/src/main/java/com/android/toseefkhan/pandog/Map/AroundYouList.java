@@ -23,7 +23,9 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.PullToRefreshView;
 import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserDistance;
@@ -65,6 +67,18 @@ public class AroundYouList extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_around_you_list, container, false);
+
+        PullToRefreshView mPullToRefreshView = view.findViewById(R.id.pull_to_refresh);
+
+        mPullToRefreshView.setOnRefreshListener(() -> mPullToRefreshView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPullToRefreshView.setRefreshing(false);
+                Intent i = new Intent(getActivity(), MapActivity2.class);
+                startActivity(i);
+                getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+            }
+        }, 1000));
 
         mUserListRecyclerView = view.findViewById(R.id.user_list_recycler_view);
         permsNull = view.findViewById(R.id.permission_null);

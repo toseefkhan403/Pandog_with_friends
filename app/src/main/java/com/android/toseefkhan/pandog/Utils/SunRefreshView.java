@@ -59,7 +59,7 @@ public class SunRefreshView extends BaseRefreshView implements Animatable {
 
     private Bitmap mSky;
     private Bitmap mSun;
-    private Bitmap mTown;
+ //   private Bitmap mTown;
 
     private boolean isRefreshing = false;
 
@@ -104,8 +104,8 @@ public class SunRefreshView extends BaseRefreshView implements Animatable {
 
         mSky = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.sky, options);
         mSky = Bitmap.createScaledBitmap(mSky, mScreenWidth, mSkyHeight, true);
-        mTown = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.buildings, options);
-        mTown = Bitmap.createScaledBitmap(mTown, mScreenWidth, (int) (mScreenWidth * TOWN_RATIO), true);
+//        mTown = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.buildings, options);
+//        mTown = Bitmap.createScaledBitmap(mTown, mScreenWidth, (int) (mScreenWidth * TOWN_RATIO), true);
         mSun = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.heart_red, options);
         mSun = Bitmap.createScaledBitmap(mSun, mSunSize, mSunSize, true);
     }
@@ -133,7 +133,7 @@ public class SunRefreshView extends BaseRefreshView implements Animatable {
 
         drawSky(canvas);
         drawSun(canvas);
-        drawTown(canvas);
+        //drawTown(canvas);
 
         canvas.restoreToCount(saveCount);
     }
@@ -199,7 +199,7 @@ public class SunRefreshView extends BaseRefreshView implements Animatable {
         matrix.postScale(townScale, townScale);
         matrix.postTranslate(offsetX, offsetY);
 
-        canvas.drawBitmap(mTown, matrix, null);
+    //    canvas.drawBitmap(mTown, matrix, null);
     }
 
     private void drawSun(Canvas canvas) {

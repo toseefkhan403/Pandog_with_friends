@@ -23,6 +23,7 @@ import com.android.toseefkhan.pandog.Home.HomeFragment;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.BottomNavViewHelper;
 import com.android.toseefkhan.pandog.Utils.Like;
+import com.android.toseefkhan.pandog.Utils.PullToRefreshView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
@@ -97,110 +98,39 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
     boolean horizontalScrollingEnabled;
     boolean isshowFloatingButton;
 
-
-    @Override
-    public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-
-    }
-
-    private void initImageLoader(){
-        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
-        ImageLoader.getInstance().init(universalImageLoader.getConfig());
-    }
-
-    @Override
-    public void onRFACItemIconClick(int position, RFACLabelItem item) {
-
-        switch (position){
-
-            case 0:
-                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off.");
-
-                if (horizontalScrollingEnabled) {
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putBoolean(horizontalScreenEnabled, false);
-                    editor.apply();
-                }else{
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putBoolean(horizontalScreenEnabled, true);
-                    editor.apply();
-                }
-
-                Intent i = new Intent(mContext,HomeActivity.class);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-                break;
-
-            case 1:
-                mAdapter.sharePost();
-                break;
-
-            case 2:
-                Intent intent = new Intent(this, EditProfileActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.pull,R.anim.push);
-                break;
-
-            case 3:
-                spotlight();
-                SharedPreferences.Editor editor = mPrefs.edit();
-                editor.putBoolean(showFloatingButton, false);
-                editor.apply();
-                rfaBtn.setVisibility(View.GONE);
-
-                break;
-        }
-
-        rfabHelper.toggleContent();
-    }
-
-    private void spotlight() {
-
-        View first = LayoutInflater.from(mContext).inflate(R.layout.overlay_shake_device, new FrameLayout(mContext));
-
-        CustomTarget homeView = new CustomTarget.Builder(this)
-                .setPoint(0f,0f)
-                .setShape(new Circle(0f))
-                .setOverlay(first)
-                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
-                    @Override
-                    public void onStarted(CustomTarget target) {
-                        // do something
-                    }
-                    @Override
-                    public void onEnded(CustomTarget target) {
-                        // do something
-                    }
-                })
-                .build();
-
-        Spotlight spotlight = Spotlight.with(ViewPostsListActivity.this)
-                .setOverlayColor(R.color.background)
-                .setDuration(1000L)
-                .setAnimation(new DecelerateInterpolator(2f))
-                .setTargets(homeView)
-                .setClosedOnTouchedOutside(true)
-                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
-                    @Override
-                    public void onStarted() {
-
-                    }
-
-                    @Override
-                    public void onEnded() {
-
-                    }
-                });
-        spotlight.start();
-
-    }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_profile_posts_list);
         setupBottomNavigationView();
         initImageLoader();
+
+        PullToRefreshView mPullToRefreshView = findViewById(R.id.pull_to_refresh);
+
+        mPullToRefreshView.setOnRefreshListener(() -> mPullToRefreshView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPullToRefreshView.setRefreshing(false);
+
+                if (getIntent().hasExtra("post_keys_list")){
+
+                    Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                    i.putExtra("post_keys_list",getIntent().getStringArrayListExtra("post_keys_list"));
+                    i.putExtra("title",getIntent().getStringExtra("title"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                }else if (getIntent().hasExtra("uid")){
+
+                    Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                    i.putExtra("uid",getIntent().getExtras().getString("uid"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                }
+
+            }
+        }, 1000));
 
 
         reference = FirebaseDatabase.getInstance().getReference();
@@ -269,9 +199,22 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                 editor.putBoolean(showFloatingButton, true);
                 editor.apply();
 
-                Intent i = new Intent(mContext,HomeActivity.class);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                if (getIntent().hasExtra("post_keys_list")){
+
+                    Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                    i.putExtra("post_keys_list",getIntent().getStringArrayListExtra("post_keys_list"));
+                    i.putExtra("title",getIntent().getStringExtra("title"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                }else if (getIntent().hasExtra("uid")){
+
+                    Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                    i.putExtra("uid",getIntent().getExtras().getString("uid"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                }
             }
         });
         ShakeDetector.updateConfiguration(2.0f,3);
@@ -594,6 +537,119 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
 
         reference.removeEventListener(v1);
     }
+
+
+
+    @Override
+    public void onRFACItemLabelClick(int position, RFACLabelItem item) {
+
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
+    @Override
+    public void onRFACItemIconClick(int position, RFACLabelItem item) {
+
+        switch (position){
+
+            case 0:
+                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off.");
+
+                if (horizontalScrollingEnabled) {
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, false);
+                    editor.apply();
+                }else{
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, true);
+                    editor.apply();
+                }
+
+                if (getIntent().hasExtra("post_keys_list")){
+
+                    Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                    i.putExtra("post_keys_list",getIntent().getStringArrayListExtra("post_keys_list"));
+                    i.putExtra("title",getIntent().getStringExtra("title"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+
+                }else if (getIntent().hasExtra("uid")){
+
+                    Intent i = new Intent(mContext,ViewPostsListActivity.class);
+                    i.putExtra("uid",getIntent().getExtras().getString("uid"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                }
+
+                break;
+
+            case 1:
+                mAdapter.sharePost();
+                break;
+
+            case 2:
+                Intent intent = new Intent(this, EditProfileActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.pull,R.anim.push);
+                break;
+
+            case 3:
+                spotlight();
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(showFloatingButton, false);
+                editor.apply();
+                rfaBtn.setVisibility(View.GONE);
+
+                break;
+        }
+
+        rfabHelper.toggleContent();
+    }
+
+    private void spotlight() {
+
+        View first = LayoutInflater.from(mContext).inflate(R.layout.overlay_shake_device, new FrameLayout(mContext));
+
+        CustomTarget homeView = new CustomTarget.Builder(this)
+                .setPoint(0f,0f)
+                .setShape(new Circle(0f))
+                .setOverlay(first)
+                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+                    @Override
+                    public void onStarted(CustomTarget target) {
+                        // do something
+                    }
+                    @Override
+                    public void onEnded(CustomTarget target) {
+                        // do something
+                    }
+                })
+                .build();
+
+        Spotlight spotlight = Spotlight.with(ViewPostsListActivity.this)
+                .setOverlayColor(R.color.background)
+                .setDuration(1000L)
+                .setAnimation(new DecelerateInterpolator(2f))
+                .setTargets(homeView)
+                .setClosedOnTouchedOutside(true)
+                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                    @Override
+                    public void onStarted() {
+
+                    }
+
+                    @Override
+                    public void onEnded() {
+
+                    }
+                });
+        spotlight.start();
+
+    }
+
 
 
 

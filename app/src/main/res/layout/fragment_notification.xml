@@ -4,11 +4,18 @@
     android:layout_height="match_parent"
     android:background="@color/white">
 
+    <com.android.toseefkhan.pandog.Utils.PullToRefreshView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pull_to_refresh">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/NotifsRecyclerView"
         android:layout_width="match_parent"
-        android:background="@color/black"
+        android:background="@color/white"
         android:layout_height="wrap_content"/>
+
+    </com.android.toseefkhan.pandog.Utils.PullToRefreshView>
 
     <ProgressBar
         android:id="@+id/NotifProgressBar"
@@ -46,6 +53,5 @@
             android:layout_margin="5dp"/>
 
     </RelativeLayout>
-
 
 </RelativeLayout>

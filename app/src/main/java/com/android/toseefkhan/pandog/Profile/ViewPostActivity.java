@@ -133,7 +133,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
         switch (position){
 
             case 0:
-                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off.");
+                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off/on");
 
                 if (horizontalScrollingEnabled) {
                     SharedPreferences.Editor editor = mPrefs.edit();
@@ -145,9 +145,24 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                     editor.apply();
                 }
 
-                Intent i = new Intent(mContext, HomeActivity.class);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                //refresh the screen
+                if (getIntent().hasExtra("intent_post_key")) {
+                    Intent i = new Intent(mContext,ViewPostActivity.class);
+                    i.putExtra("intent_post_key",getIntent().getExtras().getString("intent_post_key"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                }else if (getIntent().hasExtra(getString(R.string.intent_post))){
+                    Intent i = new Intent(mContext,ViewPostActivity.class);
+                    i.putExtra(getString(R.string.intent_post),getPostFromIntent());
+
+                    if (getPostFromIntent() != null) {
+                        startActivity(i);
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }else{
+                        Toasty.error(mContext,"Argh.. Something went wrong",Toasty.LENGTH_LONG,false).show();
+                    }
+                }
+
                 break;
 
             case 1:
@@ -292,9 +307,22 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                 editor.putBoolean(showFloatingButton, true);
                 editor.apply();
 
-                Intent i = new Intent(mContext,HomeActivity.class);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                if (getIntent().hasExtra("intent_post_key")) {
+                    Intent i = new Intent(mContext,ViewPostActivity.class);
+                    i.putExtra("intent_post_key",getIntent().getExtras().getString("intent_post_key"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                }else if (getIntent().hasExtra(getString(R.string.intent_post))){
+                    Intent i = new Intent(mContext,ViewPostActivity.class);
+                    i.putExtra(getString(R.string.intent_post),getPostFromIntent());
+
+                    if (getPostFromIntent() != null) {
+                        startActivity(i);
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }else{
+                        Toasty.error(mContext,"Argh.. Something went wrong",Toasty.LENGTH_LONG,false).show();
+                    }
+                }
             }
         });
         ShakeDetector.updateConfiguration(2.0f,3);

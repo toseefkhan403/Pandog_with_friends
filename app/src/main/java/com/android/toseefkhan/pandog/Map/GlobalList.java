@@ -3,6 +3,7 @@ package com.android.toseefkhan.pandog.Map;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -16,9 +17,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.Heart;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
+import com.android.toseefkhan.pandog.Utils.PullToRefreshView;
 import com.android.toseefkhan.pandog.models.User;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -55,6 +58,19 @@ public class GlobalList extends Fragment{
         View view = inflater.inflate(R.layout.fragment_global_list, container, false);
 
         mUserListRecyclerView = view.findViewById(R.id.global_list);
+
+        PullToRefreshView mPullToRefreshView = view.findViewById(R.id.pull_to_refresh);
+
+        mPullToRefreshView.setOnRefreshListener(() -> mPullToRefreshView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPullToRefreshView.setRefreshing(false);
+                Intent i = new Intent(getActivity(), MapActivity2.class);
+                i.putExtra("move_to_two",2);
+                startActivity(i);
+                getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+            }
+        }, 1000));
 
         mProgressbar = view.findViewById(R.id.progressBar);
         mProgressbar.setVisibility(View.VISIBLE);

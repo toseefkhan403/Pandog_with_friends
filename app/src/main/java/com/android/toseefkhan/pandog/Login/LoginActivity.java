@@ -111,8 +111,9 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                mFbButton.setEnabled(false);
-                mCatLoadingView.show(getSupportFragmentManager(),"");
+          //      mFbButton.setEnabled(false);
+                if (!mCatLoadingView.isAdded())
+                    mCatLoadingView.show(getSupportFragmentManager(), "");
 
                 LoginManager.getInstance().logInWithReadPermissions(LoginActivity.this, Arrays.asList("email", "public_profile"));
                 LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
@@ -120,18 +121,24 @@ public class LoginActivity extends AppCompatActivity {
                     public void onSuccess(LoginResult loginResult) {
                         Log.d(TAG, "facebook:onSuccess:" + loginResult);
                         handleFacebookAccessToken(loginResult.getAccessToken());
+                        if (mCatLoadingView != null)
+                            mCatLoadingView.dismiss();
                     }
 
                     @Override
                     public void onCancel() {
                         Log.d(TAG, "facebook:onCancel");
                         // ...
+                        if (mCatLoadingView != null)
+                            mCatLoadingView.dismiss();
                     }
 
                     @Override
                     public void onError(FacebookException error) {
                         Log.d(TAG, "facebook:onError", error);
                         // ...
+                        if (mCatLoadingView != null)
+                            mCatLoadingView.dismiss();
                     }
                 });
             }
@@ -386,7 +393,10 @@ public class LoginActivity extends AppCompatActivity {
                 if(isStringNull(email) || isStringNull(password)){
                     Toasty.info(mContext, "You must fill out all the fields", Toast.LENGTH_SHORT,true).show();
                 }else{
-                    mCatLoadingView.show(getSupportFragmentManager(),"");
+
+                    if (!mCatLoadingView.isAdded())
+                        mCatLoadingView.show(getSupportFragmentManager(), "");
+
 //                    mProgressBar.setVisibility(View.VISIBLE);
 //                    mPleaseWait.setVisibility(View.VISIBLE);
 

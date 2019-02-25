@@ -1,5 +1,6 @@
 package com.android.toseefkhan.pandog.Home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.PullToRefreshView;
 import com.android.toseefkhan.pandog.models.Challenge;
 import com.dingmouren.layoutmanagergroup.echelon.EchelonLayoutManager;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,6 +98,19 @@ public class NotificationFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: called");
         mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
+
+        PullToRefreshView mPullToRefreshView = view.findViewById(R.id.pull_to_refresh);
+
+        mPullToRefreshView.setOnRefreshListener(() -> mPullToRefreshView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPullToRefreshView.setRefreshing(false);
+                Intent i = new Intent(getActivity(),HomeActivity.class);
+                i.putExtra("ChallengerUser",2);
+                startActivity(i);
+                getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+            }
+        }, 1000));
 
         progressBar = view.findViewById(R.id.NotifProgressBar);
         rel = view.findViewById(R.id.noNotifs);

@@ -89,7 +89,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
-import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
@@ -180,6 +179,9 @@ public class MapActivity2 extends AppCompatActivity implements OnMapReadyCallbac
 
         tabLayout.getTabAt(0).setText("AROUND YOU");
         tabLayout.getTabAt(1).setText("THE CHAMPS");
+
+        if (getIntent().hasExtra("move_to_two"))
+            mViewPager.setCurrentItem(1);
     }
 
 
