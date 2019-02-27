@@ -93,32 +93,102 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     }
 
     private static final String TAG = "HomeActivity";
-    private Context mContext=HomeActivity.this;
+    private Context mContext;
     private static final int ACTIVITY_NUM = 0;
     private static int count = 0;
 
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
     private ViewPager mViewPager;
+    private HomeFragment mHomeFragment;
+    private NotificationFragment mNotificationFragment;
+    private UniversalImageLoader mUniversalImageLoader;
 
     //for the welcome screen
     SharedPreferences mPrefs;
     final String tutorialScreenShownPref = "tutorialScreenShown";
     final String referralScreenShownPref = "referralScreenShown";
-
-    private FrameLayout root;
-    private LayoutInflater inflater;
-
     final String showFloatingButton = "showFloatingButton";
 
     //todo a thorough testing of the app and bug fixes, memory management!
     //todo create dev account on google play; launch the app successfully (*happy emoji)(*another happy emoji)
 
+    /*
+        -----------------------------------------------------------LIFECYCLE METHODS--------------------------------------------------------------
+     */
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        ShakeDetector.stop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+
+        mHomeFragment = null;
+        mNotificationFragment = null;
+        mUniversalImageLoader = null;
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mContext = HomeActivity.this;
+        if (!InternetStatus.getInstance(this).isOnline()) {
+
+            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_INDEFINITE)
+                    .setAction("RETRY", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Intent i = new Intent(mContext,HomeActivity.class);
+                            startActivity(i);
+                        }
+                    })
+                    .show();
+        }
+
+        mAuth.addAuthStateListener(mAuthListener);
+        checkCurrentUser(mAuth.getCurrentUser());
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mContext = null;
+        mHomeFragment = null;
+        mNotificationFragment = null;
+        mUniversalImageLoader = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ShakeDetector.destroy();
+        mContext = null;
+        mHomeFragment = null;
+        mNotificationFragment = null;
+        mUniversalImageLoader = null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ShakeDetector.start();
+        mContext = HomeActivity.this;
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        mContext = HomeActivity.this;
 
         Intent intent = getIntent();
         if (intent.hasExtra("ChallengerUser")) {
@@ -195,21 +265,6 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
             }
         }
 
-
-
-        if (!InternetStatus.getInstance(this).isOnline()) {
-
-            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_INDEFINITE)
-                    .setAction("RETRY", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent i = new Intent(mContext,HomeActivity.class);
-                            startActivity(i);
-                        }
-                    })
-                    .show();
-        }
-
         ShakeDetector.create(this, new ShakeDetector.OnShakeListener() {
             @Override
             public void OnShake() {
@@ -221,7 +276,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                 editor.putBoolean(showFloatingButton, true);
                 editor.apply();
 
-                Intent i = new Intent(mContext, HomeActivity.class);
+                Intent i = new Intent(HomeActivity.this, HomeActivity.class);
                 startActivity(i);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             }
@@ -230,25 +285,18 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
     //getTrendingPosts();
     //setTrendingPosts();
-}
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        ShakeDetector.start();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ShakeDetector.destroy();
     }
 
     private void setupViewPager() {
 
+        if (mHomeFragment == null || mNotificationFragment == null) {
+            mHomeFragment = new HomeFragment();
+            mNotificationFragment = new NotificationFragment();
+        }
+
         FragmentPagerAdapter adapter=new FragmentPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new HomeFragment()); //index is 0
-        adapter.addFragment(new NotificationFragment());  //index is 1
+        adapter.addFragment(mHomeFragment); //index is 0
+        adapter.addFragment(mNotificationFragment);  //index is 1
 
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(adapter);
@@ -256,13 +304,21 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         TabLayout tabLayout = findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_flm);
-        tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
+        try {
+            tabLayout.getTabAt(0).setIcon(R.drawable.ic_flm);
+            tabLayout.getTabAt(1).setIcon(R.drawable.ic_notification);
+        }catch (NullPointerException e){
+            Log.d(TAG, "setupViewPager: NullPointerException" + e.getMessage());
+        }
+
     }
 
     private void initImageLoader(){
-        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
-        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+
+        if (mUniversalImageLoader == null)
+            mUniversalImageLoader = new UniversalImageLoader(mContext);
+
+        ImageLoader.getInstance().init(mUniversalImageLoader.getConfig());
     }
 
     /**
@@ -270,7 +326,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
      */
     private void setupBottomNavigationView(){
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
         BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
         BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx,HomeActivity.this);
         Menu menu = bottomNavigationViewEx.getMenu();
@@ -345,37 +401,15 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
                 //check if the user is logged in
                 checkCurrentUser(user);
-
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
-                // ...
             }
         };
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-        checkCurrentUser(mAuth.getCurrentUser());
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        ShakeDetector.stop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
     private void startTutorial(RelativeLayout Rview){
         Log.d(TAG, "startTutorial: spotlight tutorial started.");
+
+        FrameLayout root = new FrameLayout((Context) HomeActivity.this);
+        LayoutInflater inflater = LayoutInflater.from((Context) HomeActivity.this);
 
         View first = inflater.inflate(R.layout.overlay_home_tutorial, root);
 
@@ -460,65 +494,32 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                                 .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                                     @Override
                                     public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+
                                         if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
+
                                             new MaterialTapTargetPrompt.Builder(HomeActivity.this)
-                                                    .setTarget(findViewById(R.id.pc))
-                                                    .setBackButtonDismissEnabled(false)
-                                                    .setAutoDismiss(true)
+                                                    .setTarget(findViewById(R.id.notifFrag))
                                                     .setBackgroundColour(getResources().getColor(R.color.background))
-                                                    .setPrimaryText("Tap here!")
+                                                    .setAutoDismiss(false)
+                                                    .setBackButtonDismissEnabled(false)
+                                                    .setIconDrawable(getResources().getDrawable(R.drawable.ic_notification))
+                                                    .setPrimaryText("Click here to see the list of your pending challenges")
                                                     .setSecondaryText("")
                                                     .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                                                         @Override
                                                         public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-
                                                             if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
                                                                 new MaterialTapTargetPrompt.Builder(HomeActivity.this)
-                                                                        .setTarget(findViewById(R.id.pc))
-                                                                        .setBackButtonDismissEnabled(false)
-                                                                        .setAutoDismiss(true)
+                                                                        .setTarget(findViewById(R.id.ic_android))
                                                                         .setBackgroundColour(getResources().getColor(R.color.background))
-                                                                        .setPrimaryText("And here!")
-                                                                        .setSecondaryText("This is how you can navigate through a post")
+                                                                        .setAutoDismiss(false)
+                                                                        .setBackButtonDismissEnabled(false)
+                                                                        .setPrimaryText("This is your profile")
+                                                                        .setSecondaryText("Make sure you keep it updated!")
                                                                         .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                                                                             @Override
                                                                             public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
 
-                                                                                if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
-
-                                                                                    new MaterialTapTargetPrompt.Builder(HomeActivity.this)
-                                                                                            .setTarget(findViewById(R.id.notifFrag))
-                                                                                            .setBackgroundColour(getResources().getColor(R.color.background))
-                                                                                            .setAutoDismiss(false)
-                                                                                            .setBackButtonDismissEnabled(false)
-                                                                                            .setIconDrawable(getResources().getDrawable(R.drawable.ic_notification))
-                                                                                            .setPrimaryText("Click here to see the list of your pending challenges")
-                                                                                            .setSecondaryText("")
-                                                                                            .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                                                                                                @Override
-                                                                                                public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                                                                                                    if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
-                                                                                                        new MaterialTapTargetPrompt.Builder(HomeActivity.this)
-                                                                                                                .setTarget(findViewById(R.id.ic_android))
-                                                                                                                .setBackgroundColour(getResources().getColor(R.color.background))
-                                                                                                                .setAutoDismiss(false)
-                                                                                                                .setBackButtonDismissEnabled(false)
-                                                                                                                .setPrimaryText("This is your profile")
-                                                                                                                .setSecondaryText("Make sure you keep it updated!")
-                                                                                                                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                                                                                                                    @Override
-                                                                                                                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                                                                                                                        if (state == MaterialTapTargetPrompt.STATE_FOCAL_PRESSED) {
-
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                })
-                                                                                                                .show();
-                                                                                                    }
-                                                                                                }
-                                                                                            })
-                                                                                            .show();
-                                                                                }
                                                                             }
                                                                         })
                                                                         .show();
@@ -559,8 +560,6 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                     setupBottomNavigationView();
                     setupViewPager();
                     RelativeLayout Rview = findViewById(R.id.view_tutorial);
-                    root = new FrameLayout(mContext);
-                    inflater = LayoutInflater.from(mContext);
                     startTutorial(Rview);
                     SharedPreferences.Editor editor = mPrefs.edit();
                     editor.putBoolean(tutorialScreenShownPref, true);
@@ -582,6 +581,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
 
     private boolean isReferralCorrect = false;
+    User user;
 
     private void setReferralPoints(String referralCode) {
 
@@ -597,7 +597,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
                         for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
 
-                            User user = singleSnapshot.getValue(User.class);
+                            user = singleSnapshot.getValue(User.class);
                             Log.d(TAG, "onDataChange: user is " + user);
 
                             if (user.getUsername().equals(referralCode)){
@@ -639,8 +639,6 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                                                         setupBottomNavigationView();
                                                         setupViewPager();
                                                         RelativeLayout view = findViewById(R.id.view_tutorial);
-                                                        root = new FrameLayout(mContext);
-                                                        inflater = LayoutInflater.from(mContext);
                                                         startTutorial(view);
                                                         SharedPreferences.Editor editor = mPrefs.edit();
                                                         editor.putBoolean(tutorialScreenShownPref, true);

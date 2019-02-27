@@ -62,7 +62,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class HomeFragment extends Fragment implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
 
@@ -91,6 +90,24 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
     /*
        The main feed list only displays posts from your following and your posts.
      */
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
 
     @Nullable
     @Override
@@ -138,53 +155,6 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
         return view;
     }
 
-    private void setupFloatingButton() {
-
-        if (getActivity() != null) {
-
-            RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(getActivity());
-            rfaContent.setOnRapidFloatingActionContentLabelListListener(this);
-            List<RFACLabelItem> items = new ArrayList<>();
-            items.add(new RFACLabelItem<Integer>()
-                    .setLabel("Toggle Horizontal Scrolling")
-                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_flip))
-                    .setIconNormalColor(0xffd84315)
-                    .setIconPressedColor(0xffbf360c)
-                    .setWrapper(0)
-            );
-            items.add(new RFACLabelItem<Integer>()
-                    .setLabel("Share this post")
-                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_share))
-                    .setIconNormalColor(0xff4e342e)
-                    .setIconPressedColor(0xff3e2723)
-                    .setWrapper(1)
-            );
-            items.add(new RFACLabelItem<Integer>()
-                    .setLabel("Edit Your Profile "+ getEmojiByUnicode(0x1F60E))
-                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_face))
-                    .setIconNormalColor(getActivity().getResources().getColor(R.color.white))
-                    .setIconPressedColor(0xff0d5302)
-                    .setLabelColor(0xff056f00)
-                    .setWrapper(2)
-            );
-            items.add(new RFACLabelItem<Integer>()
-                    .setLabel("Disable this button")
-                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_close))
-                    .setIconNormalColor(getActivity().getResources().getColor(R.color.light_blue_400))
-                    .setIconPressedColor(0xff1a237e)
-                    .setLabelColor(0xff283593)
-                    .setWrapper(3)
-            );
-
-            rfaContent
-                    .setItems(items)
-                    .setIconShadowColor(0xff888888);
-
-            rfabHelper = new RapidFloatingActionHelper(getActivity(),rfaLayout,rfaBtn,rfaContent).build();
-        }
-
-    }
-
     private void getFollowing(){
         Log.d(TAG, "getFollowing: searching for following");
 
@@ -194,7 +164,7 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
                     Log.d(TAG, "onDataChange: found user: " +
                             singleSnapshot.child(getString(R.string.field_user_id)).getValue());
@@ -341,7 +311,6 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
         }
 
     }
-
 
     private void displayPhotos(){
         Log.d(TAG, "displayPhotos: i am being called.");
@@ -515,6 +484,52 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
 
     }
 
+    private void setupFloatingButton() {
+
+        if (getActivity() != null) {
+
+            RapidFloatingActionContentLabelList rfaContent = new RapidFloatingActionContentLabelList(getActivity());
+            rfaContent.setOnRapidFloatingActionContentLabelListListener(this);
+            List<RFACLabelItem> items = new ArrayList<>();
+            items.add(new RFACLabelItem<Integer>()
+                    .setLabel("Toggle Horizontal Scrolling")
+                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_flip))
+                    .setIconNormalColor(0xffd84315)
+                    .setIconPressedColor(0xffbf360c)
+                    .setWrapper(0)
+            );
+            items.add(new RFACLabelItem<Integer>()
+                    .setLabel("Share this post")
+                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_share))
+                    .setIconNormalColor(0xff4e342e)
+                    .setIconPressedColor(0xff3e2723)
+                    .setWrapper(1)
+            );
+            items.add(new RFACLabelItem<Integer>()
+                    .setLabel("Edit Your Profile "+ getEmojiByUnicode(0x1F60E))
+                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_face))
+                    .setIconNormalColor(getActivity().getResources().getColor(R.color.white))
+                    .setIconPressedColor(0xff0d5302)
+                    .setLabelColor(0xff056f00)
+                    .setWrapper(2)
+            );
+            items.add(new RFACLabelItem<Integer>()
+                    .setLabel("Disable this button")
+                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_close))
+                    .setIconNormalColor(getActivity().getResources().getColor(R.color.light_blue_400))
+                    .setIconPressedColor(0xff1a237e)
+                    .setLabelColor(0xff283593)
+                    .setWrapper(3)
+            );
+
+            rfaContent
+                    .setItems(items)
+                    .setIconShadowColor(0xff888888);
+
+            rfabHelper = new RapidFloatingActionHelper(getActivity(),rfaLayout,rfaBtn,rfaContent).build();
+        }
+
+    }
 
     private String getEmojiByUnicode(int unicode){
         return new String(Character.toChars(unicode));

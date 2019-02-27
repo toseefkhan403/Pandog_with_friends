@@ -47,6 +47,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         this.mContext = ctx;
     }
 
+
     @Override
     public int getItemViewType(int position) {
         return position;

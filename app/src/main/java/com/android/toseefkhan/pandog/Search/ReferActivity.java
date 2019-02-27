@@ -19,7 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ReferActivity extends AppCompatActivity {
+public class
+ReferActivity extends AppCompatActivity {
 
 
     @Override

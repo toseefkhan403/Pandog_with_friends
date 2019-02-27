@@ -934,7 +934,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child(mContext.getString(R.string.dbname_users))
                 .child(post.getUser_id())
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         final User user = dataSnapshot.getValue(User.class);
@@ -989,7 +989,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
 
         ref.child(mContext.getString(R.string.dbname_users))
                 .child(post.getUser_id2())
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         final User user = dataSnapshot.getValue(User.class);

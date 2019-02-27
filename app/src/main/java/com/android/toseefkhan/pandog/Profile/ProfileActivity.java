@@ -69,6 +69,7 @@ public class ProfileActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods mFirebaseMethods;
+    private ValueEventListener v1;
 
     //widgets
     private TextView  mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
@@ -408,8 +409,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         };
 
-
-        myRef.addValueEventListener(new ValueEventListener() {
+        v1 = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -431,16 +431,15 @@ public class ProfileActivity extends AppCompatActivity {
                     editor.putBoolean(tutorialScreenShownPrefProfile, true);
                     editor.apply(); // Very important to save the preference
                 }
-
-                //retrieve images for the user in question
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+
+        myRef.addValueEventListener(v1);
     }
 
     private void startTutorial() {
@@ -493,5 +492,25 @@ public class ProfileActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
+    }
+
 }

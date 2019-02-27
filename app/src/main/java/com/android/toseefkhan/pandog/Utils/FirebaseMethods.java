@@ -652,7 +652,6 @@ public class FirebaseMethods {
     public UserSettings getUserSettings(DataSnapshot dataSnapshot){
         Log.d(TAG, "getUserAccountSettings: retrieving user account settings from firebase.");
 
-
         UserAccountSettings settings  = new UserAccountSettings();
         User user = new User();
 

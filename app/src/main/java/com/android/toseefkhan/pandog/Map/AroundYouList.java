@@ -52,13 +52,11 @@ public class AroundYouList extends Fragment {
     private static final String TAG = "AroundYouList";
     private static final int PERMISSIONS_REQUEST_ENABLE_GPS = 9002;
 
-    private MapRecyclerViewAdapter2 mUserRecyclerAdapter;
     private RecyclerView mUserListRecyclerView;
     private ProgressBar mProgressbar;
     private double latitude,longitude;
     private RelativeLayout permsNull;
     private DatabaseReference ref;
-    private TextView gps;
 
     private Context mContext;
     private ArrayList<UserDistance> userList = new ArrayList<>();
@@ -86,7 +84,7 @@ public class AroundYouList extends Fragment {
         mProgressbar = view.findViewById(R.id.progressBar);
         mProgressbar.setVisibility(View.VISIBLE);
 
-        gps = view.findViewById(R.id.tvEnableGps);
+        TextView gps = view.findViewById(R.id.tvEnableGps);
 
         gps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,7 +204,7 @@ public class AroundYouList extends Fragment {
 
     private void initUserListRecyclerView(ArrayList<UserDistance> users) {
         mProgressbar.setVisibility(View.GONE);
-        mUserRecyclerAdapter = new MapRecyclerViewAdapter2(mContext , users);
+        MapRecyclerViewAdapter2 mUserRecyclerAdapter = new MapRecyclerViewAdapter2(mContext, users);
         AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(mUserRecyclerAdapter);
         a.setDuration(1750);
         a.setInterpolator(new OvershootInterpolator());

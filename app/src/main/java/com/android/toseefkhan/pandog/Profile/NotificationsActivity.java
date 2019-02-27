@@ -225,7 +225,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
                                 User user = dataSnapshot.getValue(User.class);
 
-                                notif.setmDescription("Your challenge with " + user.getUsername() + " ended in a Draw");
+                                notif.setmDescription("Your challenge with " + user.getUsername() + " ended in a Draw. Yay! You got +2 Flames");
 
                                 HashMap<String, Object> obj = new HashMap<>();
                                 obj.put("intent_post_key",postKey);
@@ -245,7 +245,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
             case "win":
 
-                notif.setmTitle("Woohooo! You Won! " + getEmojiByUnicode(0x1F603));
+                notif.setmTitle("Woohooo! You Won +5 Flames! " + getEmojiByUnicode(0x1F603));
 
                 myRef.child(getString(R.string.dbname_users))
                         .child((String) data.get("loser"))
@@ -255,7 +255,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
                                 User user = dataSnapshot.getValue(User.class);
 
-                                notif.setmDescription("You won your challenge against " + user.getUsername());
+                                notif.setmDescription("You won your challenge against " + user.getUsername() +" like a boss " + getEmojiByUnicode(0x1F60E));
 
                                 HashMap<String, Object> obj = new HashMap<>();
                                 obj.put("intent_post_key",postKey);
@@ -285,7 +285,7 @@ public class NotificationsActivity extends AppCompatActivity {
 
                                 User user = dataSnapshot.getValue(User.class);
 
-                                notif.setmDescription("You lost against " + user.getUsername() + ". \nAll you need is a better photographer, trust me.");
+                                notif.setmDescription("You lost against " + user.getUsername() + ". \n You received -2 Flames.");
 
                                 HashMap<String, Object> obj = new HashMap<>();
                                 obj.put("intent_post_key",postKey);

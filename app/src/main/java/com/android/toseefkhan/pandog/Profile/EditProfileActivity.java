@@ -81,6 +81,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
+    private ValueEventListener v1;
     private FirebaseMethods mFirebaseMethods;
     private String userID;
 
@@ -496,10 +497,9 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
             }
         };
 
-
-        myRef.addValueEventListener(new ValueEventListener() {
+        v1 = new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 //retrieve user information from the database
                 setProfileWidgets(mFirebaseMethods.getUserSettings(dataSnapshot));
@@ -512,7 +512,9 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+
+        myRef.addValueEventListener(v1);
     }
 
     private Uri bitmapToUriConverter(Bitmap mBitmap) {
@@ -540,26 +542,25 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
-    }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-    }
-
-    @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
 
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
+    }
 
 }

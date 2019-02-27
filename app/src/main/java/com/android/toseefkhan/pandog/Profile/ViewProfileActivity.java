@@ -68,13 +68,13 @@ public class ViewProfileActivity extends AppCompatActivity {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
     private FirebaseMethods mFirebaseMethods;
+    private ValueEventListener v1;
 
     //vars
     private User mUser;
 
     private TextView mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
     private ProgressBar mProgressBar;
-    private GridView gridView;
     private BottomNavigationViewEx bottomNavigationView;
     private ImageView mProfilePhoto;
     private TextView mFollow, mUnfollow, PandaPoints;
@@ -129,7 +129,6 @@ public class ViewProfileActivity extends AppCompatActivity {
             }
         });
 
-        gridView = (GridView) findViewById(R.id.gridView);
         PandaPoints= findViewById(R.id.pandaPoints);
         mMenu = findViewById(R.id.menu);
         mMenu.setVisibility(View.GONE);
@@ -245,7 +244,7 @@ public class ViewProfileActivity extends AppCompatActivity {
         ref.child(getString(R.string.dbname_users))
                 .child(user.getUser_id())
                 .orderByChild(getString(R.string.db_level))
-                .addValueEventListener(new ValueEventListener() {       //todo this is giving a memory leak
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         User currentUser = dataSnapshot.getValue(User.class);
@@ -306,21 +305,23 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     private void getPandaPointsCount() {
 
+        v1 = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Long l = dataSnapshot.getValue(Long.class);
+                PandaPoints.setText(String.valueOf(l));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        };
+
         myRef.child(getString(R.string.dbname_users))
                 .child(mUser.getUser_id())
                 .child("panda_points")
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Long l = dataSnapshot.getValue(Long.class);
-                        PandaPoints.setText(String.valueOf(l));
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                .addValueEventListener(v1);
     }
 
     private void init() {
@@ -548,7 +549,6 @@ public class ViewProfileActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public void onStart() {
         super.onStart();
@@ -561,5 +561,24 @@ public class ViewProfileActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (myRef != null && v1 != null)
+            myRef.removeEventListener(v1);
     }
 }

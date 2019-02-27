@@ -74,7 +74,7 @@ import java.util.Random;
 public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.ThumbnailsAdapterListener {
 
     private static final String TAG = "NextActivity";
-    private Context mContext = NextActivity.this;
+    private Context mContext;
 
     //firebase
     private FirebaseMethods mFirebaseMethods;
@@ -100,9 +100,33 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+        mContext = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mContext = null;
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mContext = NextActivity.this;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_next);
+
+        mContext = NextActivity.this;
 
         initImageLoader();
         loadEditScreen();

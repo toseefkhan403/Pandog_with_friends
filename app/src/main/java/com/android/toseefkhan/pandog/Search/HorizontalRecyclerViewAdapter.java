@@ -56,28 +56,30 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        HashMap<String,Object> objectMap = (HashMap<String,Object>) dataSnapshot.getValue();
+                        if (dataSnapshot.exists()) {
+                            HashMap<String, Object> objectMap = (HashMap<String, Object>) dataSnapshot.getValue();
 
-                        UniversalImageLoader.setImage(objectMap.get("image_url").toString(),holder.first_photo,null,"",holder.child);
-                        UniversalImageLoader.setImage(objectMap.get("image_url2").toString(),holder.second_photo,null,"",holder.child);
+                            UniversalImageLoader.setImage(objectMap.get("image_url").toString(), holder.first_photo, null, "", holder.child);
+                            UniversalImageLoader.setImage(objectMap.get("image_url2").toString(), holder.second_photo, null, "", holder.child);
 
-                        holder.first_photo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent i = new Intent(mContext, ViewPostActivity.class);
-                                i.putExtra("intent_post_key",postKey);
-                                mContext.startActivity(i);
-                            }
-                        });
+                            holder.first_photo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ViewPostActivity.class);
+                                    i.putExtra("intent_post_key", postKey);
+                                    mContext.startActivity(i);
+                                }
+                            });
 
-                        holder.second_photo.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent i = new Intent(mContext, ViewPostActivity.class);
-                                i.putExtra("intent_post_key",postKey);
-                                mContext.startActivity(i);
-                            }
-                        });
+                            holder.second_photo.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent i = new Intent(mContext, ViewPostActivity.class);
+                                    i.putExtra("intent_post_key", postKey);
+                                    mContext.startActivity(i);
+                                }
+                            });
+                        }
 
                     }
 

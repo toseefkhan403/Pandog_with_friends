@@ -41,6 +41,41 @@ public class NotificationFragment extends Fragment {
     private NotificationsAdapter notificationsAdapter;
     private DatabaseReference mDatabaseReference;
     private RelativeLayout rel;
+    private ValueEventListener v1;
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+//        notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+//        mNotificationRecyclerView.setAdapter(null);
+        if (mDatabaseReference != null && v1 != null)
+            mDatabaseReference.removeEventListener(v1);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        mNotificationRecyclerView.setAdapter(null);
+        if (mDatabaseReference != null && v1 != null)
+            mDatabaseReference.removeEventListener(v1);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (mDatabaseReference != null && v1 != null)
+            mDatabaseReference.removeEventListener(v1);
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -124,44 +159,47 @@ public class NotificationFragment extends Fragment {
     private void addChallenge(final String challengeKey) {
         if (isAdded()) {
             Log.d(TAG, "addChallenge: challengekey " + challengeKey);
-            mDatabaseReference.child(getString(R.string.db_challenges))
-                    .child(challengeKey)
-                    .addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists()) {
-                                Challenge challenge = dataSnapshot.getValue(Challenge.class);
-                                if (challenge.getStatus().equals("NOT_DECIDED")) {
 
-                                    if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
-                                        int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
-                                        challengesList.set(challlengeIndex, challenge);
-                                        notificationsAdapter.updateList(challengesList,challenge);
-                                    } else {
-                                        challengesList.add(challenge);
-                                        notificationsAdapter.changeList(challengesList,challenge);
-                                        if (progressBar != null) {
-                                            if (progressBar.getVisibility() != View.GONE) {
-                                                progressBar.setVisibility(View.GONE);
-                                            }
-                                        }
+            v1 = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        Challenge challenge = dataSnapshot.getValue(Challenge.class);
+                        if (challenge.getStatus().equals("NOT_DECIDED")) {
+
+                            if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
+                                int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
+                                challengesList.set(challlengeIndex, challenge);
+                                notificationsAdapter.updateList(challengesList,challenge);
+                            } else {
+                                challengesList.add(challenge);
+                                notificationsAdapter.changeList(challengesList,challenge);
+                                if (progressBar != null) {
+                                    if (progressBar.getVisibility() != View.GONE) {
+                                        progressBar.setVisibility(View.GONE);
                                     }
                                 }
                             }
-                            if (challengesList.isEmpty()) {
-                                if (progressBar != null)
-                                    progressBar.setVisibility(View.GONE);
-                                rel.setVisibility(View.VISIBLE);
-                            } else {
-                                rel.setVisibility(View.GONE);
-                            }
                         }
+                    }
+                    if (challengesList.isEmpty()) {
+                        if (progressBar != null)
+                            progressBar.setVisibility(View.GONE);
+                        rel.setVisibility(View.VISIBLE);
+                    } else {
+                        rel.setVisibility(View.GONE);
+                    }
+                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
+                }
+            };
+
+            mDatabaseReference.child(getString(R.string.db_challenges))
+                    .child(challengeKey)
+                    .addValueEventListener(v1);
         }
     }
 
