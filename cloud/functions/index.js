@@ -3,6 +3,33 @@ const admin = require('firebase-admin');
 
 admin.initializeApp(functions.config().firebase);
 
+
+exports.limitNotifs = functions.database.ref("/user_notif/{userUid}/{notifKey}")
+    .onCreate((snapshot) => {
+        console.log("limitNotifs invoked");
+        return snapshot.ref.parent.orderByChild("time").once("value").then((notifSnaps) => {
+            var Notifcount = notifSnaps.numChildren();
+            var limit = 25;
+            if (Notifcount > limit) {
+                var extranotifCount = Notifcount - limit;
+                var count = 0;
+                var p = [];
+                var promise;
+                notifSnaps.forEach((NotifSnap) => {
+                    if (count < extranotifCount) {
+                        promise = NotifSnap.ref.remove();
+                        p.push(promise);
+                        count = count + 1;
+                    }
+                });
+                return Promise.all(p);
+            } else {
+                console.log("No limitation required");
+                return null;
+            }
+        });
+    });
+
 exports.setLevels = functions.database.ref("/users/{user_uid}/panda_points")
     .onWrite(() => {
 
@@ -277,6 +304,73 @@ exports.unfollowed = functions.database.ref('followers/{userUid}/{followingUserU
         return admin.database().ref("/users/" + followedUserUid).child("panda_points").transaction((panda_points) => {
             return panda_points - 1;
         });
+    });
+
+exports.sendCommentMessage = functions.database.ref('/Posts/{postId}/comments/{commentId}')
+    .onCreate((snapshot, context) => {
+        console.log("commentMessage Invoked");
+        const postKey = context.params.postId;
+        var comment = snapshot.val();
+        var userUid = comment.user_id;
+        var p = [];
+        var promise1 = snapshot.ref.parent.parent.child("user_id").once("value");
+        var promise2 = snapshot.ref.parent.parent.child("user_id2").once("value");
+        p.push(promise1, promise2);
+
+        return Promise.all(p).then((uidSnapshots) => {
+            var promises = [];
+            var promise;
+            uidSnapshots.forEach((uidSnapshot) => {
+                var uid = uidSnapshot.val();
+                promise = admin.database().ref("/token/" + uid).once("value").then((tokenSnap) => {
+                    var token = tokenSnap.val();
+                    if (token == null) {
+                        return null;
+                    }
+                    var payload;
+                    payload = {
+                        data: {
+                            type: "comment",
+                            postKey: postKey,
+                            userUid: userUid
+                        }
+                    };
+                    return admin.messaging().sendToDevice(token, payload).then(() => {
+                        return admin.database().ref("/user_notif/" + uid).push().set(payload);
+                    });
+                });
+                promises.push(promise);
+            });
+            return Promise.all(promises);
+        });
+    });
+
+exports.sendCommentMentionedMessage = functions.database.ref("/Posts/{postId}/comments/{commentId}/mentionArrayList/{index}")
+    .onCreate((snapshot, context) => {
+        console.log("commentMentionedMessage invoked");
+        var mention = snapshot.val();
+        var mentionedUid = mention.mentionUid;
+        const postkey = context.params.postId;
+        return snapshot.ref.parent.parent.child("user_id").once("value").then((uidSnapshot) => {
+            var uid = uidSnapshot.val();
+            return admin.database().ref("/token/" + mentionedUid).once("value").then((tokenSnap) => {
+                var token = tokenSnap.val();
+                if (token == null) {
+                    return null;
+                }
+                var payload = {
+                    data: {
+                        type: "mention",
+                        mentionedPlace: "comment",
+                        userUid: uid,
+                        postKey: postkey
+                    }
+                };            
+                return admin.messaging().sendToDevice(token, payload).then(() => {
+                    return admin.database().ref("/user_notif/" + mentionedUid).push().set(payload);
+                });
+            });
+        }); 
     });
 
 exports.sendFollowingMessage = functions.database.ref('/followers/{userUid}/{followingUserUid}')

@@ -249,6 +249,29 @@ public class PandogMessagingService extends FirebaseMessagingService {
                             Log.d("DB ERROR", databaseError.toString());
                         }
                     });
+        }else if(notificationType.equals("comment")){
+            String NotificationTitle = "Comment";
+            String NotificationBody = "@ commented in your post";
+            String uid = remoteMessage.getData().get("userUid");
+            FirebaseDatabase.getInstance().getReference()
+                    .child(getApplicationContext().getString(R.string.dbname_users))
+                    .child(uid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                User user = dataSnapshot.getValue(User.class);
+                                String userName = user.getUsername();
+                                buildNotification(remoteMessage,NotificationTitle,
+                                        NotificationBody.replace("@",userName),user);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
         }
 
     }
@@ -281,6 +304,10 @@ public class PandogMessagingService extends FirebaseMessagingService {
             notifIntent.putExtra("intent_post_key", postKey);
 
         }else if(remoteMessage.getData().get("type").equals("mention")){
+            notifIntent = new Intent(this,ViewPostActivity.class);
+            String postKey = remoteMessage.getData().get("postKey");
+            notifIntent.putExtra("intent_post_key",postKey);
+        }else if(remoteMessage.getData().get("type").equals("comment")){
             notifIntent = new Intent(this,ViewPostActivity.class);
             String postKey = remoteMessage.getData().get("postKey");
             notifIntent.putExtra("intent_post_key",postKey);

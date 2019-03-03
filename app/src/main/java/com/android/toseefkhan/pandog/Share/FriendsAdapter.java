@@ -24,7 +24,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -37,7 +36,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     private Context mContext;
     private DatabaseReference mDatabaseReference;
     private int mSelectedUserPosition = -1;
-    private SearchView friendSearchView;
+
 
     public FriendsAdapter(String mUserUid, Context context) {
         this.mUserUid = mUserUid;
@@ -200,16 +199,16 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         }
 
         public void filter(CharSequence constraint) {
-            if(constraint != null){
+            if (constraint != null && constraint.length() > 0) {
                 ArrayList<User> filteredList = new ArrayList<>();
-                for(User user: friendUserList){
-                    if(user.getUser_id().contains(constraint)){
+                for (User user : friendUserList) {
+                    if (user.getUser_id().contains(constraint)) {
                         filteredList.add(user);
                     }
                 }
                 usingList = filteredList;
                 notifyDataSetChanged();
-            }else{
+            } else {
                 usingList = friendUserList;
                 notifyDataSetChanged();
             }
@@ -231,7 +230,6 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             photoView = itemView.findViewById(R.id.UserProfilePictureView);
             pb = itemView.findViewById(R.id.pb);
             child = itemView.findViewById(R.id.progress_child);
-
         }
     }
 }

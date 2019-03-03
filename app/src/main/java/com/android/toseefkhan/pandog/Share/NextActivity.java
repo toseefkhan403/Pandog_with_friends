@@ -151,6 +151,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                 } else {
                     mFriendsAdapter = new FriendsAdapter(user, mContext);
                     friendsListView.setAdapter(mFriendsAdapter);
+                    friendSearchView.setVisibility(View.GONE);
                 }
             }
         } else {
@@ -498,7 +499,6 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 mFriendsAdapter.filter(newText);
                 return true;
             }
