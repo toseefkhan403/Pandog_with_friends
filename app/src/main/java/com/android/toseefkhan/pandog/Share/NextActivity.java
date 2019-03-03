@@ -1,79 +1,43 @@
 package com.android.toseefkhan.pandog.Share;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-
-import com.android.toseefkhan.pandog.Profile.ViewCommentsActivity;
-import com.android.toseefkhan.pandog.Utils.BitmapUtils;
-import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
-import com.android.toseefkhan.pandog.Utils.SpacesItemDecoration;
-import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
-import com.android.toseefkhan.pandog.models.Mention;
-import com.android.toseefkhan.pandog.models.MyMention;
-import com.android.toseefkhan.pandog.models.TrendingItem;
-import com.fenchtose.nocropper.BitmapResult;
-import com.fenchtose.nocropper.CropperCallback;
-import com.fenchtose.nocropper.CropperView;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.PluralsRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-import de.hdodenhof.circleimageview.CircleImageView;
-import es.dmoral.toasty.Toasty;
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
-
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.InternetStatus;
+import com.android.toseefkhan.pandog.Utils.SpacesItemDecoration;
+import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.Mention;
+import com.android.toseefkhan.pandog.models.MyMention;
+import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.android.toseefkhan.pandog.models.User;
-import com.google.android.material.tabs.TabLayout;
+import com.fenchtose.nocropper.CropperCallback;
+import com.fenchtose.nocropper.CropperView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.hendraanggrian.appcompat.socialview.Hashtag;
-import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter;
-import com.hendraanggrian.appcompat.widget.MentionArrayAdapter;
 import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView;
-import com.hendraanggrian.appcompat.widget.SocialEditText;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.percolate.mentions.Mentionable;
 import com.percolate.mentions.Mentions;
@@ -85,43 +49,49 @@ import com.zomato.photofilters.utils.ThumbnailItem;
 import com.zomato.photofilters.utils.ThumbnailsManager;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import de.hdodenhof.circleimageview.CircleImageView;
+import es.dmoral.toasty.Toasty;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.ThumbnailsAdapterListener {
 
     private static final String TAG = "NextActivity";
-    private Context mContext;
-
-    //firebase
-    private FirebaseMethods mFirebaseMethods;
-
-    //widgets
-    private SocialAutoCompleteTextView mCaption;
-    private ListView friendsListView;
-
-    private Intent intent;
-    private ImageView image;
-    private Bitmap finalBitmap;
-
-    private FriendsAdapter mFriendsAdapter;
-    private RecyclerView mRVMentions;
-    private Mentions mentions;
-    private HashMap<String,String> mentionHash = new HashMap<>();
-
-    CropperView imagePreview;
-    Bitmap originalImage;
-    // to backup image with filter applied
-    Bitmap filteredImage;
 
     // load native image filters library
     static {
         System.loadLibrary("NativeImageProcessor");
     }
+
+    CropperView imagePreview;
+    Bitmap originalImage;
+    // to backup image with filter applied
+    Bitmap filteredImage;
+    SearchView friendSearchView;
+    private Context mContext;
+    //firebase
+    private FirebaseMethods mFirebaseMethods;
+    //widgets
+    private SocialAutoCompleteTextView mCaption;
+    private RecyclerView friendsListView;
+    private Intent intent;
+    private ImageView image;
+    private Bitmap finalBitmap;
+    private FriendsAdapter mFriendsAdapter;
+    private RecyclerView mRVMentions;
+    private Mentions mentions;
+    private HashMap<String, String> mentionHash = new HashMap<>();
+    private ArrayList<User> mUserList = new ArrayList<>();
 
     @Override
     public void onPause() {
@@ -136,7 +106,6 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
         mContext = null;
     }
-
 
     @Override
     protected void onResume() {
@@ -155,28 +124,36 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         initImageLoader();
         loadEditScreen();
 
+        friendSearchView = findViewById(R.id.FriendsSearch);
+
+        friendSearchView.setQueryHint("Search for your friends here ...");
+
         Log.d(TAG, "onCreate: got the chosen image: " + getIntent().getStringExtra(getString(R.string.selected_image)));
         mFirebaseMethods = new FirebaseMethods(NextActivity.this);
         mCaption = findViewById(R.id.caption);
         mRVMentions = findViewById(R.id.recycler_mentions);
         mRVMentions.setLayoutManager(new LinearLayoutManager(mContext));
+
         friendsListView = findViewById(R.id.FriendsListView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
+        friendsListView.setLayoutManager(layoutManager);
+
         image = findViewById(R.id.imageShare);
 
         Intent i = getIntent();
-        if (i.hasExtra("challenger_user")){
+        if (i.hasExtra("challenger_user")) {
             Bundle b = i.getExtras();
-            if(b!=null){
+            if (b != null) {
                 User user = b.getParcelable("challenger_user");
                 Log.d(TAG, "onCreate: user " + user);
-                if (user == null){
+                if (user == null) {
                     setupFriendsList();
-                }else{
-                    mFriendsAdapter = new FriendsAdapter(user,mContext);
+                } else {
+                    mFriendsAdapter = new FriendsAdapter(user, mContext);
                     friendsListView.setAdapter(mFriendsAdapter);
                 }
             }
-        }else{
+        } else {
             setupFriendsList();
         }
 
@@ -201,11 +178,11 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
         if (!InternetStatus.getInstance(this).isOnline()) {
 
-            Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getWindow().getDecorView().getRootView(), "You are not online!", Snackbar.LENGTH_LONG).show();
         }
     }
 
-    private void initImageLoader(){
+    private void initImageLoader() {
         UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
@@ -216,7 +193,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         findViewById(R.id.r).setVisibility(View.VISIBLE);
 
         imagePreview = findViewById(R.id.image_preview);
-        RecyclerView recyclerView  = findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
 
         loadImage();
 
@@ -332,11 +309,11 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
                         for (DataSnapshot ss : dataSnapshot.getChildren()) {
 
-                            if (ss.exists()){
+                            if (ss.exists()) {
                                 Log.d(TAG, "onDataChange: trends " + ss.getValue(TrendingItem.class));
                                 String title = ss.getValue(TrendingItem.class).getTitle();
-                                hashtagAdapter.add(new Hashtag(title.replace("#","")
-                                        ,ss.getValue(TrendingItem.class).getPost_keys_list().size()));
+                                hashtagAdapter.add(new Hashtag(title.replace("#", "")
+                                        , ss.getValue(TrendingItem.class).getPost_keys_list().size()));
                             }
                         }
                         Log.d(TAG, "onDataChange: hashtagadapternow " + hashtagAdapter.getItem(0));
@@ -356,7 +333,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         mRVMentions.setAdapter(adapter);
 
         getUsers();
-        mentions = new Mentions.Builder(mContext,mCaption)
+        mentions = new Mentions.Builder(mContext, mCaption)
                 .highlightColor(R.color.deep_orange_400)
                 .maxCharacters(20)
                 .queryListener(new QueryListener() {
@@ -379,7 +356,6 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
     }
 
-    private ArrayList<User> mUserList = new ArrayList<>();
     private void getUsers() {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
@@ -430,14 +406,15 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         try {
             if (getIntent().hasExtra(getString(R.string.selected_image))) {
                 originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(getIntent().getStringExtra(getString(R.string.selected_image))));
-            }else if (Intent.ACTION_SEND.equals(getIntent().getAction()) && getIntent().getType() != null) {
+            } else if (Intent.ACTION_SEND.equals(getIntent().getAction()) && getIntent().getType() != null) {
                 Log.d(TAG, "loadImage: image coming from gallery");
                 originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
             }
             filteredImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
             imagePreview.setImageBitmap(originalImage);
 
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
     }
 
@@ -447,7 +424,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         //upload the image to firebase
         int selectedUserPosition = mFriendsAdapter.getSelectedUserPosition();
         if (selectedUserPosition == -1) {
-            Toasty.info(mContext, "Select a user from list first", Toast.LENGTH_SHORT,true).show();
+            Toasty.info(mContext, "Select a user from list first", Toast.LENGTH_SHORT, true).show();
             return;
         }
 
@@ -466,12 +443,12 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
         ArrayList<MyMention> mentions = checkLists();
 
-        if (getIntent().hasExtra("post_task")){
+        if (getIntent().hasExtra("post_task")) {
             String challengeKey = getIntent().getStringArrayListExtra("post_task").get(0);
-            mFirebaseMethods.uploadNewPhoto(getString(R.string.post_photo),caption,imageName,null,myUri, selectedUser, challengeKey,mentions);
+            mFirebaseMethods.uploadNewPhoto(getString(R.string.post_photo), caption, imageName, null, myUri, selectedUser, challengeKey, mentions);
 
-        }else{
-            mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser,mentions);
+        } else {
+            mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser, mentions);
         }
 
     }
@@ -480,7 +457,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
         ArrayList<MyMention> arr = new ArrayList<>();
 
-        for(Mentionable mentionable : mentions.getInsertedMentions()){
+        for (Mentionable mentionable : mentions.getInsertedMentions()) {
 
             MyMention m = new MyMention();
             m.setMentionName(mentionable.getMentionName());
@@ -512,6 +489,20 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
     private void setupFriendsList() {
         mFriendsAdapter = new FriendsAdapter(FirebaseAuth.getInstance().getCurrentUser().getUid(), mContext);
         friendsListView.setAdapter(mFriendsAdapter);
+
+        friendSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                mFriendsAdapter.filter(newText);
+                return true;
+            }
+        });
     }
 
     @Override
@@ -609,7 +600,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                     mention.setMentionName("@" + user.getUsername());
                     mention.setMentionUid(user.getUser_id());
                     mentions.insertMention(mention);
-                    mentionHash.put(mention.getMentionName(),mention.getMentionUid());
+                    mentionHash.put(mention.getMentionName(), mention.getMentionUid());
                 }
             });
         }
@@ -660,7 +651,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                 ProfileList.clear();
 
                 if (constraint != null && constraint.length() > 0) {
-                    for (int i = 0; i <mUserList.size() ; i++) {
+                    for (int i = 0; i < mUserList.size(); i++) {
 
                         Log.d(TAG, "filter: userslist " + mUserList);
 
@@ -675,7 +666,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
 
                     if (ProfileList.size() != 0) {
                         mRVMentions.setVisibility(View.VISIBLE);
-                    }else{
+                    } else {
                         mRVMentions.setVisibility(View.GONE);
                     }
 

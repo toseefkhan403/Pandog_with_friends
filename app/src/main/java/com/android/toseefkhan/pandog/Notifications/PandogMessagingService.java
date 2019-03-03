@@ -225,6 +225,30 @@ public class PandogMessagingService extends FirebaseMessagingService {
                             }
                         });
             }
+        } else if (notificationType.equals("mention")) {
+            String notificationTitle = "Mentioned";
+            String notificationBody = "you were mentioned in a # by @";
+            String mentionedPlace = remoteMessage.getData().get("mentionedPlace");
+            String mentioningUserUid = remoteMessage.getData().get("userUid");
+            FirebaseDatabase.getInstance().getReference()
+                    .child(getApplicationContext().getString(R.string.dbname_users))
+                    .child(mentioningUserUid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if(dataSnapshot.exists()){
+                                User user = dataSnapshot.getValue(User.class);
+                                String userName = user.getUsername();
+                                buildNotification(remoteMessage,notificationTitle
+                                ,notificationBody.replace("#",mentionedPlace).replace("@",userName),user);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.d("DB ERROR", databaseError.toString());
+                        }
+                    });
         }
 
     }
@@ -256,6 +280,10 @@ public class PandogMessagingService extends FirebaseMessagingService {
             String postKey = remoteMessage.getData().get("postKey");
             notifIntent.putExtra("intent_post_key", postKey);
 
+        }else if(remoteMessage.getData().get("type").equals("mention")){
+            notifIntent = new Intent(this,ViewPostActivity.class);
+            String postKey = remoteMessage.getData().get("postKey");
+            notifIntent.putExtra("intent_post_key",postKey);
         }
         notifIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
@@ -264,7 +292,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 this,
                 0,
                 notifIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
+                0
         );
 
         builder.setSmallIcon(R.mipmap.ic_logo_celfie)

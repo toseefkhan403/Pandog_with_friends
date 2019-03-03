@@ -1,12 +1,11 @@
 package com.android.toseefkhan.pandog.Share;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,30 +23,47 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class FriendsAdapter extends BaseAdapter {
+public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendViewHolder> {
 
     private static final String TAG = "FriendsAdapter";
+    FriendFilter filter;
     private String mUserUid;
-    private ArrayList<User> friendUserList;
+    private ArrayList<User> friendUserList, usingList;
     private Context mContext;
     private DatabaseReference mDatabaseReference;
     private int mSelectedUserPosition = -1;
+    private SearchView friendSearchView;
 
     public FriendsAdapter(String mUserUid, Context context) {
         this.mUserUid = mUserUid;
         friendUserList = new ArrayList<>();
+        usingList = new ArrayList<>();
         this.mContext = context;
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
         getFriendsFromUid();
+        initImageLoader();
     }
 
-    public FriendsAdapter(User user,Context context){
+    public FriendsAdapter(User user, Context context) {
         Log.d(TAG, "FriendsAdapter: the selected user " + user);
         this.mContext = context;
+        usingList = new ArrayList<>();
         friendUserList = new ArrayList<>();
-        friendUserList.add(user);
+        usingList.add(user);
+        initImageLoader();
+    }
+
+    public void filter(CharSequence constraint) {
+        if (filter == null) {
+            filter = new FriendFilter();
+        }
+        filter.filter(constraint);
     }
 
     public int getSelectedUserPosition() {
@@ -107,7 +123,8 @@ public class FriendsAdapter extends BaseAdapter {
                             }
                             if (!repeated) {
                                 friendUserList.add(user);
-                                notifyDataSetChanged();
+                                usingList.add(user);
+                                notifyItemInserted(usingList.indexOf(user));
                             }
                         }
                     }
@@ -120,17 +137,51 @@ public class FriendsAdapter extends BaseAdapter {
     }
 
     @Override
-    public int getCount() {
-        if (friendUserList == null) {
+    public int getItemCount() {
+        if (usingList == null) {
             return 0;
         } else {
-            return friendUserList.size();
+            return usingList.size();
         }
     }
 
+    public User getItem(int position) {
+        return usingList.get(position);
+    }
+
+    @NonNull
     @Override
-    public Object getItem(int position) {
-        return friendUserList.get(position);
+    public FriendViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View convertView = LayoutInflater.from(mContext).inflate(R.layout.profile_item, parent, false);
+        return new FriendViewHolder(convertView);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull FriendViewHolder holder, int position) {
+
+        User user = getItem(position);
+        if (getItemCount() == 1) {
+            mSelectedUserPosition = position;
+            holder.itemView.setBackgroundColor(Color.RED);
+        }
+        if (position == mSelectedUserPosition) {
+            holder.itemView.setBackgroundColor(Color.RED);
+        } else {
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+        }
+        holder.userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
+        holder.userEmailView.setText(user.getEmail());
+        String Photourl = user.getProfile_photo();
+        UniversalImageLoader.setImage(Photourl, holder.photoView, null, "", holder.child);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int p = mSelectedUserPosition;
+                mSelectedUserPosition = position;
+                FriendsAdapter.this.notifyItemChanged(p);
+                FriendsAdapter.this.notifyItemChanged(mSelectedUserPosition);
+            }
+        });
     }
 
     @Override
@@ -138,57 +189,49 @@ public class FriendsAdapter extends BaseAdapter {
         return position;
     }
 
-    @Override
-    public boolean hasStableIds() {
-        return false;
-    }
-
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(mContext).inflate(R.layout.profile_item, parent, false);
-        }
-        User user = (User) getItem(position);
-
-        if (friendUserList.size() == 1){
-            mSelectedUserPosition = position;
-        }else{
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mSelectedUserPosition = position;
-                    notifyDataSetChanged();
-                }
-            });
-        }
-
-
-        Log.i("User", user.getUser_id());
-        if (position == mSelectedUserPosition) {
-            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.skyBlue));
-        } else {
-            convertView.setBackgroundColor(mContext.getResources().getColor(R.color.white));
-        }
-        TextView userNameView = convertView.findViewById(R.id.UserNameView);
-        userNameView.setText(StringManipulation.expandUsername(user.getUsername()));
-
-        TextView userEmailView = convertView.findViewById(R.id.UserEmailView);
-        userEmailView.setText(user.getEmail());
-
-        String PhotoUrl = user.getProfile_photo();
-
-        CircleImageView photoView = convertView.findViewById(R.id.UserProfilePictureView);
-        ProgressBar pb = convertView.findViewById(R.id.pb);
-        View child = convertView.findViewById(R.id.progress_child);
-
-        initImageLoader();
-        UniversalImageLoader.setImage(PhotoUrl, photoView, null, "",child);
-
-        return convertView;
-    }
-
-    private void initImageLoader(){
+    private void initImageLoader() {
         UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
+    private class FriendFilter {
+        public FriendFilter() {
+
+        }
+
+        public void filter(CharSequence constraint) {
+            if(constraint != null){
+                ArrayList<User> filteredList = new ArrayList<>();
+                for(User user: friendUserList){
+                    if(user.getUser_id().contains(constraint)){
+                        filteredList.add(user);
+                    }
+                }
+                usingList = filteredList;
+                notifyDataSetChanged();
+            }else{
+                usingList = friendUserList;
+                notifyDataSetChanged();
+            }
+        }
+    }
+
+    public class FriendViewHolder extends RecyclerView.ViewHolder {
+
+        TextView userNameView, userEmailView;
+        CircleImageView photoView;
+        ProgressBar pb;
+        View child, itemView;
+
+        public FriendViewHolder(@NonNull View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+            userNameView = itemView.findViewById(R.id.UserNameView);
+            userEmailView = itemView.findViewById(R.id.UserEmailView);
+            photoView = itemView.findViewById(R.id.UserProfilePictureView);
+            pb = itemView.findViewById(R.id.pb);
+            child = itemView.findViewById(R.id.progress_child);
+
+        }
     }
 }

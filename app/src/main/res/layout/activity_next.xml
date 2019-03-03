@@ -1,111 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <RelativeLayout
+        android:id="@+id/next_activity"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/next_activity">
+        android:layout_height="wrap_content">
 
         <RelativeLayout
-            android:layout_width="match_parent"
             android:id="@+id/scrollView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <RelativeLayout
+                android:id="@+id/relLayout1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/relLayout1">
+                android:layout_height="wrap_content">
 
                 <!-- toolbar -->
-                <include layout="@layout/snippet_top_nexttoolbar"/>
+                <include layout="@layout/snippet_top_nexttoolbar" />
 
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/relLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relLayout1"
-                android:id="@+id/relLayout2"
                 android:background="@drawable/white_pink_border_bottom">
 
                 <ImageView
+                    android:id="@+id/imageShare"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:id="@+id/imageShare"
-                    android:scaleType="centerCrop"
                     android:layout_centerVertical="true"
-                    android:transitionName="imm"
                     android:layout_marginStart="20dp"
-                    android:layout_marginBottom="40dp"/>
+                    android:layout_marginBottom="40dp"
+                    android:scaleType="centerCrop"
+                    android:transitionName="imm" />
 
                 <com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView
+                    android:id="@+id/caption"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:id="@+id/caption"
-                    android:hint="Write a cool caption..."
-                    android:layout_toEndOf="@+id/imageShare"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_toEndOf="@+id/imageShare"
                     android:background="@null"
-                    app:social="hashtag|mention"
+                    android:hint="Write a cool caption..."
                     app:hashtagColor="@color/blue"
-                    app:mentionColor="@color/orange_400"/>
+                    app:mentionColor="@color/orange_400"
+                    app:social="hashtag|mention" />
 
             </RelativeLayout>
 
         </RelativeLayout>
 
-
-    <ListView
-        android:id="@+id/FriendsListView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/scrollView"
-        tools:listitem="@layout/profile_item" />
-
-    <LinearLayout
-        android:layout_width="170dp"
-        android:layout_centerInParent="true"
-        android:layout_centerVertical="true"
-        android:layout_marginTop="140dp"
-        android:id="@+id/progress_root"
-        android:layout_height="170dp">
-
-        <View
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/FriendsSearch"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
-
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_below="@id/scrollView"
+            android:clickable="true"
+            android:focusable="true" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/FriendsListView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/FriendsSearch"
+            tools:listitem="@layout/profile_item" />
+
+        <LinearLayout
+            android:id="@+id/progress_root"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:layout_centerInParent="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="140dp">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_mentions"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:id="@+id/recycler_mentions"
-            android:visibility="gone"
             android:layout_marginStart="120dp"
             android:layout_marginTop="170dp"
-            />
+            android:visibility="gone" />
 
     </RelativeLayout>
 
-    <RelativeLayout android:id="@+id/r"
+    <RelativeLayout
+        android:id="@+id/r"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
-        android:background="@color/black">
+        android:background="@color/black"
+        android:visibility="visible">
 
         <RelativeLayout
+            android:id="@+id/i"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/i">
+            android:layout_height="wrap_content">
 
             <!-- toolbar -->
-            <include layout="@layout/snippet_top_edit_screen"/>
+            <include layout="@layout/snippet_top_edit_screen" />
 
         </RelativeLayout>
 
@@ -114,7 +120,7 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/i">
 
-        <include layout="@layout/content_main" />
+            <include layout="@layout/content_main" />
 
         </RelativeLayout>
 
