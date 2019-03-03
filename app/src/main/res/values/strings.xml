@@ -2,8 +2,8 @@
     <string name="app_name">Celfie</string>
     <string name="google_maps_api_key">AIzaSyD3-zw8LZLHo57Y0-1Mlf9u7eFScqG7SOs</string>
 
-    <string name="facebook_app_id">334440810712976</string>
-    <string name="fb_login_protocol_scheme">fb334440810712976</string>
+    <string name="facebook_app_id">249814359299917</string>
+    <string name="fb_login_protocol_scheme">fb249814359299917</string>
 
     <!-- fragment names -->
     <string name="edit_profile_fragment">Edit Profile</string>

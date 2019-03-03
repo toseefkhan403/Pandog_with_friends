@@ -383,8 +383,16 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
                     mPaginatedPosts.add(mPostList.get(i));
                 }
                 mResults = mResults + iterations;
-                mAdapter.notifyDataSetChanged();
+
+                mRVPosts.post(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
             }
+
         }catch (NullPointerException e){
             Log.e(TAG, "displayPhotos: NullPointerException: " + e.getMessage() );
         }catch (IndexOutOfBoundsException e){

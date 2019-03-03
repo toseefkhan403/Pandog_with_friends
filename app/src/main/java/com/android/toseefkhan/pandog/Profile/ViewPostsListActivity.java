@@ -168,6 +168,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
 
         mRVPosts = findViewById(R.id.posts_recycler_view_list);
         mRVPosts.setLayoutManager(new ViewPagerLayoutManager(mContext, OrientationHelper.VERTICAL));
+        mRVPosts.setVisibility(View.GONE);
         rfaLayout = findViewById(R.id.activity_main_rfal);
         rfaBtn = findViewById(R.id.activity_main_rfab);
         mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
@@ -416,6 +417,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
 
     private void displayPhotos(){
         mPaginatedPosts = new ArrayList<>();
+        mRVPosts.setVisibility(View.VISIBLE);
 
         if(!mPostList.isEmpty()){
             try{
@@ -477,7 +479,15 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                     mPaginatedPosts.add(mPostList.get(i));
                 }
                 mResults = mResults + iterations;
-                mAdapter.notifyDataSetChanged();
+
+                mRVPosts.post(new Runnable()
+                {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+
             }
         }catch (NullPointerException e){
             Log.e(TAG, "displayPhotos: NullPointerException: " + e.getMessage() );
@@ -489,7 +499,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
 
     private void setupBottomNavigationView(){
         Log.d(TAG, "setupBottomNavigationView: setting up BottomNavigationView");
-        BottomNavigationViewEx bottomNavigationViewEx = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
+        BottomNavigationViewEx bottomNavigationViewEx = findViewById(R.id.bottomNavViewBar);
         BottomNavViewHelper.setupBottomNavigationView(bottomNavigationViewEx);
         BottomNavViewHelper.enableNavigation(mContext, bottomNavigationViewEx, ViewPostsListActivity.this);
         Menu menu = bottomNavigationViewEx.getMenu();

@@ -1,5 +1,6 @@
 package com.android.toseefkhan.pandog.Home;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -139,13 +140,13 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     public void onClick(View view) {
                         ref.child("Challenges").child(challenge.getChallengeKey()).child("status").setValue("REJECTED");
                         Intent i = new Intent(mContext,HomeActivity.class);
+                        i.putExtra("ChallengerUser",2);
                         mContext.startActivity(i);
+                        ((Activity)mContext).overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     }
                 });
             }
         }
-
-        //tod
     }
 
     private void setPpChallenger(final NotificationViewHolder holder, String challengerUserUid) {

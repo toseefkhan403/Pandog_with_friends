@@ -67,6 +67,7 @@ public class ViewProfileActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference myRef;
+    private DatabaseReference myRefVal;
     private FirebaseMethods mFirebaseMethods;
     private ValueEventListener v1;
 
@@ -318,10 +319,11 @@ public class ViewProfileActivity extends AppCompatActivity {
             }
         };
 
-        myRef.child(getString(R.string.dbname_users))
+        myRefVal = myRef.child(getString(R.string.dbname_users))
                 .child(mUser.getUser_id())
-                .child("panda_points")
-                .addValueEventListener(v1);
+                .child("panda_points");
+
+                myRefVal.addValueEventListener(v1);
     }
 
     private void init() {
@@ -562,23 +564,23 @@ public class ViewProfileActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
 
-        if (myRef != null && v1 != null)
-            myRef.removeEventListener(v1);
+        if (myRefVal != null && v1 != null)
+            myRefVal.removeEventListener(v1);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        if (myRef != null && v1 != null)
-            myRef.removeEventListener(v1);
+        if (myRefVal != null && v1 != null)
+            myRefVal.removeEventListener(v1);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        if (myRef != null && v1 != null)
-            myRef.removeEventListener(v1);
+        if (myRefVal != null && v1 != null)
+            myRefVal.removeEventListener(v1);
     }
 }

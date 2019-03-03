@@ -1,5 +1,7 @@
 package com.android.toseefkhan.pandog.models;
 
+import java.util.ArrayList;
+
 public class Challenge {
     private String challengerUserUid;
     private String challengedUserUid;
@@ -11,6 +13,7 @@ public class Challenge {
     private String challengeKey;
     private String caption;
     private String tags;
+    private ArrayList<MyMention> mentions;
 
     public Challenge(String challengerUserUid, String challengedUserUid, String photoUrl, String caption, String tags) {
         this.challengerUserUid = challengerUserUid;
@@ -20,6 +23,14 @@ public class Challenge {
         this.tags = tags;
     }
     public Challenge() {
+    }
+
+    public ArrayList<MyMention> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(ArrayList<MyMention> mentions) {
+        this.mentions = mentions;
     }
 
     public String getPostKey() {

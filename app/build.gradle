@@ -104,11 +104,15 @@ dependencies {
     implementation 'com.roger.catloadinglibrary:catloadinglibrary:1.0.4'
     //pull to refresh
     implementation 'com.yalantis:phoenix:1.2.3'
+    //@mention library
+    implementation 'com.github.percolate:mentions:0.1.1'
+    implementation 'com.hendraanggrian.appcompat:socialview:0.1'
+    implementation "com.hendraanggrian.appcompat:socialview-commons:0.1"
 
 
     //library for detecting memory leaks : leakcanary
-//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
-//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
 
     //Arch
     implementation 'androidx.arch.core:core-runtime:2.0.0-beta01'

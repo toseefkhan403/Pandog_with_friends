@@ -14,14 +14,21 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.android.toseefkhan.pandog.Profile.ViewCommentsActivity;
 import com.android.toseefkhan.pandog.Utils.BitmapUtils;
 import com.android.toseefkhan.pandog.Utils.FragmentPagerAdapter;
 import com.android.toseefkhan.pandog.Utils.SpacesItemDecoration;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
+import com.android.toseefkhan.pandog.models.Mention;
+import com.android.toseefkhan.pandog.models.MyMention;
+import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.fenchtose.nocropper.BitmapResult;
 import com.fenchtose.nocropper.CropperCallback;
 import com.fenchtose.nocropper.CropperView;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.PluralsRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -31,15 +38,19 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
+import de.hdodenhof.circleimageview.CircleImageView;
 import es.dmoral.toasty.Toasty;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -58,7 +69,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.hendraanggrian.appcompat.socialview.Hashtag;
+import com.hendraanggrian.appcompat.widget.HashtagArrayAdapter;
+import com.hendraanggrian.appcompat.widget.MentionArrayAdapter;
+import com.hendraanggrian.appcompat.widget.SocialAutoCompleteTextView;
+import com.hendraanggrian.appcompat.widget.SocialEditText;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.percolate.mentions.Mentionable;
+import com.percolate.mentions.Mentions;
+import com.percolate.mentions.QueryListener;
+import com.percolate.mentions.SuggestionsListener;
 import com.zomato.photofilters.FilterPack;
 import com.zomato.photofilters.imageprocessors.Filter;
 import com.zomato.photofilters.utils.ThumbnailItem;
@@ -68,6 +88,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -80,7 +101,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
     private FirebaseMethods mFirebaseMethods;
 
     //widgets
-    private EditText mCaption;
+    private SocialAutoCompleteTextView mCaption;
     private ListView friendsListView;
 
     private Intent intent;
@@ -88,6 +109,9 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
     private Bitmap finalBitmap;
 
     private FriendsAdapter mFriendsAdapter;
+    private RecyclerView mRVMentions;
+    private Mentions mentions;
+    private HashMap<String,String> mentionHash = new HashMap<>();
 
     CropperView imagePreview;
     Bitmap originalImage;
@@ -134,6 +158,8 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         Log.d(TAG, "onCreate: got the chosen image: " + getIntent().getStringExtra(getString(R.string.selected_image)));
         mFirebaseMethods = new FirebaseMethods(NextActivity.this);
         mCaption = findViewById(R.id.caption);
+        mRVMentions = findViewById(R.id.recycler_mentions);
+        mRVMentions.setLayoutManager(new LinearLayoutManager(mContext));
         friendsListView = findViewById(R.id.FriendsListView);
         image = findViewById(R.id.imageShare);
 
@@ -254,6 +280,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                             @Override
                             public void onAnimationEnd(Animator animator) {
                                 findViewById(R.id.r).setVisibility(View.GONE);
+                                setupHashtagAndMentioning();
                             }
 
                             @Override
@@ -292,6 +319,89 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
             }
         });
 
+    }
+
+    private void setupHashtagAndMentioning() {
+
+        ArrayAdapter<Hashtag> hashtagAdapter = new HashtagAdapter(mContext);
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("trending")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ss : dataSnapshot.getChildren()) {
+
+                            if (ss.exists()){
+                                Log.d(TAG, "onDataChange: trends " + ss.getValue(TrendingItem.class));
+                                String title = ss.getValue(TrendingItem.class).getTitle();
+                                hashtagAdapter.add(new Hashtag(title.replace("#","")
+                                        ,ss.getValue(TrendingItem.class).getPost_keys_list().size()));
+                            }
+                        }
+                        Log.d(TAG, "onDataChange: hashtagadapternow " + hashtagAdapter.getItem(0));
+                        mCaption.setHashtagAdapter(hashtagAdapter);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+        mCaption.setMentionEnabled(false);
+
+        final SearchAdapter adapter = new SearchAdapter(mContext);
+        mRVMentions.setAdapter(adapter);
+
+        getUsers();
+        mentions = new Mentions.Builder(mContext,mCaption)
+                .highlightColor(R.color.deep_orange_400)
+                .maxCharacters(20)
+                .queryListener(new QueryListener() {
+                    @Override
+                    public void onQueryReceived(String s) {
+                        adapter.filter(s);
+                        Log.d(TAG, "setupMentioning: getInsertedMentions " + mentions.getInsertedMentions());
+                    }
+                })
+                .suggestionsListener(new SuggestionsListener() {
+                    @Override
+                    public void displaySuggestions(boolean b) {
+
+                        if (!b)
+                            mRVMentions.setVisibility(View.GONE);
+                        Log.d(TAG, "displaySuggestions: boolean boy " + b);
+                    }
+                })
+                .build();
+
+    }
+
+    private ArrayList<User> mUserList = new ArrayList<>();
+    private void getUsers() {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child(getString(R.string.dbname_users))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ss :
+                                dataSnapshot.getChildren()) {
+
+                            if (ss.exists())
+                                mUserList.add(ss.getValue(User.class));
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     private void refreshBitmap() {
@@ -354,13 +464,32 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         long timeStamp = System.currentTimeMillis();
         String imageName = "photo" + timeStamp;
 
+        ArrayList<MyMention> mentions = checkLists();
+
         if (getIntent().hasExtra("post_task")){
             String challengeKey = getIntent().getStringArrayListExtra("post_task").get(0);
-            mFirebaseMethods.uploadNewPhoto(getString(R.string.post_photo),caption,imageName,null,myUri, selectedUser, challengeKey);
+            mFirebaseMethods.uploadNewPhoto(getString(R.string.post_photo),caption,imageName,null,myUri, selectedUser, challengeKey,mentions);
+
         }else{
-            mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser);
+            mFirebaseMethods.uploadNewPhoto(getString(R.string.new_photo), caption, imageName, null, myUri, selectedUser,mentions);
         }
 
+    }
+
+    private ArrayList<MyMention> checkLists() {
+
+        ArrayList<MyMention> arr = new ArrayList<>();
+
+        for(Mentionable mentionable : mentions.getInsertedMentions()){
+
+            MyMention m = new MyMention();
+            m.setMentionName(mentionable.getMentionName());
+            m.setMentionUid(mentionHash.get(mentionable.getMentionName()));
+            if (!arr.contains(m))
+                arr.add(m);
+        }
+
+        return arr;
     }
 
     /**
@@ -396,4 +525,166 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         String path = MediaStore.Images.Media.insertImage(mContext.getContentResolver(), mBitmap, "CelfieImage", null);
         return Uri.parse(path);
     }
+
+    private class HashtagAdapter extends ArrayAdapter<Hashtag> {
+
+        public HashtagAdapter(@NonNull Context context) {
+            super(context, R.layout.socialview_layout_hashtag, R.id.socialview_hashtag);
+
+        }
+
+        @NonNull
+        @Override
+        @SuppressWarnings("unchecked")
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            final ViewHolder holder;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.socialview_layout_hashtag, parent, false);
+                holder = new ViewHolder(convertView);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            final Hashtag item = getItem(position);
+            if (item != null) {
+                holder.hashtagView.setText(item.getHashtag());
+
+                final int count = item.getCount();
+                holder.countView.setText(count + " Posts");
+
+            }
+            return convertView;
+        }
+
+        private class ViewHolder {
+            private final TextView hashtagView;
+            private final TextView countView;
+
+            ViewHolder(View itemView) {
+                hashtagView = itemView.findViewById(R.id.socialview_hashtag);
+                countView = itemView.findViewById(R.id.socialview_hashtag_count);
+            }
+        }
+    }
+
+    public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchItemViewHolder> {
+
+        private ProfileFilter filter;
+        private Context mContext;
+        private ArrayList<User> ProfileList;
+
+        public SearchAdapter(Context context) {
+            this.mContext = context;
+            ProfileList = new ArrayList<>();
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            return position;
+        }
+
+        @NonNull
+        @Override
+        public SearchItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+            View itemView = LayoutInflater.from(mContext).inflate(R.layout.profile_item_mention, viewGroup, false);
+            return new SearchAdapter.SearchItemViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull SearchItemViewHolder searchItemViewHolder, int i) {
+
+            searchItemViewHolder.setIsRecyclable(false);
+            User user = getItem(i);
+
+            searchItemViewHolder.userNameView.setText(user.getUsername());
+            String PhotoUrl = user.getProfile_photo();
+            UniversalImageLoader.setImage(PhotoUrl, searchItemViewHolder.userppSearch, null, "",
+                    null);
+
+            searchItemViewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    final com.android.toseefkhan.pandog.models.Mention mention = new Mention();
+                    mention.setMentionName("@" + user.getUsername());
+                    mention.setMentionUid(user.getUser_id());
+                    mentions.insertMention(mention);
+                    mentionHash.put(mention.getMentionName(),mention.getMentionUid());
+                }
+            });
+        }
+
+        private User getItem(int i) {
+            return ProfileList.get(i);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public int getItemCount() {
+            return ProfileList != null ? ProfileList.size() : 0;
+        }
+
+        public void filter(CharSequence constraint) {
+            if (filter == null) {
+                filter = new ProfileFilter();
+            }
+            filter.filter(constraint);
+        }
+
+        public class SearchItemViewHolder extends RecyclerView.ViewHolder {
+
+            View mView;
+            TextView userNameView;
+            CircleImageView userppSearch;
+
+            public SearchItemViewHolder(@NonNull View itemView) {
+                super(itemView);
+                this.mView = itemView;
+
+                userNameView = itemView.findViewById(R.id.UserNameView);
+                userppSearch = itemView.findViewById(R.id.UserProfilePictureView);
+            }
+        }
+
+        private class ProfileFilter {
+
+            public ProfileFilter() {
+            }
+
+            public void filter(final CharSequence constraint) {
+
+                ProfileList.clear();
+
+                if (constraint != null && constraint.length() > 0) {
+                    for (int i = 0; i <mUserList.size() ; i++) {
+
+                        Log.d(TAG, "filter: userslist " + mUserList);
+
+                        if (mUserList.get(i) != null) {
+                            String Username = mUserList.get(i).getUsername().toUpperCase();
+                            String entered = constraint.toString().toUpperCase();
+                            if (Username.contains(entered)) {
+                                ProfileList.add(mUserList.get(i));
+                            }
+                        }
+                    }
+
+                    if (ProfileList.size() != 0) {
+                        mRVMentions.setVisibility(View.VISIBLE);
+                    }else{
+                        mRVMentions.setVisibility(View.GONE);
+                    }
+
+                    notifyDataSetChanged();
+                }
+
+            }
+
+        }
+    }
+
 }

@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.android.toseefkhan.pandog.Utils.Like;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Post implements Parcelable{
@@ -26,6 +27,7 @@ public class Post implements Parcelable{
 
     private long timeStamp;
     private String challenge_id, status, winner;
+    private ArrayList<MyMention> mentions;
 
     public Post() {
     }
@@ -96,6 +98,14 @@ public class Post implements Parcelable{
 
     public void setWinner(String winner) {
         this.winner = winner;
+    }
+
+    public ArrayList<MyMention> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(ArrayList<MyMention> mentions) {
+        this.mentions = mentions;
     }
 
     public String getCaption() {

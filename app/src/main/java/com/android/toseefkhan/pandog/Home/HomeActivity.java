@@ -1,10 +1,15 @@
 package com.android.toseefkhan.pandog.Home;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Animatable;
 
@@ -13,6 +18,7 @@ import androidx.annotation.NonNull;
 import com.android.toseefkhan.pandog.Intro.Holder;
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
+import com.android.toseefkhan.pandog.Utils.ExitActivity;
 import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.android.toseefkhan.pandog.models.User;
@@ -31,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.transition.Slide;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,10 +45,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,15 +80,11 @@ import com.takusemba.spotlight.OnTargetStateChangedListener;
 import com.takusemba.spotlight.Spotlight;
 import com.takusemba.spotlight.shape.Circle;
 import com.takusemba.spotlight.target.CustomTarget;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 
 public class HomeActivity extends AppCompatActivity implements PostsProfileRVAdapter.OnLoadMoreItemsListener {
 
@@ -113,6 +119,18 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     final String showFloatingButton = "showFloatingButton";
 
     //todo a thorough testing of the app and bug fixes, memory management!
+    //todo mentioning in comments and notifications for that as well
+    //todo notification for comments
+    //todo notifs should pile up
+    //todo dynamic trending notifications
+    //todo home feed suggesting popular users
+    //todo mischief
+    //todo notif mention challenge post
+    //search view for challenging users
+    /*
+        anonymous chats with selfies and gifs
+        some game time
+     */
     //todo create dev account on google play; launch the app successfully (*happy emoji)(*another happy emoji)
 
     /*
@@ -127,8 +145,8 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
             mAuth.removeAuthStateListener(mAuthListener);
         }
 
-        mHomeFragment = null;
-        mNotificationFragment = null;
+//        mHomeFragment = null;
+//        mNotificationFragment = null;
         mUniversalImageLoader = null;
 
     }
@@ -154,14 +172,28 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         mAuth.addAuthStateListener(mAuthListener);
         checkCurrentUser(mAuth.getCurrentUser());
 
+        //key hash for facebook auth login
+//        try {
+//            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_SIGNATURES);
+//            for (Signature signature : info.signatures) {
+//                MessageDigest md = MessageDigest.getInstance("SHA");
+//                md.update(signature.toByteArray());
+//                String hashKey = new String(Base64.encode(md.digest(), 0));
+//                Log.d(TAG, "printHashKey() Hash Key: " + hashKey);
+//            }
+//        } catch (NoSuchAlgorithmException e) {
+//            Log.e(TAG, "printHashKey()", e);
+//        } catch (Exception e) {
+//            Log.e(TAG, "printHashKey()", e);
+//        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mContext = null;
-        mHomeFragment = null;
-        mNotificationFragment = null;
+//        mHomeFragment = null;
+//        mNotificationFragment = null;
         mUniversalImageLoader = null;
     }
 
@@ -170,8 +202,8 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         super.onDestroy();
         ShakeDetector.destroy();
         mContext = null;
-        mHomeFragment = null;
-        mNotificationFragment = null;
+//        mHomeFragment = null;
+//        mNotificationFragment = null;
         mUniversalImageLoader = null;
     }
 
@@ -226,6 +258,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                         RelativeLayout r = findViewById(R.id.r);
 
                         if (r != null) {
+
                             r.animate()
                                     .translationY(findViewById(R.id.r).getHeight())
                                     .alpha(0.0f)
@@ -254,7 +287,8 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                                     });
                         }
                     }
-                }, 6000);
+                }, 4700);
+
                 ((InitialSetup) getApplicationContext()).isFirstTimeStart = false;
 
             }else{
@@ -335,8 +369,26 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         menuItem.setEnabled(false);
     }
 
+    private static int backCount = 0;
+
     @Override
     public void onBackPressed() {
+
+        if (backCount == 0) {
+            Toasty.warning(getApplicationContext(), "Press Back again to exit", Toasty.LENGTH_LONG, true).show();
+            backCount++;
+
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    backCount = 0;
+                }
+            },1500);
+
+        }else if (backCount == 1){
+
+            ExitActivity.exitApplication(mContext);
+        }
 
     }
 

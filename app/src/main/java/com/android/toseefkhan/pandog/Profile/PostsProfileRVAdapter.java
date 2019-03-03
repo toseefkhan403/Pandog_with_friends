@@ -100,7 +100,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         getLikesString(viewHolder,post);
     }
 
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -118,7 +117,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder,final int position) {
-        Log.d(TAG, "onBindViewHolder: called.");
+        Log.d(TAG, "onBindViewHolder: called position " + position);
 
         final Post post = mPostList.get(position);
 
@@ -211,9 +210,8 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         setTimeAndCalculateResults(holder, time, post);
 
         if(reachedEndOfList(position)){
-            loadMoreData();
+            loadMoreData(holder);
         }
-
     }
 
     private void setTimeAndCalculateResults(ViewHolder holder, int time, Post post) {
@@ -317,8 +315,9 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         return position == getItemCount() - 1;
     }
 
-    private void loadMoreData(){
+    private void loadMoreData(ViewHolder holder){
 
+       // loadSuggestions(holder);
         try{
             mOnLoadMoreItemsListener = (OnLoadMoreItemsListener) mContext;
         }catch (ClassCastException e){
@@ -330,6 +329,60 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         }catch (Exception e){
             Log.e(TAG, "loadMoreData: ClassCastException: " +e.getMessage() );
         }
+    }
+
+    private void loadSuggestions(ViewHolder holder) {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
+        ref.child(mContext.getString(R.string.dbname_users))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        User user = dataSnapshot.getValue(User.class);
+                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.image1,null,"",null);
+                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.image2,null,"",null);
+                        holder.caption1.setText(user.getUsername());
+                        holder.caption2.setText(user.getUsername());
+                        holder.caption1.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                Intent i = new Intent(mContext,ViewProfileActivity.class);
+                                i.putExtra(mContext.getString(R.string.intent_user),user);
+                                mContext.startActivity(i);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+        holder.bottomView.setVisibility(View.GONE);
+        holder.bottomView2.setVisibility(View.GONE);
+
+        /*
+        holder.dp1,holder.dp2;
+        holder.username1,holder.username2;
+        holder.image1,image2;
+         likesString1,likesString2;
+         comments_list,comments_list2;
+         caption1,caption2,timeRemaining;
+         heartWhite,heartWhite2,heartRed,heartRed2;
+         horizontalScrollView;
+         theWholeView;
+         cardView1;
+         cardView2;
+         child,child2;
+         heartHolder, heartHolder2,tvWinner,tvWinner2,tvLoser,tvLoser2;
+         */
+
     }
 
     private void initLikesString(final ViewHolder holder, Post post) {
@@ -639,7 +692,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         return mPostList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder{
 
         CircleImageView dp1,dp2;
         TextView username1,username2;
@@ -653,7 +706,8 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         CardView cardView1;
         CardView cardView2;
         View child,child2;
-        RelativeLayout heartHolder, heartHolder2,tvWinner,tvWinner2,tvLoser,tvLoser2;
+        RelativeLayout heartHolder, heartHolder2,tvWinner,tvWinner2
+                ,tvLoser,tvLoser2,bottomView,bottomView2;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -681,6 +735,8 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             timeRemaining = itemView.findViewById(R.id.timeRemaining);
             child = itemView.findViewById(R.id.progress_child);
             child2 = itemView.findViewById(R.id.progress_child2);
+            bottomView = itemView.findViewById(R.id.bottomView);
+            bottomView2 = itemView.findViewById(R.id.bottomView2);
 
 
             heartRed.setVisibility(View.GONE);

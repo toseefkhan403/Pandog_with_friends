@@ -133,6 +133,7 @@ public class NotificationFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: called");
         mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
+        mNotificationRecyclerView.smoothScrollToPosition(0);
 
         PullToRefreshView mPullToRefreshView = view.findViewById(R.id.pull_to_refresh);
 

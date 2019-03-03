@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -29,6 +30,31 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_above="@+id/relLayout3"
+        android:layout_marginBottom="1dp"
+        android:layout_height="wrap_content">
+
+        <com.github.florent37.shapeofview.shapes.RoundRectView
+            android:layout_width="wrap_content"
+            app:shape_roundRect_topRightRadius="30dp"
+            app:shape_roundRect_bottomRightRadius="30dp"
+            app:shape_roundRect_borderWidth="1dp"
+            app:shape_roundRect_borderColor="@color/darkgrey"
+            android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="250dp"
+                android:background="@color/white"
+                android:layout_height="170dp"
+                android:visibility="gone"
+                android:id="@+id/recycler_mentions" />
+
+        </com.github.florent37.shapeofview.shapes.RoundRectView>
 
     </RelativeLayout>
 

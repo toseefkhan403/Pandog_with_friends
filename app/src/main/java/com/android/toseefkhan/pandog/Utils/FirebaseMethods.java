@@ -25,6 +25,7 @@ import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.models.Challenge;
+import com.android.toseefkhan.pandog.models.MyMention;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
 import com.android.toseefkhan.pandog.models.UserAccountSettings;
@@ -49,6 +50,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -245,9 +247,10 @@ public class FirebaseMethods {
     }
 
     public void uploadNewPhoto(final String photoType, final String caption, final String imageName,
-                               final String imgUrl, final Uri imageUri,User selectedUser, final String challengeKey) {
+                               final String imgUrl, final Uri imageUri,User selectedUser, final String challengeKey,ArrayList<MyMention> mentions) {
         Log.d(TAG, "uploadNewPhoto: attempting to upload new photo.");
         mSelectedUser = selectedUser;
+        this.mentions = mentions;
 
         final Dialog uploadDialog= new Dialog(mContext);
         uploadDialog.setContentView(R.layout.layout_confirmation_dialog);
@@ -441,6 +444,7 @@ public class FirebaseMethods {
                             mChallenge.setChallengerName(challengerUserName);
                             String challengeKey = myRef.child("Challenges").push().getKey();
                             mChallenge.setChallengeKey(challengeKey);
+                            mChallenge.setMentions(mentions);
                             myRef.child("Challenges").child(challengeKey).setValue(mChallenge);
 
                             DatabaseReference challengeReference = myRef.child("User_Challenges");
@@ -479,6 +483,7 @@ public class FirebaseMethods {
 
                 long timeStamp = System.currentTimeMillis();
                 post.setTimeStamp(timeStamp);
+                post.setMentions(mentions);
 
                 addPostToDataBase(post, postKey);
 
@@ -718,9 +723,11 @@ public class FirebaseMethods {
 
     }
 
+    private ArrayList<MyMention> mentions;
 
-    public void uploadNewPhoto(String photoType, String caption, String imageName, String imgUrl, Uri imageUri, User selectedUser) {
+    public void uploadNewPhoto(String photoType, String caption, String imageName, String imgUrl, Uri imageUri, User selectedUser, ArrayList<MyMention> mentions) {
         uploadNewPhoto(photoType, caption, imageName, imgUrl, imageUri);
         mSelectedUser = selectedUser;
+        this.mentions = mentions;
     }
 }

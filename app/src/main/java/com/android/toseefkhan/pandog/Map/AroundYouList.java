@@ -152,17 +152,22 @@ public class AroundYouList extends Fragment {
                         for (DataSnapshot ss : dataSnapshot.getChildren()){
 
                             User user = ss.getValue(User.class);
+                            Log.d(TAG, "onDataChange: user object " + user);
 
-                            if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                try {
-                                    double distance = distance(latitude, longitude, user.getLat_lng().getLatitude(), user.getLat_lng().getLongitude());
-                                    distance = Math.round(distance);
-                                    if (distance == 0)
-                                        distance = 1;
-                                    userList.add(new UserDistance(user, (int) distance));
-                                } catch (NullPointerException e) {
-                                    Log.d(TAG, "onDataChange: User doesn't have latlng");
+                            try {
+                                if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                    try {
+                                        double distance = distance(latitude, longitude, user.getLat_lng().getLatitude(), user.getLat_lng().getLongitude());
+                                        distance = Math.round(distance);
+                                        if (distance == 0)
+                                            distance = 1;
+                                        userList.add(new UserDistance(user, (int) distance));
+                                    } catch (NullPointerException e) {
+                                        Log.d(TAG, "onDataChange: User doesn't have latlng");
+                                    }
                                 }
+                            }catch (NullPointerException e){
+                                Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
                             }
                         }
 

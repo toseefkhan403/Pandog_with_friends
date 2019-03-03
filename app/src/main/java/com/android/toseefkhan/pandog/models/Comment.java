@@ -3,10 +3,21 @@ package com.android.toseefkhan.pandog.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+
 public class Comment implements Parcelable{
 
     private String comment;
     private String user_id;
+    private ArrayList<MyMention> mentionArrayList;
+
+    public ArrayList<MyMention> getMentionArrayList() {
+        return mentionArrayList;
+    }
+
+    public void setMentionArrayList(ArrayList<MyMention> mentionArrayList) {
+        this.mentionArrayList = mentionArrayList;
+    }
 
     public Comment(String comment, String user_id) {
         this.comment = comment;
