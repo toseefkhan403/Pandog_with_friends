@@ -394,6 +394,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
 
     private void getPostFromPostKey(String postKey) {
 
+        Log.d(TAG, "getPostFromPostKey: postkey " + postKey);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child("Posts")
                 .child(postKey)

@@ -36,7 +36,7 @@ public class UniversalImageLoader {
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(defaultImage)
                 .showImageOnFail(defaultImage)
-                .showImageOnLoading(defaultImage)
+                .showImageOnLoading(defaultLoadingImage)
                 .considerExifParams(true)
                 .cacheOnDisk(true).cacheInMemory(true)
                 .cacheOnDisk(true).resetViewBeforeLoading(true)

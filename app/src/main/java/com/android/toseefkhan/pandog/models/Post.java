@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import com.android.toseefkhan.pandog.Utils.Like;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Post implements Parcelable{
@@ -27,7 +28,8 @@ public class Post implements Parcelable{
 
     private long timeStamp;
     private String challenge_id, status, winner;
-    private ArrayList<MyMention> mentions;
+    private HashMap<String,ArrayList<MyMention>> mention_hash_map;
+
 
     public Post() {
     }
@@ -76,6 +78,14 @@ public class Post implements Parcelable{
         }
     };
 
+    public HashMap<String, ArrayList<MyMention>> getMention_hash_map() {
+        return mention_hash_map;
+    }
+
+    public void setMention_hash_map(HashMap<String, ArrayList<MyMention>> mention_hash_map) {
+        this.mention_hash_map = mention_hash_map;
+    }
+
     public List<Comment> getComments() {
         return comments;
     }
@@ -98,14 +108,6 @@ public class Post implements Parcelable{
 
     public void setWinner(String winner) {
         this.winner = winner;
-    }
-
-    public ArrayList<MyMention> getMentions() {
-        return mentions;
-    }
-
-    public void setMentions(ArrayList<MyMention> mentions) {
-        this.mentions = mentions;
     }
 
     public String getCaption() {

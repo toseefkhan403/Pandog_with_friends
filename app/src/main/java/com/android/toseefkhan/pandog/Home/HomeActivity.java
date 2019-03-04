@@ -119,14 +119,11 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     final String showFloatingButton = "showFloatingButton";
 
     //todo a thorough testing of the app and bug fixes, memory management!
-    //todo mentioning in comments and notifications for that as well
-    //todo notification for comments
-    //todo notifs should pile up
     //todo dynamic trending notifications
     //todo home feed suggesting popular users
     //todo mischief
-    //todo notif mention challenge post
-    //search view for challenging users
+    //todo notif mention post
+    //intent extra wrong for viewPostActivity
     /*
         anonymous chats with selfies and gifs
         some game time
@@ -303,16 +300,20 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
             @Override
             public void OnShake() {
                 Log.d(TAG, "OnShake: called");
-                Toasty.success(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT, false).show();
 
-                mPrefs.getBoolean(showFloatingButton,true);
-                SharedPreferences.Editor editor = mPrefs.edit();
-                editor.putBoolean(showFloatingButton, true);
-                editor.apply();
+                boolean isShowButton = mPrefs.getBoolean(showFloatingButton,true);
 
-                Intent i = new Intent(HomeActivity.this, HomeActivity.class);
-                startActivity(i);
-                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                if (!isShowButton) {
+                    Toasty.success(getApplicationContext(), "Device shaken!", Toast.LENGTH_SHORT, false).show();
+
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(showFloatingButton, true);
+                    editor.apply();
+
+                    Intent i = new Intent(HomeActivity.this, HomeActivity.class);
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                }
             }
         });
         ShakeDetector.updateConfiguration(2.0f, 3);

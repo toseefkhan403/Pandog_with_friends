@@ -252,7 +252,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                     });
         }else if(notificationType.equals("comment")){
             String NotificationTitle = "Comment";
-            String NotificationBody = "@ commented in your post";
+            String NotificationBody = "@ commented on your post";
             String uid = remoteMessage.getData().get("userUid");
             FirebaseDatabase.getInstance().getReference()
                     .child(getApplicationContext().getString(R.string.dbname_users))
@@ -302,7 +302,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
             notifIntent = new Intent(this, ViewProfileActivity.class);
             notifIntent.putExtra(getResources().getString(R.string.intent_user), user);
         } else if (remoteMessage.getData().get("type").equals("RESULTS")) {
-            NOTIFICATION_ID = 3;
+            NOTIFICATION_ID = (int)System.currentTimeMillis();
             notifIntent = new Intent(this, ViewPostActivity.class);
             String postKey = remoteMessage.getData().get("postKey");
             notifIntent.putExtra("intent_post_key", postKey);
@@ -315,6 +315,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
             NOTIFICATION_ID = 5;
             notifIntent = new Intent(this,ViewPostActivity.class);
             String postKey = remoteMessage.getData().get("postKey");
+            Log.d(TAG, "buildNotification: getting the postkey " + postKey);
             notifIntent.putExtra("intent_post_key",postKey);
         }
         notifIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

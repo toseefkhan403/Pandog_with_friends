@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -483,7 +484,13 @@ public class FirebaseMethods {
 
                 long timeStamp = System.currentTimeMillis();
                 post.setTimeStamp(timeStamp);
-                post.setMentions(mentions);
+                Log.d(TAG, "onDataChange: getting the mentions " + c.getMentions());
+
+                HashMap<String,ArrayList<MyMention>> hashMap = new HashMap<>();
+
+                hashMap.put(c.getChallengerUserUid(),c.getMentions());
+                hashMap.put(c.getChallengedUserUid(),mentions);
+                post.setMention_hash_map(hashMap);
 
                 addPostToDataBase(post, postKey);
 

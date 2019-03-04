@@ -485,7 +485,9 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
 
                     @Override
                     public void onEnded() {
-
+                        Intent i = new Intent(getActivity(),HomeActivity.class);
+                        startActivity(i);
+                        getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                     }
                 });
         spotlight.start();
