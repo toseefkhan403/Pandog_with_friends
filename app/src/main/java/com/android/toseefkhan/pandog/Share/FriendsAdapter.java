@@ -200,9 +200,10 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
 
         public void filter(CharSequence constraint) {
             if (constraint != null && constraint.length() > 0) {
+                constraint = constraint.toString().toUpperCase();
                 ArrayList<User> filteredList = new ArrayList<>();
                 for (User user : friendUserList) {
-                    if (user.getUser_id().contains(constraint)) {
+                    if (user.getUsername().toUpperCase().contains(constraint)) {
                         filteredList.add(user);
                     }
                 }
@@ -211,6 +212,9 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
             } else {
                 usingList = friendUserList;
                 notifyDataSetChanged();
+            }
+            for (User user : usingList) {
+                Log.v("Filtered Users",user.getUsername());
             }
         }
     }

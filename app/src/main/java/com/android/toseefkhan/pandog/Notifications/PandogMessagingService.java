@@ -33,6 +33,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
     private static final String TAG = "PandogMessagingService";
     private static final String NOTIFICATION_CHANNEL_ID = "1001010101";
 
+    private static int NOTIFICATION_ID = 0;
     @Override
     public void onNewToken(String token) {
         Log.d("TokenRegistration", token);
@@ -284,6 +285,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
 
         Intent notifIntent = null;
         if (remoteMessage.getData().get("type").equals("Challenge")) {
+            NOTIFICATION_ID = 1;
             if (remoteMessage.getData().get("status").equals("NOT_DECIDED")) {
                 notifIntent = new Intent(this, HomeActivity.class);
                 notifIntent.putExtra("ChallengerUser", user);
@@ -296,18 +298,21 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 notifIntent = new Intent(this, HomeActivity.class);
             }
         } else if (remoteMessage.getData().get("type").equals("Following")) {
+            NOTIFICATION_ID = 2;
             notifIntent = new Intent(this, ViewProfileActivity.class);
             notifIntent.putExtra(getResources().getString(R.string.intent_user), user);
         } else if (remoteMessage.getData().get("type").equals("RESULTS")) {
+            NOTIFICATION_ID = 3;
             notifIntent = new Intent(this, ViewPostActivity.class);
             String postKey = remoteMessage.getData().get("postKey");
             notifIntent.putExtra("intent_post_key", postKey);
-
         }else if(remoteMessage.getData().get("type").equals("mention")){
+            NOTIFICATION_ID = 4;
             notifIntent = new Intent(this,ViewPostActivity.class);
             String postKey = remoteMessage.getData().get("postKey");
             notifIntent.putExtra("intent_post_key",postKey);
         }else if(remoteMessage.getData().get("type").equals("comment")){
+            NOTIFICATION_ID = 5;
             notifIntent = new Intent(this,ViewPostActivity.class);
             String postKey = remoteMessage.getData().get("postKey");
             notifIntent.putExtra("intent_post_key",postKey);
@@ -332,7 +337,8 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentText(notificationBody)
-                .setContentIntent(notificationPendingIntent);
+                .setContentIntent(notificationPendingIntent)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE);
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -356,7 +362,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
         }
 
         builder.setChannelId(NOTIFICATION_CHANNEL_ID);          //very important to set channel id
-        notificationManager.notify(0, builder.build());
+        notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
     private void addTokenToDevice(String token) {
