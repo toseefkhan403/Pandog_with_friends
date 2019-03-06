@@ -147,7 +147,9 @@ public class FirebaseMethods {
 
                             //navigate to the main feed so the user can see their photo
                             Intent intent = new Intent(mContext, HomeActivity.class);
+                            intent.putExtra("ChallengerUser",2);
                             mContext.startActivity(intent);
+                            System.gc();
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -212,6 +214,7 @@ public class FirebaseMethods {
                             //navigate to the profileActivity so the user can see their photo
                             Intent intent = new Intent(mContext, ProfileActivity.class);
                             mContext.startActivity(intent);
+                            System.gc();
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -302,9 +305,9 @@ public class FirebaseMethods {
                                 ((Activity)mContext).finish();
 
                                 //navigate to the main feed so the user can see their photo
-                                Intent intent = new Intent(mContext, ProfileActivity.class);
-                                Toasty.success(mContext, "Your post is up for voting!", Toast.LENGTH_SHORT,true).show();
+                                Intent intent = new Intent(mContext, HomeActivity.class);
                                 mContext.startActivity(intent);
+                                System.gc();
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {

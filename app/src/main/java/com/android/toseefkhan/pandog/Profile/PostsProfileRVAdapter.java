@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -124,7 +125,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         long timediff = System.currentTimeMillis() - post.getTimeStamp();
         int time = (int) ((86400000 - timediff) / 3600000);
 
-    //    int bottomHeight = 60 * (mContext.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
+        //    int bottomHeight = 60 * (mContext.getResources().getDisplayMetrics().densityDpi / DisplayMetrics.DENSITY_DEFAULT);
 
         holder.theWholeView.setLayoutParams(new FrameLayout.LayoutParams(screenWidth * 2, screenHeight));
         holder.cardView1.setLayoutParams(new LinearLayout.LayoutParams(screenWidth, screenHeight - (int)mContext.getResources().getDimension(R.dimen.bottom_view)));
@@ -193,7 +194,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             public void onClick(View v) {
                 //takes you to ViewCommentsActivity
                 Intent i = new Intent(mContext, ViewCommentsActivity.class);
-                i.putExtra("post_comments",post);
+                i.putExtra("post_comments",post.getPostKey());
                 mContext.startActivity(i);
             }
         });
@@ -202,7 +203,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             public void onClick(View v) {
                 //takes you to ViewCommentsActivity
                 Intent i = new Intent(mContext,ViewCommentsActivity.class);
-                i.putExtra("post_comments",post);
+                i.putExtra("post_comments",post.getPostKey());
                 mContext.startActivity(i);
             }
         });
@@ -216,6 +217,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
     private void setTimeAndCalculateResults(ViewHolder holder, int time, Post post) {
 
+        holder.timeRemaining.setVisibility(View.INVISIBLE);
         holder.timeRemaining.setText(String.valueOf(time) + " hr remaining");
 
         if (!post.getStatus().equals("INACTIVE")) {
@@ -309,6 +311,14 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                         });
             }
         }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                holder.timeRemaining.setVisibility(View.VISIBLE);
+            }
+        },500);
+
     }
 
     private boolean reachedEndOfList(int position){
@@ -317,7 +327,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
 
     private void loadMoreData(ViewHolder holder){
 
-       // loadSuggestions(holder);
+        // loadSuggestions(holder);
         try{
             mOnLoadMoreItemsListener = (OnLoadMoreItemsListener) mContext;
         }catch (ClassCastException e){
@@ -392,40 +402,40 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                 .child(post.getPostKey())
                 .child("likes");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot singleSnap : dataSnapshot.getChildren()){
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot singleSnap : dataSnapshot.getChildren()){
 
-                            Like like = singleSnap.getValue(Like.class);
-                            if (like.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-                               mLikedbyCurrentUser1 = true;
-                            }
-
-                           likesCount1++;
-                            Log.d(TAG, "onDataChange: the first post has been liked by " +  like.getUser_id());
-                        }
-                        if (likesCount1==1)
-                            holder.likesString1.setText(String.valueOf(likesCount1)+ " Like");
-                        else
-                            holder.likesString1.setText(String.valueOf(likesCount1)+ " Likes");
-
-                        likesCount1 = 0;
-                        if (mLikedbyCurrentUser1){
-                            holder.heartRed.setVisibility(View.VISIBLE);
-                            holder.heartWhite.setVisibility(View.GONE);
-                            mLikedbyCurrentUser1 = false;
-                        }else {
-                            holder.heartRed.setVisibility(View.GONE);
-                            holder.heartWhite.setVisibility(View.VISIBLE);
-                            mLikedbyCurrentUser1=false;
-                        }
+                    Like like = singleSnap.getValue(Like.class);
+                    if (like.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                        mLikedbyCurrentUser1 = true;
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    likesCount1++;
+                    Log.d(TAG, "onDataChange: the first post has been liked by " +  like.getUser_id());
+                }
+                if (likesCount1==1)
+                    holder.likesString1.setText(String.valueOf(likesCount1)+ " Like");
+                else
+                    holder.likesString1.setText(String.valueOf(likesCount1)+ " Likes");
 
-                    }
-                });
+                likesCount1 = 0;
+                if (mLikedbyCurrentUser1){
+                    holder.heartRed.setVisibility(View.VISIBLE);
+                    holder.heartWhite.setVisibility(View.GONE);
+                    mLikedbyCurrentUser1 = false;
+                }else {
+                    holder.heartRed.setVisibility(View.GONE);
+                    holder.heartWhite.setVisibility(View.VISIBLE);
+                    mLikedbyCurrentUser1=false;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         //same for second photo 2
         DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference();
@@ -480,27 +490,27 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                 .child(post.getPostKey())
                 .child("likes");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot singleSnap : dataSnapshot.getChildren()){
-                            Like like = singleSnap.getValue(Like.class);
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot singleSnap : dataSnapshot.getChildren()){
+                    Like like = singleSnap.getValue(Like.class);
 
-                            likesCount1++;
-                            Log.d(TAG, "onDataChange: the first post has been liked by " +  like.getUser_id());
-                        }
-                        if (likesCount1==1)
-                            holder.likesString1.setText(String.valueOf(likesCount1)+ " Like");
-                        else
-                            holder.likesString1.setText(String.valueOf(likesCount1)+ " Likes");
+                    likesCount1++;
+                    Log.d(TAG, "onDataChange: the first post has been liked by " +  like.getUser_id());
+                }
+                if (likesCount1==1)
+                    holder.likesString1.setText(String.valueOf(likesCount1)+ " Like");
+                else
+                    holder.likesString1.setText(String.valueOf(likesCount1)+ " Likes");
 
-                        likesCount1 = 0;
-                    }
+                likesCount1 = 0;
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+            }
+        });
 
         //same for second photo 2
         DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference();

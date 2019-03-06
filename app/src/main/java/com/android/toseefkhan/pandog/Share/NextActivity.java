@@ -73,12 +73,14 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         System.loadLibrary("NativeImageProcessor");
     }
 
-    CropperView imagePreview;
-    Bitmap originalImage;
-    // to backup image with filter applied
-    Bitmap filteredImage;
-    SearchView friendSearchView;
+    private CropperView imagePreview;
+    private Bitmap originalImage;
+    private Bitmap filteredImage;
+    private Bitmap finalBitmap;
+
+    private SearchView friendSearchView;
     private Context mContext;
+
     //firebase
     private FirebaseMethods mFirebaseMethods;
     //widgets
@@ -86,7 +88,6 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
     private RecyclerView friendsListView;
     private Intent intent;
     private ImageView image;
-    private Bitmap finalBitmap;
     private FriendsAdapter mFriendsAdapter;
     private RecyclerView mRVMentions;
     private Mentions mentions;
@@ -98,6 +99,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         super.onPause();
 
         mContext = null;
+
     }
 
     @Override
@@ -258,6 +260,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                             @Override
                             public void onAnimationEnd(Animator animator) {
                                 findViewById(R.id.r).setVisibility(View.GONE);
+                                cleanMemory();
                                 setupHashtagAndMentioning();
                             }
 
@@ -296,7 +299,13 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                 refreshBitmap();
             }
         });
+    }
 
+    private void cleanMemory() {
+
+        imagePreview = null;
+        originalImage = null;
+        filteredImage = null;
     }
 
     private void setupHashtagAndMentioning() {
@@ -435,7 +444,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
         User selectedUser = (User) mFriendsAdapter.getItem(selectedUserPosition);
         intent = getIntent();
 
-        //saves the bitmap in memory. Not good
+        //todo saves the bitmap in memory. Not good
         Uri myUri = bitmapToUriConverter(finalBitmap);
         Log.d(TAG, "onClick: this is the uri from the intent " + myUri);
 
@@ -540,6 +549,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
             if (item != null) {
                 holder.hashtagView.setText(item.getHashtag());
 
+                Log.d(TAG, "getView: this part is working " + item.getCount());
                 final int count = item.getCount();
                 holder.countView.setText(count + " Posts");
 
@@ -554,6 +564,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
             ViewHolder(View itemView) {
                 hashtagView = itemView.findViewById(R.id.socialview_hashtag);
                 countView = itemView.findViewById(R.id.socialview_hashtag_count);
+                countView.setVisibility(View.VISIBLE);
             }
         }
     }

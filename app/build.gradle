@@ -111,8 +111,8 @@ dependencies {
 
 
     //library for detecting memory leaks : leakcanary
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.2'
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.2'
 
     //Arch
     implementation 'androidx.arch.core:core-runtime:2.0.0-beta01'

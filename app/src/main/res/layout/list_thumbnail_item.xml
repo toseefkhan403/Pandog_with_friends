@@ -19,9 +19,10 @@
 
     <ImageView
         android:id="@+id/thumbnail"
+        android:background="@color/grey"
         android:layout_width="@dimen/thumbnail_size"
         android:layout_height="@dimen/thumbnail_size"
-        android:scaleType="centerCrop" />
+        android:scaleType="centerInside" />
 
     </com.github.florent37.shapeofview.shapes.CircleView>
 

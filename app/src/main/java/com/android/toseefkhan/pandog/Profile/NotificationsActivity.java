@@ -76,6 +76,7 @@ public class NotificationsActivity extends AppCompatActivity {
     }
 
     private void hasListEnded(){
+        Log.d(TAG, "hasListEnded: called." + count + "  " + mNotifsList.size());
 
         if (mNotifsList.size() == count) {
             Log.d(TAG, "hasListEnded: making sure you happen only once");
@@ -125,9 +126,82 @@ public class NotificationsActivity extends AppCompatActivity {
                                 case "RESULTS":
                                     getDataForResult((String) data.get("postKey"),(String) data.get("status"), data);
                                     break;
+
+                                case "mention":
+                                    getDataForMention((String) data.get("postKey"),(String) data.get("userUid"),(String) data.get("mentionedPlace"));
+                                    break;
+
+                                case "comment":
+                                    getDataForComment((String) data.get("postKey"),(String) data.get("userUid"));
+                                    break;
                             }
                         }
 
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private void getDataForMention(String postKey, String userUid, String mentionedPlace) {
+
+        if (mentionedPlace.equals("comment")) {
+
+            myRef.child(getString(R.string.dbname_users))
+                    .child(userUid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            if (dataSnapshot.exists()) {
+                                Notif notif = new Notif();
+                                notif.setmTitle(dataSnapshot.getValue(User.class).getUsername() + " mentioned you in a comment.");
+                                notif.setmDescription(getEmojiByUnicode(0x1F496));
+                                notif.setmImgUrl(dataSnapshot.getValue(User.class).getProfile_photo());
+
+                                HashMap<String, Object> obj = new HashMap<>();
+                                obj.put("intent_post_key", postKey);
+                                obj.put("post_comments",postKey);
+                                notif.setmIntentExtra(obj);
+
+                                mNotifsList.add(notif);
+                                hasListEnded();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+        }
+    }
+
+    private void getDataForComment(String postKey, String userUid) {
+
+        myRef.child(getString(R.string.dbname_users))
+                .child(userUid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        if (dataSnapshot.exists()) {
+                            Notif notif = new Notif();
+                            notif.setmTitle(dataSnapshot.getValue(User.class).getUsername() + " commented on your post.");
+                            notif.setmDescription("Click here to know more.");
+                            notif.setmImgUrl(dataSnapshot.getValue(User.class).getProfile_photo());
+
+                            HashMap<String, Object> obj = new HashMap<>();
+                            obj.put("intent_post_key", postKey);
+                            obj.put("post_comments",postKey);
+                            notif.setmIntentExtra(obj);
+
+                            mNotifsList.add(notif);
+                            hasListEnded();
+                        }
                     }
 
                     @Override
@@ -384,6 +458,7 @@ public class NotificationsActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+            Log.d(TAG, "onBindViewHolder: called.");
             holder.setIsRecyclable(false);
             String photoUrl = notifsList.get(position).getmImgUrl();
             String title = notifsList.get(position).getmTitle();
@@ -408,9 +483,16 @@ public class NotificationsActivity extends AppCompatActivity {
 
                     }else if (intentExtra.containsKey("intent_post_key")){
 
-                        Intent i = new Intent(mContext, ViewPostActivity.class);
-                        i.putExtra("intent_post_key",(String) intentExtra.get("intent_post_key"));
-                        startActivity(i);
+                        if (intentExtra.containsKey("post_comments")){
+                            Intent i = new Intent(mContext, ViewPostActivity.class);
+                            i.putExtra("intent_post_key", (String) intentExtra.get("intent_post_key"));
+                            i.putExtra("post_comments", (String) intentExtra.get("post_comments"));
+                            startActivity(i);
+                        }else {
+                            Intent i = new Intent(mContext, ViewPostActivity.class);
+                            i.putExtra("intent_post_key", (String) intentExtra.get("intent_post_key"));
+                            startActivity(i);
+                        }
 
                     }else if(intentExtra.containsKey("ChallengerUser")){
 

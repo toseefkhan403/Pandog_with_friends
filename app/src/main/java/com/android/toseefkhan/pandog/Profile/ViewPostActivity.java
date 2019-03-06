@@ -116,119 +116,6 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
     boolean horizontalScrollingEnabled;
     boolean isshowFloatingButton;
 
-
-    @Override
-    public void onRFACItemLabelClick(int position, RFACLabelItem item) {
-
-    }
-
-    private void initImageLoader(){
-        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
-        ImageLoader.getInstance().init(universalImageLoader.getConfig());
-    }
-
-    @Override
-    public void onRFACItemIconClick(int position, RFACLabelItem item) {
-
-        switch (position){
-
-            case 0:
-                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off/on");
-
-                if (horizontalScrollingEnabled) {
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putBoolean(horizontalScreenEnabled, false);
-                    editor.apply();
-                }else{
-                    SharedPreferences.Editor editor = mPrefs.edit();
-                    editor.putBoolean(horizontalScreenEnabled, true);
-                    editor.apply();
-                }
-
-                //refresh the screen
-                if (getIntent().hasExtra("intent_post_key")) {
-                    Intent i = new Intent(mContext,ViewPostActivity.class);
-                    i.putExtra("intent_post_key",getIntent().getExtras().getString("intent_post_key"));
-                    startActivity(i);
-                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
-                }else if (getIntent().hasExtra(getString(R.string.intent_post))){
-                    Intent i = new Intent(mContext,ViewPostActivity.class);
-                    i.putExtra(getString(R.string.intent_post),getPostFromIntent());
-
-                    if (getPostFromIntent() != null) {
-                        startActivity(i);
-                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                    }else{
-                        Toasty.error(mContext,"Argh.. Something went wrong",Toasty.LENGTH_LONG,false).show();
-                    }
-                }
-
-                break;
-
-            case 1:
-                sharePost();
-                break;
-
-            case 2:
-                Intent intent = new Intent(this, EditProfileActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.pull,R.anim.push);
-                break;
-
-            case 3:
-                spotlight();
-                SharedPreferences.Editor editor = mPrefs.edit();
-                editor.putBoolean(showFloatingButton, false);
-                editor.apply();
-                rfaBtn.setVisibility(View.GONE);
-
-                break;
-        }
-
-        rfabHelper.toggleContent();
-    }
-
-    private void spotlight() {
-
-        View first = LayoutInflater.from(mContext).inflate(R.layout.overlay_shake_device, new FrameLayout(mContext));
-
-        CustomTarget homeView = new CustomTarget.Builder(this)
-                .setPoint(0f,0f)
-                .setShape(new Circle(0f))
-                .setOverlay(first)
-                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
-                    @Override
-                    public void onStarted(CustomTarget target) {
-                        // do something
-                    }
-                    @Override
-                    public void onEnded(CustomTarget target) {
-                        // do something
-                    }
-                })
-                .build();
-
-        Spotlight spotlight = Spotlight.with(ViewPostActivity.this)
-                .setOverlayColor(R.color.background)
-                .setDuration(1000L)
-                .setAnimation(new DecelerateInterpolator(2f))
-                .setTargets(homeView)
-                .setClosedOnTouchedOutside(true)
-                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
-                    @Override
-                    public void onStarted() {
-
-                    }
-
-                    @Override
-                    public void onEnded() {
-
-                    }
-                });
-        spotlight.start();
-
-    }
-
     /*
       pass to this activity either the post or the post_key as intent extra. It will show the post itself.
      */
@@ -236,6 +123,13 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent().hasExtra("post_comments")){
+            Intent i = new Intent(mContext,ViewCommentsActivity.class);
+            i.putExtra("post_comments",getIntent().getStringExtra("post_comments"));
+            startActivity(i);
+            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+        }
 
         mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         horizontalScrollingEnabled = mPrefs.getBoolean(horizontalScreenEnabled, true);
@@ -641,7 +535,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
             public void onClick(View v) {
                 //takes you to ViewCommentsActivity
                 Intent i = new Intent(mContext, ViewCommentsActivity.class);
-                i.putExtra("post_comments",post);
+                i.putExtra("post_comments",post.getPostKey());
                 mContext.startActivity(i);
             }
         });
@@ -651,7 +545,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
             public void onClick(View v) {
                 //takes you to ViewCommentsActivity
                 Intent i = new Intent(mContext,ViewCommentsActivity.class);
-                i.putExtra("post_comments",post);
+                i.putExtra("post_comments",post.getPostKey());
                 mContext.startActivity(i);
             }
         });
@@ -1098,6 +992,118 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onRFACItemLabelClick(int position, RFACLabelItem item) {
+
+    }
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
+    @Override
+    public void onRFACItemIconClick(int position, RFACLabelItem item) {
+
+        switch (position){
+
+            case 0:
+                Log.d(TAG, "onRFACItemIconClick: toggling horizontal off/on");
+
+                if (horizontalScrollingEnabled) {
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, false);
+                    editor.apply();
+                }else{
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putBoolean(horizontalScreenEnabled, true);
+                    editor.apply();
+                }
+
+                //refresh the screen
+                if (getIntent().hasExtra("intent_post_key")) {
+                    Intent i = new Intent(mContext,ViewPostActivity.class);
+                    i.putExtra("intent_post_key",getIntent().getExtras().getString("intent_post_key"));
+                    startActivity(i);
+                    overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                }else if (getIntent().hasExtra(getString(R.string.intent_post))){
+                    Intent i = new Intent(mContext,ViewPostActivity.class);
+                    i.putExtra(getString(R.string.intent_post),getPostFromIntent());
+
+                    if (getPostFromIntent() != null) {
+                        startActivity(i);
+                        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    }else{
+                        Toasty.error(mContext,"Argh.. Something went wrong",Toasty.LENGTH_LONG,false).show();
+                    }
+                }
+
+                break;
+
+            case 1:
+                sharePost();
+                break;
+
+            case 2:
+                Intent intent = new Intent(this, EditProfileActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.pull,R.anim.push);
+                break;
+
+            case 3:
+                spotlight();
+                SharedPreferences.Editor editor = mPrefs.edit();
+                editor.putBoolean(showFloatingButton, false);
+                editor.apply();
+                rfaBtn.setVisibility(View.GONE);
+
+                break;
+        }
+
+        rfabHelper.toggleContent();
+    }
+
+    private void spotlight() {
+
+        View first = LayoutInflater.from(mContext).inflate(R.layout.overlay_shake_device, new FrameLayout(mContext));
+
+        CustomTarget homeView = new CustomTarget.Builder(this)
+                .setPoint(0f,0f)
+                .setShape(new Circle(0f))
+                .setOverlay(first)
+                .setOnSpotlightStartedListener(new OnTargetStateChangedListener<CustomTarget>() {
+                    @Override
+                    public void onStarted(CustomTarget target) {
+                        // do something
+                    }
+                    @Override
+                    public void onEnded(CustomTarget target) {
+                        // do something
+                    }
+                })
+                .build();
+
+        Spotlight spotlight = Spotlight.with(ViewPostActivity.this)
+                .setOverlayColor(R.color.background)
+                .setDuration(1000L)
+                .setAnimation(new DecelerateInterpolator(2f))
+                .setTargets(homeView)
+                .setClosedOnTouchedOutside(true)
+                .setOnSpotlightStateListener(new OnSpotlightStateChangedListener() {
+                    @Override
+                    public void onStarted() {
+
+                    }
+
+                    @Override
+                    public void onEnded() {
+
+                    }
+                });
+        spotlight.start();
+
     }
 
 }

@@ -70,7 +70,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     }
 
     private void getFriendsFromUid() {
-        mDatabaseReference.child("followers").child(mUserUid).addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.child("followers").child(mUserUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 getUsers(dataSnapshot);
@@ -82,7 +82,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
                 Toast.makeText(mContext, "Error Occured", Toast.LENGTH_LONG).show();
             }
         });
-        mDatabaseReference.child("following").child(mUserUid).addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.child("following").child(mUserUid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 getUsers(dataSnapshot);
@@ -108,7 +108,7 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     private void adduserFromUid(String userUid) {
         Log.i("addingUser", userUid);
         mDatabaseReference.child(mContext.getString(R.string.dbname_users)).child(userUid)
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {

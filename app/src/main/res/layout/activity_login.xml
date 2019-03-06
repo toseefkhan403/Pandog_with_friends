@@ -74,20 +74,26 @@
             android:padding="20dp"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
+            android:layout_gravity="center_horizontal"
             android:text="Register via email"
             android:gravity="center"
             android:textSize="16dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
             android:id="@+id/link_signup"
             android:textColor="@color/blue"/>
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="Forgot password? Get a new one!"
             android:gravity="center"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:layout_gravity="center_horizontal"
             android:textSize="16dp"
             android:id="@+id/link_reset_password"
             android:textColor="@color/purple_400"/>

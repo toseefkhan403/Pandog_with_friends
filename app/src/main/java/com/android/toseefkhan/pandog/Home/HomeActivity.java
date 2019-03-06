@@ -120,10 +120,10 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
     //todo a thorough testing of the app and bug fixes, memory management!
     //todo dynamic trending notifications
-    //todo home feed suggesting popular users
     //todo mischief
     //todo notif mention post
-    //intent extra wrong for viewPostActivity
+    // results being executed thrice
+    //SEARCH IS BLINKING
     /*
         anonymous chats with selfies and gifs
         some game time
@@ -803,7 +803,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
         TrendingItem item = new TrendingItem();
 
-        String title = "LOL";                       //the only field that needs to be set manually
+        String title = "deadpool";                       //the only field that needs to be set manually
         item.setTitle("#" + title);
 
         ArrayList<String> postKeysList = new ArrayList<>();

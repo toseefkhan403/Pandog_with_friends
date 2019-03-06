@@ -40,8 +40,11 @@ public class NotificationFragment extends Fragment {
     private ProgressBar progressBar;
     private NotificationsAdapter notificationsAdapter;
     private DatabaseReference mDatabaseReference;
+    private DatabaseReference ref1;
+    private DatabaseReference ref2;
     private RelativeLayout rel;
     private ValueEventListener v1;
+    private ChildEventListener v2;
 
 
     @Override
@@ -53,28 +56,86 @@ public class NotificationFragment extends Fragment {
 
     @Override
     public void onPause() {
-        super.onPause();
 
 //        mNotificationRecyclerView.setAdapter(null);
-        if (mDatabaseReference != null && v1 != null)
-            mDatabaseReference.removeEventListener(v1);
+        if (ref1 != null && v1 != null)
+            ref1.removeEventListener(v1);
+
+        if (ref2 != null && v2 != null)
+            ref2.removeEventListener(v2);
+
+        if (mNotificationRecyclerView != null){
+            mNotificationRecyclerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    // no-op
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    if (mNotificationRecyclerView != null)
+                        mNotificationRecyclerView.setAdapter(null);
+                }
+            });
+        }
+
+        super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
 
-        mNotificationRecyclerView.setAdapter(null);
-        if (mDatabaseReference != null && v1 != null)
-            mDatabaseReference.removeEventListener(v1);
+        if (ref1 != null && v1 != null)
+            ref1.removeEventListener(v1);
+
+        if (ref2 != null && v2 != null)
+            ref2.removeEventListener(v2);
+
+        if (mNotificationRecyclerView != null){
+            mNotificationRecyclerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    // no-op
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+
+                    if (mNotificationRecyclerView != null)
+                        mNotificationRecyclerView.setAdapter(null);
+                }
+            });
+        }
+
+        super.onDestroy();
     }
 
     @Override
     public void onStop() {
-        super.onStop();
 
-        if (mDatabaseReference != null && v1 != null)
-            mDatabaseReference.removeEventListener(v1);
+        if (ref1 != null && v1 != null)
+            ref1.removeEventListener(v1);
+
+        if (ref2 != null && v2 != null)
+            ref2.removeEventListener(v2);
+
+        if (mNotificationRecyclerView != null){
+            mNotificationRecyclerView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    // no-op
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+
+                    if (mNotificationRecyclerView != null)
+                        mNotificationRecyclerView.setAdapter(null);
+                }
+            });
+        }
+
+        super.onStop();
     }
 
     @Override
@@ -92,37 +153,38 @@ public class NotificationFragment extends Fragment {
 
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
-        mDatabaseReference.child(getString(R.string.db_user_challenges))
-                .child(userUid)
-                .orderByKey()
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        if (dataSnapshot.exists()) {
-                            String ChallengeKey = dataSnapshot.getValue(String.class);
-                            Log.d("String", "ChildAdded" + s);
-                            addChallenge(ChallengeKey);
-                        }
-                    }
+        ref2 = mDatabaseReference.child(getString(R.string.db_user_challenges))
+                .child(userUid);
+        v2 = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.exists()) {
+                    String ChallengeKey = dataSnapshot.getValue(String.class);
+                    Log.d("String", "ChildAdded" + s);
+                    addChallenge(ChallengeKey);
+                }
+            }
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            }
 
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            }
 
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    }
+            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("Db ERROR", databaseError.toString());
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d("Db ERROR", databaseError.toString());
+            }
+        };
+
+        ref2.orderByKey().addChildEventListener(v2);
 
     }
 
@@ -133,7 +195,6 @@ public class NotificationFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: called");
         mNotificationRecyclerView = view.findViewById(R.id.NotifsRecyclerView);
-        mNotificationRecyclerView.smoothScrollToPosition(0);
 
         PullToRefreshView mPullToRefreshView = view.findViewById(R.id.pull_to_refresh);
 
@@ -190,6 +251,8 @@ public class NotificationFragment extends Fragment {
                     } else {
                         rel.setVisibility(View.GONE);
                     }
+
+                    mNotificationRecyclerView.smoothScrollToPosition(0);
                 }
 
                 @Override
@@ -198,9 +261,10 @@ public class NotificationFragment extends Fragment {
                 }
             };
 
-            mDatabaseReference.child(getString(R.string.db_challenges))
-                    .child(challengeKey)
-                    .addValueEventListener(v1);
+            ref1 = mDatabaseReference.child(getString(R.string.db_challenges))
+                    .child(challengeKey);
+
+            ref1.addValueEventListener(v1);
         }
     }
 
@@ -212,8 +276,15 @@ public class NotificationFragment extends Fragment {
         notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
         AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(notificationsAdapter);
         Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
-
         mNotificationRecyclerView.setAdapter(a);
+    }
+
+    @Override
+    public void onDestroyView() {
+
+        mNotificationRecyclerView = null;
+
+        super.onDestroyView();
     }
 
 }

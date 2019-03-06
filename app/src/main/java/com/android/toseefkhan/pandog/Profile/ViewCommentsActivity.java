@@ -64,13 +64,18 @@ public class ViewCommentsActivity extends AppCompatActivity{
     private RecyclerView mRVMentions;
     private Mentions mentions;
     private HashMap<String,String> mentionHash = new HashMap<>();
+    private String mPostKey;
 
-    private Post mPost;
+    /*
+        Just pass the postKey to this activity and it will show the comments.
+     */
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
+
+        mPostKey = getIntent().getExtras().getString("post_comments");
 
         ref = FirebaseDatabase.getInstance().getReference();
         mRVMentions = findViewById(R.id.recycler_mentions);
@@ -120,8 +125,7 @@ public class ViewCommentsActivity extends AppCompatActivity{
 
         mComments = new ArrayList<>();
 
-        mPost = getPostFromBundle();
-        getCommentsFromPost();
+        getCommentsFromPostKey();
 
         if (!InternetStatus.getInstance(this).isOnline()) {
 
@@ -236,11 +240,11 @@ public class ViewCommentsActivity extends AppCompatActivity{
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
     }
 
-    private void getCommentsFromPost() {
+    private void getCommentsFromPostKey() {
 
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
         myRef.child("Posts")
-                .child(mPost.getPostKey())
+                .child(mPostKey)
                 .child("comments")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -275,7 +279,7 @@ public class ViewCommentsActivity extends AppCompatActivity{
         comment.setMentionArrayList(checkLists());
 
         myRef.child("Posts")
-                .child(mPost.getPostKey())
+                .child(mPostKey)
                 .child("comments")
                 .child(commentID)
                 .setValue(comment);
@@ -298,18 +302,6 @@ public class ViewCommentsActivity extends AppCompatActivity{
         }
 
         return arr;
-    }
-
-    private Post getPostFromBundle() {
-        Log.d(TAG, "getPhotoFromBundle: arguments: " + getIntent().getExtras());
-
-        Bundle bundle = getIntent().getExtras();
-        if(bundle != null) {
-            Log.d(TAG, "getPostFromBundle: bundle.getParcelable " + bundle.getParcelable("post_comments"));
-            return bundle.getParcelable("post_comments");
-        }else{
-            return null;
-        }
     }
 
     public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchItemViewHolder> {
