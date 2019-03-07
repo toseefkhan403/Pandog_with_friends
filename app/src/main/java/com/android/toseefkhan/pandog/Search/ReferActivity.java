@@ -18,6 +18,7 @@ import com.google.firebase.database.ValueEventListener;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import es.dmoral.toasty.Toasty;
 
 public class
 ReferActivity extends AppCompatActivity {
@@ -55,6 +56,7 @@ ReferActivity extends AppCompatActivity {
                             @Override
                             public boolean onLongClick(View view) {
 
+                                Toasty.warning(getApplicationContext(),"Attempting to share Celfie...",Toasty.LENGTH_LONG,true).show();
                                 Intent shareIntent = new Intent();
                                 shareIntent.setAction(Intent.ACTION_SEND);
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, "Share your selfies with the world using the Celfie app! Compete " +

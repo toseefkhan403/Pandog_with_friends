@@ -1,10 +1,14 @@
 package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.android.toseefkhan.pandog.Home.HomeActivity;
+import com.android.toseefkhan.pandog.Utils.Like;
+import com.android.toseefkhan.pandog.Utils.PullToRefreshView;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.models.Mention;
 import com.android.toseefkhan.pandog.models.MyMention;
@@ -22,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.R;
@@ -47,7 +52,50 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class ViewCommentsActivity extends AppCompatActivity{
+public class ViewCommentsActivity extends AppCompatActivity implements CommentsRVAdapter.replyButtonListener, CommentsRVAdapter.editButtonListener{
+
+    @Override
+    public void editButtonPressed(Comment comment) {
+        Log.d(TAG, "editButtonPressed: edit button pressed.");
+
+        View view = getCurrentFocus();
+        if(view != null){
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(view, 0);
+            }
+        }
+
+        editComment.setText(comment.getComment());
+        editComment.setSelection(comment.getComment().length());
+        editCheck = true;
+        mComment = comment;
+    }
+
+    @Override
+    public void replyButtonPressed(User user) {
+        Log.d(TAG, "replyButtonPressed: reply button pressed.");
+
+        final Mention mention = new Mention();
+        mention.setMentionName("@" + user.getUsername());
+        mention.setMentionUid(user.getUser_id());
+
+        mentionHash.put(mention.getMentionName(),mention.getMentionUid());
+        Log.d(TAG, "replyButtonPressed: mentionhash " + mentionHash.toString());
+
+        View view = getCurrentFocus();
+        if(view != null){
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(view, 0);
+            }
+        }
+
+        editComment.setText("@" + user.getUsername());
+        editComment.setSelection(user.getUsername().length()+1);
+        mentions.insertMention(mention);
+        Log.d(TAG, "replyButtonPressed:" + mentions.getInsertedMentions());
+    }
 
     private static final String TAG = "ViewCommentsActivity";
 
@@ -57,6 +105,9 @@ public class ViewCommentsActivity extends AppCompatActivity{
     private ArrayList<Comment> mComments;
     private CommentsRVAdapter mAdapter;
     private DatabaseReference ref;
+    private boolean editCheck = false;
+    private Comment mComment;
+    private ProgressBar pb;
 
     private ArrayList<String> mFollowingList = new ArrayList<>();
     private ArrayList<User> mUserList = new ArrayList<>();
@@ -92,6 +143,7 @@ public class ViewCommentsActivity extends AppCompatActivity{
         });
 
         recyclerView = findViewById(R.id.comments_rv);
+        pb = findViewById(R.id.pb);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext,RecyclerView.VERTICAL,false));
 
         editComment = findViewById(R.id.comment);
@@ -112,13 +164,26 @@ public class ViewCommentsActivity extends AppCompatActivity{
         submitComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!editComment.getText().toString().equals("")){
-                    Log.d(TAG, "onClick: attempting to submit new comment.");
-                    addNewComment(editComment.getText().toString());
 
-                    editComment.setText("");
+                if (!editCheck) {
+                    if (!editComment.getText().toString().equals("")) {
+                        Log.d(TAG, "onClick: attempting to submit new comment.");
+                        addNewComment(editComment.getText().toString());
+
+                        editComment.setText("");
+                    } else {
+                        Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "You can't post a blank comment", Snackbar.LENGTH_SHORT).show();
+                    }
                 }else{
-                    Snackbar.make(Objects.requireNonNull(getCurrentFocus()),"You can't post a blank comment",Snackbar.LENGTH_SHORT).show();
+                    if (!editComment.getText().toString().equals("")) {
+                        Log.d(TAG, "onClick: attempting to submit edited comment.");
+                        addEditedComment(editComment.getText().toString(),mComment);
+                        editCheck = false;
+                        editComment.setText("");
+                    } else {
+                        Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "You can't post a blank comment", Snackbar.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         });
@@ -131,6 +196,23 @@ public class ViewCommentsActivity extends AppCompatActivity{
 
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
+
+        PullToRefreshView mPullToRefreshView = findViewById(R.id.pull_to_refresh);
+
+        mPullToRefreshView.setOnRefreshListener(() -> mPullToRefreshView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPullToRefreshView.setRefreshing(false);
+                Intent i = new Intent(mContext, ViewCommentsActivity.class);
+                i.putExtra("post_comments",getIntent().getStringExtra("post_comments"));
+                startActivity(i);
+                overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+            }
+        }, 1000));
+
+        recyclerView.setVisibility(View.GONE);
+        pb.setVisibility(View.VISIBLE);
+
     }
 
     private void setupFollowingList() {
@@ -242,6 +324,7 @@ public class ViewCommentsActivity extends AppCompatActivity{
 
     private void getCommentsFromPostKey() {
 
+        Log.d(TAG, "getCommentsFromPostKey: called.");
         DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
         myRef.child("Posts")
                 .child(mPostKey)
@@ -252,12 +335,44 @@ public class ViewCommentsActivity extends AppCompatActivity{
 
                         for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
 
-                            Comment comment = singleSnapshot.getValue(Comment.class);
+                            Log.d(TAG, "onDataChange: found snapshot " + singleSnapshot.getValue());
+
+                            Comment comment = new Comment();
+                            HashMap<String, Object> objectHashMap = (HashMap<String, Object>) singleSnapshot.getValue();
+
+                            comment.setUser_id(objectHashMap.get("user_id").toString());
+                            comment.setComment(objectHashMap.get("comment").toString());
+                            comment.setCommentID(objectHashMap.get("commentID").toString());
+
+                            ArrayList<Like> co = new ArrayList<>();
+                            for (DataSnapshot dSnapshot2 : singleSnapshot
+                                    .child("likes").getChildren()) {
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot2.getValue(Like.class).getUser_id());
+                                co.add(like);
+                            }
+
+                            ArrayList<MyMention> men = new ArrayList<>();
+                            for (DataSnapshot dSnapshot2 : singleSnapshot
+                                    .child("mentionArrayList").getChildren()) {
+                                MyMention mention = new MyMention();
+                                mention.setMentionName(dSnapshot2.getValue(MyMention.class).getMentionName());
+                                mention.setMentionUid(dSnapshot2.getValue(MyMention.class).getMentionUid());
+                                men.add(mention);
+                            }
+                            comment.setLikes(co);
+                            comment.setMentionArrayList(men);
+
                             mComments.add(comment);
+                            Log.d(TAG, "onDataChange: the comment now " + comment);
                         }
+
+                        Log.d(TAG, "onDataChange: the comments "+ mComments);
                         Collections.reverse(mComments);
-                        mAdapter = new CommentsRVAdapter(mContext, mComments);
+                        mAdapter = new CommentsRVAdapter(mContext, mComments,mPostKey);
                         recyclerView.setAdapter(mAdapter);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        pb.setVisibility(View.GONE);
                     }
 
                     @Override
@@ -277,6 +392,7 @@ public class ViewCommentsActivity extends AppCompatActivity{
         comment.setComment(newComment);
         comment.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
         comment.setMentionArrayList(checkLists());
+        comment.setCommentID(commentID);
 
         myRef.child("Posts")
                 .child(mPostKey)
@@ -285,6 +401,21 @@ public class ViewCommentsActivity extends AppCompatActivity{
                 .setValue(comment);
 
         mComments.add(0,comment);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void addEditedComment(String newComment,Comment comment){
+        Log.d(TAG, "addNewComment: the older comment" + comment);
+
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+        comment.setComment(newComment);
+
+        myRef.child("Posts")
+                .child(mPostKey)
+                .child("comments")
+                .child(comment.getCommentID())
+                .setValue(comment);
+
         mAdapter.notifyDataSetChanged();
     }
 

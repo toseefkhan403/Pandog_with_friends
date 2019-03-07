@@ -89,7 +89,7 @@ exports.calculateResults = functions.database.ref("/Posts/{postId}/status")
                     const challenge_id = postAfter.challenge_id;
                     const userUid1 = postAfter.user_id;
                     const userUid2 = postAfter.user_id2;
-                    const likes1 = postAfter.likes;
+                    const likes1 = postAfter.like;
                     const likes2 = postAfter.likes2;
                     const likesnumber1 = (likes1 == null) ? 0 : Object.keys(likes1).length;
                     const likesnumber2 = (likes2 == null) ? 0 : Object.keys(likes2).length;

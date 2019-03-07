@@ -24,6 +24,7 @@ import com.android.toseefkhan.pandog.Home.HomeActivity;
 import com.android.toseefkhan.pandog.Login.LoginActivity;
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.models.Challenge;
 import com.android.toseefkhan.pandog.models.MyMention;
 import com.android.toseefkhan.pandog.models.Post;
@@ -305,7 +306,7 @@ public class FirebaseMethods {
                                 ((Activity)mContext).finish();
 
                                 //navigate to the main feed so the user can see their photo
-                                Intent intent = new Intent(mContext, HomeActivity.class);
+                                Intent intent = new Intent(mContext, ShareActivity.class);
                                 mContext.startActivity(intent);
                                 System.gc();
 

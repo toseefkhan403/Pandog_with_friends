@@ -147,6 +147,9 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
         setupWidgets();
         initImageLoader();
 
+        if (getIntent().hasExtra("intent_post_winner") || getIntent().hasExtra("intent_post_loser"))
+            showCongratsDialog();
+
         ImageView back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -222,6 +225,21 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
         ShakeDetector.updateConfiguration(2.0f,3);
     }
 
+    private void showCongratsDialog() {
+
+        Log.d(TAG, "showCongratsDialog: showing dialog.");
+
+        Dialog dialog = new Dialog(mContext);
+
+        if (getIntent().hasExtra("intent_post_winner"))
+            dialog.setContentView(R.layout.layout_winner_dialog);
+        else if (getIntent().hasExtra("intent_post_loser"))
+            dialog.setContentView(R.layout.layout_loser_dialog);
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -284,8 +302,6 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
 
     }
 
-
-
     private void getPostFromPostKey(String postKey) {
 
         Log.d(TAG, "getPostFromPostKey: postkey " + postKey);
@@ -345,8 +361,21 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                         for (DataSnapshot dSnapshot : dataSnapshot
                                 .child("comments").getChildren()) {
                             Comment comment = new Comment();
-                            comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                            comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                            HashMap<String, Object> objectHashMap = (HashMap<String, Object>) dSnapshot.getValue();
+
+                            comment.setUser_id(objectHashMap.get("user_id").toString());
+                            comment.setComment(objectHashMap.get("comment").toString());
+                            comment.setCommentID(objectHashMap.get("commentID").toString());
+
+                            ArrayList<Like> co = new ArrayList<>();
+                            for (DataSnapshot dSnapshot2 : dSnapshot
+                                    .child("likes").getChildren()) {
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot2.getValue(Like.class).getUser_id());
+                                co.add(like);
+                            }
+                            comment.setLikes(co);
+
                             comments.add(comment);
                         }
                         post.setComments(comments);

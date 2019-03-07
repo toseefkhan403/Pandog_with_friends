@@ -3,26 +3,18 @@ package com.android.toseefkhan.pandog.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.android.toseefkhan.pandog.Utils.Like;
+
 import java.util.ArrayList;
+import java.util.List;
 
 public class Comment implements Parcelable{
 
     private String comment;
     private String user_id;
+    private String commentID;
     private ArrayList<MyMention> mentionArrayList;
-
-    public ArrayList<MyMention> getMentionArrayList() {
-        return mentionArrayList;
-    }
-
-    public void setMentionArrayList(ArrayList<MyMention> mentionArrayList) {
-        this.mentionArrayList = mentionArrayList;
-    }
-
-    public Comment(String comment, String user_id) {
-        this.comment = comment;
-        this.user_id = user_id;
-    }
+    private ArrayList<Like> likes;
 
     public Comment() {
     }
@@ -30,6 +22,21 @@ public class Comment implements Parcelable{
     protected Comment(Parcel in) {
         comment = in.readString();
         user_id = in.readString();
+        commentID = in.readString();
+        likes = in.createTypedArrayList(Like.CREATOR);
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(comment);
+        dest.writeString(user_id);
+        dest.writeString(commentID);
+        dest.writeTypedList(likes);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<Comment> CREATOR = new Creator<Comment>() {
@@ -60,22 +67,38 @@ public class Comment implements Parcelable{
         this.user_id = user_id;
     }
 
+    public String getCommentID() {
+        return commentID;
+    }
+
+    public void setCommentID(String commentID) {
+        this.commentID = commentID;
+    }
+
+    public ArrayList<MyMention> getMentionArrayList() {
+        return mentionArrayList;
+    }
+
+    public void setMentionArrayList(ArrayList<MyMention> mentionArrayList) {
+        this.mentionArrayList = mentionArrayList;
+    }
+
+    public ArrayList<Like> getLikes() {
+        return likes;
+    }
+
+    public void setLikes(ArrayList<Like> likes) {
+        this.likes = likes;
+    }
+
     @Override
     public String toString() {
         return "Comment{" +
                 "comment='" + comment + '\'' +
                 ", user_id='" + user_id + '\'' +
+                ", commentID='" + commentID + '\'' +
+                ", mentionArrayList=" + mentionArrayList +
+                ", likes=" + likes +
                 '}';
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(comment);
-        dest.writeString(user_id);
     }
 }

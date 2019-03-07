@@ -24,6 +24,7 @@ public class ViewLikesActivity extends AppCompatActivity {
 
 
     private ViewPager mViewPager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +38,29 @@ public class ViewLikesActivity extends AppCompatActivity {
             }
         });
 
-        setupViewPager();
+        if (getIntent().hasExtra("comment_likes")) {
+            setupCommentsViewPager();
+        }else{
+            setupViewPager();
+        }
+    }
+
+    private void setupCommentsViewPager() {
+
+        FragmentPagerAdapter adapter=new FragmentPagerAdapter(getSupportFragmentManager());
+
+        ViewLikesFragment viewLikesFragment = new ViewLikesFragment();
+        viewLikesFragment.setArguments(getIntent().getExtras());
+
+        adapter.addFragment(viewLikesFragment); //index is 0
+
+        mViewPager = findViewById(R.id.container);
+        mViewPager.setAdapter(adapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+
+        findViewById(R.id.bottomView).setVisibility(View.GONE);
     }
 
     private void setupViewPager() {

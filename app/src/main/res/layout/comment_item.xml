@@ -36,8 +36,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
-                android:layout_marginBottom="20dp">
-
+                android:id="@+id/commentHolder"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -56,6 +56,80 @@
                     android:textSize="18sp"
                     android:layout_below="@+id/comment_username"
                     android:id="@+id/comment"/>
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:id="@+id/buttonsComments"
+                android:layout_below="@+id/commentHolder">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/edit_comment"
+                    android:layout_marginLeft="15dp"
+                    android:textColor="@color/darkgrey"
+                    android:text="Edit"
+                    android:textSize="14sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/darkgrey"
+                    android:text="Delete"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_toRightOf="@+id/edit_comment"
+                    android:id="@+id/delete_comment"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:textColor="@color/darkgrey"
+                    android:text="Reply"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_toRightOf="@+id/delete_comment"
+                    android:id="@+id/reply_comment"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:textColor="@color/darkgrey"
+                    android:text="30 Likes"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_toEndOf="@+id/reply_comment"
+                    android:id="@+id/view_likes_comment"/>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/heart_holder">
+
+                    <ImageView
+                        android:id="@+id/image_heart_red"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/heart_red"
+                        android:visibility="invisible" />
+
+                    <ImageView
+                        android:id="@+id/image_heart_white"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/ic_heart"
+                        android:visibility="visible" />
+
+                </RelativeLayout>
 
 
             </RelativeLayout>

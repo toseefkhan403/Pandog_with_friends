@@ -44,7 +44,6 @@ public class NotificationsActivity extends AppCompatActivity {
     private DatabaseReference myRef;
     private RecyclerView r;
     private ArrayList<Notif> mNotifsList = new ArrayList<>();
-    private NotifsAdapter mAdapter;
     private int count = 0;
 
     @Override
@@ -81,7 +80,7 @@ public class NotificationsActivity extends AppCompatActivity {
         if (mNotifsList.size() == count) {
             Log.d(TAG, "hasListEnded: making sure you happen only once");
             Collections.reverse(mNotifsList);
-            mAdapter = new NotifsAdapter(mNotifsList);
+            NotifsAdapter mAdapter = new NotifsAdapter(mNotifsList);
             r.setAdapter(mAdapter);
         }
     }
@@ -149,7 +148,6 @@ public class NotificationsActivity extends AppCompatActivity {
     private void getDataForMention(String postKey, String userUid, String mentionedPlace) {
 
         if (mentionedPlace.equals("comment")) {
-
             myRef.child(getString(R.string.dbname_users))
                     .child(userUid)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -177,7 +175,37 @@ public class NotificationsActivity extends AppCompatActivity {
 
                         }
                     });
+
+        }else if (mentionedPlace.equals("post")) {
+
+            myRef.child(getString(R.string.dbname_users))
+                    .child(userUid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            if (dataSnapshot.exists()) {
+                                Notif notif = new Notif();
+                                notif.setmTitle(dataSnapshot.getValue(User.class).getUsername() + " mentioned you in a Post!");
+                                notif.setmDescription(getEmojiByUnicode(0x1F929));
+                                notif.setmImgUrl(dataSnapshot.getValue(User.class).getProfile_photo());
+
+                                HashMap<String, Object> obj = new HashMap<>();
+                                obj.put("intent_post_key", postKey);
+                                notif.setmIntentExtra(obj);
+
+                                mNotifsList.add(notif);
+                                hasListEnded();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
         }
+
     }
 
     private void getDataForComment(String postKey, String userUid) {

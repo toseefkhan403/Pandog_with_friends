@@ -236,16 +236,37 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                 holder.tvLoser2.setVisibility(View.GONE);
 
                 if (time <= 0) {
+
+                    holder.heartHolder.setVisibility(View.GONE);
+                    holder.heartHolder2.setVisibility(View.GONE);
                     holder.timeRemaining.setText("Awaiting result");
+
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                     ref.child("Posts")
                             .child(post.getPostKey())
                             .child("status")
-                            .setValue("AWAITING_RESULT");
-                    Log.d(TAG, "onBindViewHolder: i am setting the status to AWAITING_RESULT");
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    holder.heartHolder.setVisibility(View.GONE);
-                    holder.heartHolder2.setVisibility(View.GONE);
+                                    Log.d(TAG, "onBindViewHolder: i am setting the status to AWAITING_RESULT");
+
+                                    String status = dataSnapshot.getValue(String.class);
+
+                                    if (status.equals("ACTIVE")) {
+
+                                        ref.child("Posts")
+                                                .child(post.getPostKey())
+                                                .child("status")
+                                                .setValue("AWAITING_RESULT");
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                 } else {
                     setLikesIcons(holder,post);
                 }

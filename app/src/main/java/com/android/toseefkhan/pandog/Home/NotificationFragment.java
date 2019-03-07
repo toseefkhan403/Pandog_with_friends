@@ -252,7 +252,8 @@ public class NotificationFragment extends Fragment {
                         rel.setVisibility(View.GONE);
                     }
 
-                    mNotificationRecyclerView.smoothScrollToPosition(0);
+                    if (mNotificationRecyclerView != null)
+                        mNotificationRecyclerView.smoothScrollToPosition(0);
                 }
 
                 @Override
@@ -270,13 +271,19 @@ public class NotificationFragment extends Fragment {
 
     private void initUserListRecyclerView() {
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
-        mNotificationRecyclerView.setLayoutManager(mLayoutManager);
+        try{
 
-        notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
-        AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(notificationsAdapter);
-        Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
-        mNotificationRecyclerView.setAdapter(a);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+            mNotificationRecyclerView.setLayoutManager(mLayoutManager);
+
+            notificationsAdapter = new NotificationsAdapter(challengesList, getContext());
+            AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(notificationsAdapter);
+            Log.d(TAG, "initUserListRecyclerView: empty " + challengesList);
+            mNotificationRecyclerView.setAdapter(a);
+
+        }catch (NullPointerException e){
+            Log.d(TAG, "initUserListRecyclerView: NullPointerException " + e.getMessage());
+        }
     }
 
     @Override

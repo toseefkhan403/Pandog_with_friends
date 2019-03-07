@@ -391,11 +391,25 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                         for (DataSnapshot dSnapshot : dataSnapshot
                                 .child("comments").getChildren()) {
                             Comment comment = new Comment();
-                            comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                            comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                            HashMap<String, Object> objectHashMap = (HashMap<String, Object>) dSnapshot.getValue();
+
+                            comment.setUser_id(objectHashMap.get("user_id").toString());
+                            comment.setComment(objectHashMap.get("comment").toString());
+                            comment.setCommentID(objectHashMap.get("commentID").toString());
+
+                            ArrayList<Like> co = new ArrayList<>();
+                            for (DataSnapshot dSnapshot2 : dSnapshot
+                                    .child("likes").getChildren()) {
+                                Like like = new Like();
+                                like.setUser_id(dSnapshot2.getValue(Like.class).getUser_id());
+                                co.add(like);
+                            }
+                            comment.setLikes(co);
+
                             comments.add(comment);
                         }
                         post.setComments(comments);
+
 
                         mPostList.add(post);
                         Log.d(TAG, "onDataChange: contents of the postlist " + mPostList.size());

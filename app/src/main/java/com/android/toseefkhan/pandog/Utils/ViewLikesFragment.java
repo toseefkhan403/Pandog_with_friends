@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.Post;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -51,6 +52,13 @@ public class ViewLikesFragment extends Fragment {
                 for (Like like : post.getLikes()) {
                     userIds.add(like.getUser_id());
                 }
+            }else {
+                Log.d(TAG, "onCreateView: displaying likes from comments");
+
+                Comment comment =  b.getParcelable("comment_likes");
+                for (Like like : comment.getLikes()) {
+                    userIds.add(like.getUser_id());
+                }
             }
 
             initRecyclerView();
@@ -79,7 +87,6 @@ public class ViewLikesFragment extends Fragment {
             }
             pb.setVisibility(View.GONE);
         }
-
-
     }
+
 }

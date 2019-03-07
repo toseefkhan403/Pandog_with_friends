@@ -183,6 +183,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 //        } catch (Exception e) {
 //            Log.e(TAG, "printHashKey()", e);
 //        }
+
     }
 
     @Override
