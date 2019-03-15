@@ -317,7 +317,7 @@ public class LoginActivity extends AppCompatActivity {
         UserAccountSettings userAccountSettings = new UserAccountSettings("This is my cool bio",
                 name,
                 image,
-                username);
+                username,"");
 
         ref1.child(mContext.getString(R.string.dbname_user_account_settings))
                 .child(uid)
@@ -397,10 +397,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (!mCatLoadingView.isAdded())
                         mCatLoadingView.show(getSupportFragmentManager(), "");
 
-//                    mProgressBar.setVisibility(View.VISIBLE);
-//                    mPleaseWait.setVisibility(View.VISIBLE);
-
-                    mAuth.signInWithEmailAndPassword(email, password)
+                    mAuth.signInWithEmailAndPassword(email.replaceAll(" ",""), password.replaceAll(" ",""))
                             .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
@@ -470,7 +467,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "onClick: sending reset link to " +  input.getText().toString());
 
-                        mAuth.sendPasswordResetEmail(input.getText().toString());
+                        mAuth.sendPasswordResetEmail(input.getText().toString().replaceAll(" ",""));
                         Toasty.info(mContext, "Sending password reset link...", Toast.LENGTH_LONG,true).show();
                     }
                 });

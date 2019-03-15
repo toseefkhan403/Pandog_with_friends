@@ -334,13 +334,6 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 notifIntent = new Intent(this, ViewPostActivity.class);
                 String postKey = remoteMessage.getData().get("postKey");
                 notifIntent.putExtra("intent_post_key", postKey);
-
-                if (remoteMessage.getData().get("status").equals("win")){
-                    notifIntent.putExtra("intent_post_winner",1);
-                }else if (remoteMessage.getData().get("status").equals("lose")){
-                    notifIntent.putExtra("intent_post_loser",1);
-                }
-
                 break;
             }
             case "mention": {

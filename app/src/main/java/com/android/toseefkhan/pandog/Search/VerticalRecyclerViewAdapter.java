@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.android.toseefkhan.pandog.Profile.ViewPostsListActivity;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Share.ShareActivity;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.android.toseefkhan.pandog.models.User;
@@ -50,19 +51,37 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
         holder.setIsRecyclable(false);
 
         holder.hashtag_title.setText(item.getTitle());
-        holder.hashtag_title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideKeyboard();
-                Intent i = new Intent(mContext, ViewPostsListActivity.class);
-                i.putExtra("post_keys_list",item.getPost_keys_list());
-                i.putExtra("title",item.getTitle());
-                mContext.startActivity(i);
-                ((Activity)mContext).overridePendingTransition(R.anim.pull,R.anim.push);
-            }
-        });
 
-        holder.mHorizontalRecyclerView.setAdapter(new HorizontalRecyclerViewAdapter(mContext,item.getPost_keys_list()));
+        if (item.getPost_keys_list() != null) {
+            holder.hashtag_title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    hideKeyboard();
+                    Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                    i.putExtra("post_keys_list", item.getPost_keys_list());
+                    i.putExtra("title", item.getTitle());
+                    mContext.startActivity(i);
+                    ((Activity) mContext).overridePendingTransition(R.anim.pull, R.anim.push);
+                }
+            });
+        }
+
+        if (item.getPost_keys_list() == null){
+
+            holder.no_trending_found.setVisibility(View.VISIBLE);
+            holder.no_trending_found.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent3 = new Intent(mContext, ShareActivity.class);//ACTIVITY_NUM = 2
+                    mContext.startActivity(intent3);
+                }
+            });
+
+        }else {
+
+            holder.mHorizontalRecyclerView.setAdapter(new HorizontalRecyclerViewAdapter(mContext, item.getPost_keys_list()));
+            holder.no_trending_found.setVisibility(View.GONE);
+        }
 
     }
 
@@ -73,13 +92,14 @@ public class VerticalRecyclerViewAdapter extends RecyclerView.Adapter<VerticalRe
 
     public class ViewHolder extends RecyclerView.ViewHolder{
 
-        TextView hashtag_title;
+        TextView hashtag_title,no_trending_found;
         RecyclerView mHorizontalRecyclerView;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             hashtag_title= itemView.findViewById(R.id.hashtag_title);
+            no_trending_found= itemView.findViewById(R.id.noTrendingFound);
             mHorizontalRecyclerView = itemView.findViewById(R.id.horizontal_list);
             mHorizontalRecyclerView.setLayoutManager(new LinearLayoutManager(mContext,LinearLayoutManager.HORIZONTAL,false));
         }

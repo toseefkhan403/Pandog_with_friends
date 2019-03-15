@@ -2,6 +2,10 @@ package com.android.toseefkhan.pandog.Profile;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +18,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import es.dmoral.toasty.Toasty;
 
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,6 +64,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class ViewProfileActivity extends AppCompatActivity {
 
@@ -74,21 +84,19 @@ public class ViewProfileActivity extends AppCompatActivity {
     //vars
     private User mUser;
 
-    private TextView mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
+    private TextView mFollowers, mFollowing, mDisplayName, mUsername, mDescription, mInstagramUsername;
+    private TextView thought;
     private ProgressBar mProgressBar;
     private BottomNavigationViewEx bottomNavigationView;
     private ImageView mProfilePhoto;
     private TextView mFollow, mUnfollow, PandaPoints;
-    private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0,ppcount=0;
+    private int mFollowersCount=0,mFollowingCount=0;
     private TextView mMenu;
     private ProgressBar pb;
     private Toolbar profile;
     private RelativeLayout profile2;
     private Button mButtonChallenge;
     private RelativeLayout relativeLayout;
-
-    private ArrayList<Post> mPostList = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,14 +110,16 @@ public class ViewProfileActivity extends AppCompatActivity {
         relativeLayout.setVisibility(View.INVISIBLE);
         profile2 = findViewById(R.id.rel_profile);
         profile = findViewById(R.id.profileToolBar);
-        mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
+        thought = findViewById(R.id.thought);
+        mProgressBar = findViewById(R.id.profileProgressBar);
         mProgressBar.setVisibility(View.GONE);
         mProfilePhoto = findViewById(R.id.profile_photo);
-        mDisplayName = (TextView) findViewById(R.id.display_name);
-        mUsername = (TextView) findViewById(R.id.username);
-        mDescription = (TextView) findViewById(R.id.description);
+        mDisplayName = findViewById(R.id.display_name);
+        mUsername = findViewById(R.id.username);
+        mDescription = findViewById(R.id.description);
+        mInstagramUsername = findViewById(R.id.instagram_username);
      //   mPosts = (TextView) findViewById(R.id.);
-        mFollowers = (TextView) findViewById(R.id.tvFollowers);
+        mFollowers = findViewById(R.id.tvFollowers);
         mFollowers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -214,12 +224,21 @@ public class ViewProfileActivity extends AppCompatActivity {
 
         setupBottomNavigationView();
         setupFirebaseAuth();
+        setTheThought();
 
         try{
             mUser = getUserFromBundle();
             Log.d(TAG, "onCreate: mUser" + mUser);
-            init();
-            checkLevel(mUser);
+            if (mUser.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
+                Intent i = new Intent(mContext,ProfileActivity.class);
+                startActivity(i);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }else{
+
+                init();
+                checkLevel(mUser);
+            }
         }catch (NullPointerException e){
             Log.e(TAG, "onCreateView: NullPointerException: "  + e.getMessage() );
             Toasty.error(mContext, "something went wrong", Toast.LENGTH_SHORT,true).show();
@@ -236,6 +255,35 @@ public class ViewProfileActivity extends AppCompatActivity {
 
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
+
+    }
+
+    private void setTheThought() {
+
+        Log.d(TAG, "setTheThought: setting the thought");
+
+        myRef.child("thoughts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        try {
+                            ArrayList<String> myThoughts = (ArrayList<String>) dataSnapshot.getValue();
+                            int randomNumber = new Random().nextInt(myThoughts.size());
+                            thought.setText(myThoughts.get(randomNumber));
+
+                        }catch (NullPointerException e){
+                            Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+                        }catch (IndexOutOfBoundsException e){
+                            Log.d(TAG, "onDataChange: IndexOutOfBoundsException " + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
 
     }
 
@@ -500,6 +548,41 @@ public class ViewProfileActivity extends AppCompatActivity {
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
         mDescription.setText(settings.getDescription());
+
+        if (settings.getInstagram_username().equals("")){
+            mInstagramUsername.setVisibility(View.GONE);
+        }else {
+
+            SpannableString ss = new SpannableString("Follow me on Instagram : " + settings.getInstagram_username());
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View textView) {
+                    //set link
+                    Log.d(TAG, "onClick: navigating to Instagram");
+                    String profileLink = settings.getInstagram_username();
+                    Uri uri = Uri.parse("http://instagram.com/_u/" + profileLink);
+                    Intent insta = new Intent(Intent.ACTION_VIEW, uri);
+                    insta.setPackage("com.instagram.android");
+
+                    if (isIntentAvailable(mContext, insta)) {
+                        startActivity(insta);
+                    } else {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://instagram.com/" + profileLink)));
+                    }
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                }
+            };
+            ss.setSpan(clickableSpan, 25, 25+settings.getInstagram_username().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            mInstagramUsername.setText(ss);
+            mInstagramUsername.setMovementMethod(LinkMovementMethod.getInstance());
+            mInstagramUsername.setHighlightColor(Color.BLUE);
+        }
+
         mProgressBar.setVisibility(View.GONE);
         relativeLayout.setVisibility(View.VISIBLE);
     }
@@ -549,6 +632,12 @@ public class ViewProfileActivity extends AppCompatActivity {
             }
         };
 
+    }
+
+    private boolean isIntentAvailable(Context ctx, Intent intent) {
+        final PackageManager packageManager = ctx.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
     }
 
     @Override

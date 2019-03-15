@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -26,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import es.dmoral.toasty.Toasty;
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 
 public class ViewFollowersFragment extends Fragment {
 
@@ -91,7 +93,10 @@ public class ViewFollowersFragment extends Fragment {
         if (!userIds.isEmpty()) {
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             UserListRVAdapter adapter = new UserListRVAdapter(getActivity(), userIds,pb);
-            recyclerView.setAdapter(adapter);
+            AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(adapter);
+            a.setDuration(1750);
+            a.setInterpolator(new OvershootInterpolator());
+            recyclerView.setAdapter(a);
 
         } else if (userIds.isEmpty()) {
             try {

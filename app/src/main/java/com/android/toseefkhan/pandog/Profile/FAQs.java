@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,54 +41,20 @@ public class FAQs extends AppCompatActivity{
 
     private static final String TAG = "FAQs";
 
-//    private LinearLayout linearLayout;
-//    private Button saveBtn;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_faq);
 
-//        linearLayout = (LinearLayout) findViewById(R.id.logo_image);
-//        saveBtn = (Button) findViewById(R.id.buttonSave);
-//        saveBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                File file = saveBitMap(FAQs.this, linearLayout);    //which view you want to pass that view as parameter
-//                if (file != null) {
-//                    Toast.makeText(FAQs.this, "successful", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(FAQs.this, "unsuccessful", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-
         ExpandableListView expandableListView = findViewById(R.id.expandable_lv);
 
-//        final VideoView vv = findViewById(R.id.vv);
-//        Uri uri= Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.videoone);
-//        vv.setVideoURI(uri);
-//
-//        vv.start();
-//        vv.setZOrderOnTop(true);
-//        vv.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mp) {
-//                vv.start();
-//                vv.setZOrderOnTop(true);
-//            }
-//        });
 
-
-        List<String> questions = new ArrayList<>();
         HashMap<String,List<String>> hashMap = new HashMap<>();
 
         String heading_questions[] = getResources().getStringArray(R.array.header_questions);
         String answers_array[] = getResources().getStringArray(R.array.answers);
 
-        for (String title : heading_questions){
-            questions.add(title);
-        }
+        List<String> questions = new ArrayList<>(Arrays.asList(heading_questions));
 
         List<String> an = new ArrayList<>();
         List<String> an2 = new ArrayList<>();
@@ -99,6 +66,7 @@ public class FAQs extends AppCompatActivity{
         List<String> an8 = new ArrayList<>();
         List<String> an9 = new ArrayList<>();
         List<String> an10 = new ArrayList<>();
+        List<String> an11 = new ArrayList<>();
 
         an.add(answers_array[0]);
         an2.add(answers_array[1]);
@@ -110,6 +78,7 @@ public class FAQs extends AppCompatActivity{
         an8.add(answers_array[7]);
         an9.add(answers_array[8]);
         an10.add(answers_array[9]);
+        an11.add(answers_array[10]);
 
         hashMap.put(questions.get(0),an);
         hashMap.put(questions.get(1),an2);
@@ -121,6 +90,7 @@ public class FAQs extends AppCompatActivity{
         hashMap.put(questions.get(7),an8);
         hashMap.put(questions.get(8),an9);
         hashMap.put(questions.get(9),an10);
+        hashMap.put(questions.get(10),an11);
 
         ExpandableListViewAdapter adapter = new ExpandableListViewAdapter(questions,hashMap,this);
         expandableListView.setAdapter(adapter);
@@ -130,64 +100,5 @@ public class FAQs extends AppCompatActivity{
             Snackbar.make(getWindow().getDecorView().getRootView(),"You are not online!",Snackbar.LENGTH_LONG).show();
         }
     }
-
-//
-//    private File saveBitMap(Context context, View drawView){
-//        File pictureFileDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Handcare");
-//        if (!pictureFileDir.exists()) {
-//            boolean isDirectoryCreated = pictureFileDir.mkdirs();
-//            if(!isDirectoryCreated)
-//                Log.i("ATG", "Can't create directory to save the image");
-//            return null;
-//        }
-//        String filename = pictureFileDir.getPath() +File.separator+ System.currentTimeMillis()+".jpg";
-//        File pictureFile = new File(filename);
-//        Bitmap bitmap =getBitmapFromView(drawView);
-//        try {
-//            pictureFile.createNewFile();
-//            FileOutputStream oStream = new FileOutputStream(pictureFile);
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, oStream);
-//            oStream.flush();
-//            oStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            Log.i("TAG", "There was an issue saving the image.");
-//        }
-//        scanGallery( context,pictureFile.getAbsolutePath());
-//        return pictureFile;
-//    }
-//
-//    //create bitmap from view and returns it
-//    private Bitmap getBitmapFromView(View view) {
-//        //Define a bitmap with the same size as the view
-//        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
-//        //Bind a canvas to it
-//        Canvas canvas = new Canvas(returnedBitmap);
-//        //Get the view's background
-//        Drawable bgDrawable =view.getBackground();
-//        if (bgDrawable!=null) {
-//            //has background drawable, then draw it on the canvas
-//            bgDrawable.draw(canvas);
-//        }   else{
-//            //does not have background drawable, then draw white background on the canvas
-//            canvas.drawColor(Color.WHITE);
-//        }
-//        // draw the view on the canvas
-//        view.draw(canvas);
-//        //return the bitmap
-//        return returnedBitmap;
-//    }
-//
-//    // used for scanning gallery
-//    private void scanGallery(Context cntx, String path) {
-//        try {
-//            MediaScannerConnection.scanFile(cntx, new String[] { path },null, new MediaScannerConnection.OnScanCompletedListener() {
-//                public void onScanCompleted(String path, Uri uri) {
-//                }
-//            });
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 }

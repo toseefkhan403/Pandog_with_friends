@@ -105,11 +105,22 @@
             android:textColor="@color/black"
             android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/instagram_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/description"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/black"
+            android:textColorLink="@color/blue_400"
+            android:textSize="14sp" />
+
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="84dp"
-            android:layout_below="@id/description"
+            android:layout_below="@id/instagram_username"
             android:id="@+id/snippet"
             android:layout_marginTop="5dp">
 
@@ -119,20 +130,20 @@
 
         <RelativeLayout
             android:id="@+id/rel_profile"
-            android:layout_marginBottom="50dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:layout_below="@+id/snippet"
-            android:paddingBottom="5dp">
-
+            android:layout_marginBottom="10dp"
+            android:layout_below="@id/snippet">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
                 android:weightSum="100"
-                android:background="@drawable/white_grey_border"
                 android:layout_height="50dp"
+                android:background="@drawable/white_rounded_button"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
                 android:id="@+id/fonts">
 
                 <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupP
@@ -163,6 +174,19 @@
             </LinearLayout>
 
         </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rel_profile"
+            android:layout_alignParentEnd="true"
+            android:textColor="@color/black"
+            android:layout_marginBottom="80dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginStart="80dp"
+            android:fontFamily="@font/cursive"
+            android:id="@+id/thought"
+            android:textSize="28dp"/>
 
     </RelativeLayout>
 

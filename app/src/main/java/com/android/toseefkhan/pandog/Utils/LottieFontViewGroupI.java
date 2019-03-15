@@ -1,6 +1,7 @@
 package com.android.toseefkhan.pandog.Utils;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.FrameLayout;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.OnCompositionLoadedListener;
+import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,13 +21,9 @@ import java.util.Map;
 
 public class LottieFontViewGroupI extends FrameLayout {
     private static final String TAG = "LottieFontViewGroup";
-    private final List<View> views = new ArrayList<>();
-
 
     public LottieFontViewGroupI(Context context) {
         super(context);
-        Log.d(TAG, "LottieFontViewGroup: hey m called context");
-    //    init();
     }
 
     public LottieFontViewGroupI(Context context, AttributeSet attrs) {
@@ -36,8 +34,6 @@ public class LottieFontViewGroupI extends FrameLayout {
 
     public LottieFontViewGroupI(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        Log.d(TAG, "LottieFontViewGroup: hey m called context attr defstyel");
-    //    init();
     }
 
     private  void init() {
@@ -58,17 +54,4 @@ public class LottieFontViewGroupI extends FrameLayout {
 
         LottieComposition.Factory.fromAssetFileName(getContext(), "Mobilo/I.json", c);
     }
-
-    @Override
-    public  void addView(View child, int index) {
-        super.addView(child, index);
-        Log.d(TAG, "addView: indices information " + index);
-        if (index == -1) {
-            views.add(child);
-        } else {
-            views.add(index, child);
-        }
-    }
-
-
 }

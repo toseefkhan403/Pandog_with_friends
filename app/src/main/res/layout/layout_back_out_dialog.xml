@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="35dp"
+        app:cardElevation="20dp"
+        android:layout_centerInParent="true">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/cancel_dialog"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:elevation="5dp"
+                android:src="@drawable/ic_close_black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/cancel_dialog"
+                android:paddingTop="5dp"
+                android:id="@+id/textDialog"
+                android:textStyle="bold"
+                android:gravity="center_horizontal"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:text="Are you sure you want to take the challenge back?"
+                android:textSize="20sp"
+                android:textColor="@color/darkred"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvYes"
+                android:layout_below="@+id/textDialog"
+                android:text="Yes"
+                android:textColor="@color/black"
+                android:textStyle="normal"
+                android:textSize="18sp"
+                android:layout_marginEnd="15dp"
+                android:layout_alignParentEnd="true"
+                android:padding="10dp"/>
+
+            <TextView
+                android:id="@+id/tvNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textDialog"
+                android:layout_marginStart="15dp"
+                android:padding="10dp"
+                android:text="No"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="normal" />
+
+        </RelativeLayout>
+
+
+
+    </androidx.cardview.widget.CardView>
+
+
+
+</RelativeLayout>

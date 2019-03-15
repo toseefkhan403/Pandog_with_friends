@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import es.dmoral.toasty.Toasty;
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 
 public class ViewLikesFragment extends Fragment {
 
@@ -56,8 +58,15 @@ public class ViewLikesFragment extends Fragment {
                 Log.d(TAG, "onCreateView: displaying likes from comments");
 
                 Comment comment =  b.getParcelable("comment_likes");
-                for (Like like : comment.getLikes()) {
-                    userIds.add(like.getUser_id());
+
+                if (comment.getLikes() == null){
+
+                    pb.setVisibility(View.GONE);
+                    Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), "NO LIKES FOUND!", Snackbar.LENGTH_LONG).show();
+                }else {
+                    for (Like like : comment.getLikes()) {
+                        userIds.add(like.getUser_id());
+                    }
                 }
             }
 
@@ -78,7 +87,11 @@ public class ViewLikesFragment extends Fragment {
             Collections.reverse(userIds);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             UserListRVAdapter adapter = new UserListRVAdapter(getActivity(), userIds,pb);
-            recyclerView.setAdapter(adapter);
+            AlphaInAnimationAdapter a = new AlphaInAnimationAdapter(adapter);
+            a.setDuration(1750);
+            a.setInterpolator(new OvershootInterpolator());
+            recyclerView.setAdapter(a);
+
         } else if (userIds.isEmpty()) {
             try {
                 Snackbar.make(getActivity().getWindow().getDecorView().getRootView(), "NO LIKES FOUND!", Snackbar.LENGTH_LONG).show();

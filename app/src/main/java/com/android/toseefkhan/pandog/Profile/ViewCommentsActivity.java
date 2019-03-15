@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,6 +114,7 @@ public class ViewCommentsActivity extends AppCompatActivity implements CommentsR
     private ArrayList<User> mUserList = new ArrayList<>();
 
     private RecyclerView mRVMentions;
+    private ImageView submitComment;
     private Mentions mentions;
     private HashMap<String,String> mentionHash = new HashMap<>();
     private String mPostKey;
@@ -160,33 +162,7 @@ public class ViewCommentsActivity extends AppCompatActivity implements CommentsR
             }
         });
 
-        ImageView submitComment = findViewById(R.id.ivPostComment);
-        submitComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (!editCheck) {
-                    if (!editComment.getText().toString().equals("")) {
-                        Log.d(TAG, "onClick: attempting to submit new comment.");
-                        addNewComment(editComment.getText().toString());
-
-                        editComment.setText("");
-                    } else {
-                        Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "You can't post a blank comment", Snackbar.LENGTH_SHORT).show();
-                    }
-                }else{
-                    if (!editComment.getText().toString().equals("")) {
-                        Log.d(TAG, "onClick: attempting to submit edited comment.");
-                        addEditedComment(editComment.getText().toString(),mComment);
-                        editCheck = false;
-                        editComment.setText("");
-                    } else {
-                        Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "You can't post a blank comment", Snackbar.LENGTH_SHORT).show();
-                    }
-
-                }
-            }
-        });
+        submitComment = findViewById(R.id.ivPostComment);
 
         mComments = new ArrayList<>();
 
@@ -207,6 +183,7 @@ public class ViewCommentsActivity extends AppCompatActivity implements CommentsR
                 i.putExtra("post_comments",getIntent().getStringExtra("post_comments"));
                 startActivity(i);
                 overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                finish();
             }
         }, 1000));
 
@@ -372,6 +349,32 @@ public class ViewCommentsActivity extends AppCompatActivity implements CommentsR
                         mAdapter = new CommentsRVAdapter(mContext, mComments,mPostKey);
                         recyclerView.setAdapter(mAdapter);
                         recyclerView.setVisibility(View.VISIBLE);
+                        submitComment.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                if (!editCheck) {
+                                    if (!editComment.getText().toString().equals("")) {
+                                        Log.d(TAG, "onClick: attempting to submit new comment.");
+                                        addNewComment(editComment.getText().toString());
+
+                                        editComment.setText("");
+                                    } else {
+                                        Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "You can't post a blank comment", Snackbar.LENGTH_SHORT).show();
+                                    }
+                                }else{
+                                    if (!editComment.getText().toString().equals("")) {
+                                        Log.d(TAG, "onClick: attempting to submit edited comment.");
+                                        addEditedComment(editComment.getText().toString(),mComment);
+                                        editCheck = false;
+                                        editComment.setText("");
+                                    } else {
+                                        Snackbar.make(Objects.requireNonNull(getCurrentFocus()), "You can't post a blank comment", Snackbar.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            }
+                        });
                         pb.setVisibility(View.GONE);
                     }
 

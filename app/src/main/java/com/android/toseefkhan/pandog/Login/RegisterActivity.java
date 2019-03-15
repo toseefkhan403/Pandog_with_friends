@@ -84,7 +84,8 @@ public class RegisterActivity extends AppCompatActivity {
                     loadingPleaseWait.setVisibility(View.VISIBLE);
 
                     setupFirebaseAuth();
-                    firebaseMethods.registerNewEmail(email, password, username);
+                    firebaseMethods.registerNewEmail(email.replaceAll(" ",""),
+                            password.replaceAll(" ",""), username.replaceAll(" ",""));
 
                     new Handler().postDelayed(new Runnable() {
                         @Override

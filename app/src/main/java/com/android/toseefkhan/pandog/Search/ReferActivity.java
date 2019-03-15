@@ -20,9 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import es.dmoral.toasty.Toasty;
 
-public class
-ReferActivity extends AppCompatActivity {
-
+public class ReferActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,26 +59,26 @@ ReferActivity extends AppCompatActivity {
                                 shareIntent.setAction(Intent.ACTION_SEND);
                                 shareIntent.putExtra(Intent.EXTRA_TEXT, "Share your selfies with the world using the Celfie app! Compete " +
                                         "with your friends with your selfies and let them know that you are the best! \nRegister " +
-                                        "now using my referral code and get 50 bonus points upon joining! \napp link goes here" + " The referral code is " + share.getText().toString());
+                                        "now using my referral code and get 50 bonus points upon joining! \nhttps://play.google.com/store/apps/details?id=com.android.toseefkhan.pandog \n" + " The referral code is : " + "'"+ share.getText().toString() + "'");
                                 shareIntent.setType("text/plain");
                                 startActivity(Intent.createChooser(shareIntent, "Share Celfie with..."));
 
-                                share2.setOnLongClickListener(new View.OnLongClickListener() {
-                                    @Override
-                                    public boolean onLongClick(View view) {
+                                return true;
+                            }
+                        });
 
-                                        Intent shareIntent = new Intent();
-                                        shareIntent.setAction(Intent.ACTION_SEND);
-                                        shareIntent.putExtra(Intent.EXTRA_TEXT, "Share your selfies with the world using the Celfie app! Compete " +
-                                                "with your friends with your selfies and let them know that you are the best! \nRegister " +
-                                                "now using my referral code and get 50 bonus points upon joining! \napp link goes here" + " The referral code is " + share.getText().toString());
-                                        shareIntent.setType("text/plain");
-                                        startActivity(Intent.createChooser(shareIntent, "Share Celfie with..."));
+                        share2.setOnLongClickListener(new View.OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
 
-                                        return true;
-                                    }
-                                });
-
+                                Toasty.warning(getApplicationContext(),"Attempting to share Celfie...",Toasty.LENGTH_LONG,true).show();
+                                Intent shareIntent = new Intent();
+                                shareIntent.setAction(Intent.ACTION_SEND);
+                                shareIntent.putExtra(Intent.EXTRA_TEXT, "Share your selfies with the world using the Celfie app! Compete " +
+                                        "with your friends with your selfies and let them know that you are the best! \nRegister " +
+                                        "now using my referral code and get 50 bonus points upon joining! \nhttps://play.google.com/store/apps/details?id=com.android.toseefkhan.pandog \n" + " The referral code is : " + "'" +share.getText().toString() + "'");
+                                shareIntent.setType("text/plain");
+                                startActivity(Intent.createChooser(shareIntent, "Share Celfie with..."));
 
                                 return true;
                             }

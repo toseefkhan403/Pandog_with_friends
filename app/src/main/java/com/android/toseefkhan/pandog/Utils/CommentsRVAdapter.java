@@ -146,7 +146,7 @@ public class CommentsRVAdapter extends RecyclerView.Adapter<CommentsRVAdapter.Vi
                     public void run() {
                         notifyDataSetChanged();
                     }
-                },1000);
+                },500);
             }
         });
 
@@ -318,9 +318,16 @@ public class CommentsRVAdapter extends RecyclerView.Adapter<CommentsRVAdapter.Vi
 
                         if (dataSnapshot.exists()) {
                             User user = dataSnapshot.getValue(User.class);
-                            Intent intent = new Intent(mContext, ViewProfileActivity.class);
-                            intent.putExtra(mContext.getString(R.string.intent_user), user);
-                            mContext.startActivity(intent);
+
+                            if (user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+
+                                Intent i = new Intent(mContext,ProfileActivity.class);
+                                mContext.startActivity(i);
+                            }else {
+                                Intent intent = new Intent(mContext, ViewProfileActivity.class);
+                                intent.putExtra(mContext.getString(R.string.intent_user), user);
+                                mContext.startActivity(intent);
+                            }
                         }
                     }
 

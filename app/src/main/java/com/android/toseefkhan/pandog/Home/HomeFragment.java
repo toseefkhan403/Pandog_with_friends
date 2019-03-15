@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.OrientationHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import es.dmoral.toasty.Toasty;
 
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -29,16 +30,21 @@ import android.widget.Toast;
 import com.android.toseefkhan.pandog.Profile.EditProfileActivity;
 import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 import com.android.toseefkhan.pandog.R;
+import com.android.toseefkhan.pandog.Utils.FirebaseMethods;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.Like;
 import com.android.toseefkhan.pandog.Utils.PullToRefreshView;
+import com.android.toseefkhan.pandog.Utils.StringManipulation;
+import com.android.toseefkhan.pandog.models.Challenge;
 import com.android.toseefkhan.pandog.models.Comment;
 import com.android.toseefkhan.pandog.models.MyMention;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
+import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.android.toseefkhan.pandog.models.UserDistance;
 import com.dingmouren.layoutmanagergroup.viewpager.ViewPagerLayoutManager;
 import com.github.tbouron.shakedetector.library.ShakeDetector;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -65,6 +71,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 
 public class HomeFragment extends Fragment implements RapidFloatingActionContentLabelList.OnRapidFloatingActionContentLabelListListener {
@@ -95,24 +102,6 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
        The main feed list only displays posts from your following and your posts.
      */
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -129,6 +118,7 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
                 Intent i = new Intent(getActivity(),HomeActivity.class);
                 startActivity(i);
                 getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                getActivity().finish();
             }
         }, 1000));
 
@@ -159,32 +149,200 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
         return view;
     }
 
+    private void doYourStuff() {
+
+        Toasty.warning(getActivity(),"Beware some cool stuff is going on...", Toasty.LENGTH_LONG,true).show();
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference();
+
+//        //first make those users
+//        String[] arr = {"vandana","vanshikaa","dimple","priyanka","akansha","Pratham","Anushree","Pari Baisla"};
+//        String[] arr2 = {"https://scontent-lga3-1.cdninstagram.com/vp/841bc541d58cd84b9bc72c92920e55ee/5D0CCEF7/t51.2885-15/e35/51683097_1659167614389949_275401605049686217_n.jpg?_nc_ht=scontent-lga3-1.cdninstagram.com"
+//                ,"https://scontent-lga3-1.cdninstagram.com/vp/1a2b14829622a9579e09fd37499e9e95/5D23EAA9/t51.2885-15/e35/s1080x1080/53020543_369931253859293_9142302599771098161_n.jpg?_nc_ht=scontent-lga3-1.cdninstagram.com",
+//                "https://scontent-lga3-1.cdninstagram.com/vp/3c424cca9339d8562941a7073c4a1f59/5D079DB4/t51.2885-15/e35/52803983_360796681175705_4926478388603649303_n.jpg?_nc_ht=scontent-lga3-1.cdninstagram.com",
+//                "https://scontent-lga3-1.cdninstagram.com/vp/66a4b3b89c663870a893fda255fb61eb/5D2271C5/t51.2885-15/e35/47584546_757678054605983_6621485973782425517_n.jpg?_nc_ht=scontent-lga3-1.cdninstagram.com",
+//                "https://scontent-lga3-1.cdninstagram.com/vp/b8810186e3a51e96ce6f5ee42c919bbb/5D161A35/t51.2885-15/e35/50843378_426586281419341_8782679174938773412_n.jpg?_nc_ht=scontent-lga3-1.cdninstagram.com"
+//                ,"https://scontent-lga3-1.cdninstagram.com/vp/9d1f951f128f7eb38b057ce3673be616/5D1378AF/t51.2885-15/e35/50167465_198814314427275_5100747287541511205_n.jpg?_nc_ht=scontent-lga3-1.cdninstagram.com"
+//                ,"https://scontent-lga3-1.cdninstagram.com/vp/5913ea71abd391d765dbf4567c05e4b5/5D26C9D1/t51.2885-15/e35/52801086_1547259772043634_5954984716737087169_n.jpg?_nc_ht=scontent-lga3-1.cdninstagram.com"
+//                ,"https://scontent-lga3-1.cdninstagram.com/vp/6d732c4ad6a729374b63e1caced005cd/5D26427F/t51.2885-15/e35/53866545_364834834367670_360804512498698425_n.jpg?_nc_ht=scontent-lga3-1.cdninstagram.com"};
+//
+//        for (int i = 0; i < 8; i++) {
+//
+//            String userID = "beta_user_" + arr[i];
+//            User user = new User( arr2[i],userID,  "",  StringManipulation.condenseUsername(arr[i]),"GREY",0 );
+//
+//            myRef.child(getString(R.string.dbname_users))
+//                    .child(userID)
+//                    .setValue(user);
+//
+//            UserAccountSettings settings = new UserAccountSettings(
+//                    "",
+//                    arr[i],
+//                    arr2[i],
+//                    StringManipulation.condenseUsername(arr[i])
+//            );
+//
+//            myRef.child(getString(R.string.dbname_user_account_settings))
+//                    .child(userID)
+//                    .setValue(settings);
+//        }
+//
+//        //follow all the people you haven't.
+//        myRef.child(getString(R.string.dbname_users))
+//                .addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//
+//                        for (DataSnapshot ds: dataSnapshot.getChildren()){
+//
+//                            User user = ds.getValue(User.class);
+//
+//                            if (!user.getUser_id().contains("beta")) {
+//
+//                                for (int i = 0; i < 8; i++) {
+//
+//                                    FirebaseDatabase.getInstance().getReference()
+//                                            .child(getString(R.string.dbname_followers))
+//                                            .child(user.getUser_id())
+//                                            .child("beta_user_" + arr[i])
+//                                            .child(getString(R.string.field_user_id))
+//                                            .setValue("beta_user_" + arr[i]);
+//
+//                                    FirebaseDatabase.getInstance().getReference()
+//                                            .child(getString(R.string.dbname_following))
+//                                            .child("beta_user_" + arr[i])
+//                                            .child(user.getUser_id())
+//                                            .child(getString(R.string.field_user_id))
+//                                            .setValue(user.getUser_id());
+//                                }
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                });
+
+        //challenge users!
+        ArrayList<String> userIdnames = new ArrayList<>();
+        HashMap<String,ArrayList<String>> photoIds = new HashMap<>();
+
+        myRef.child("beta_photos")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        for (DataSnapshot ds : dataSnapshot.getChildren()){
+
+                            HashMap<String,Object> objectHashMap =(HashMap<String,Object>) ds.getValue();
+
+                            userIdnames.add(objectHashMap.get("name").toString());
+
+                            ArrayList<String> stringArrayList = new ArrayList<>();
+                            stringArrayList.add(objectHashMap.get("photo_url").toString());
+                            stringArrayList.add(objectHashMap.get("photo_url1").toString());
+                            stringArrayList.add(objectHashMap.get("photo_url2").toString());
+                            stringArrayList.add(objectHashMap.get("photo_url3").toString());
+
+                            photoIds.put(objectHashMap.get("name").toString(),stringArrayList);
+                        }
+
+
+
+                        myRef.child(getString(R.string.dbname_users))
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                        for (DataSnapshot ds : dataSnapshot.getChildren()){
+
+                                            User user = ds.getValue(User.class);
+
+                                            for (int i = 0; i < 2; i++) {
+
+                                                int rand0to7 = new Random().nextInt(8);
+                                                int rand0to3 = new Random().nextInt(4);
+
+                                                Log.d(TAG, "onDataChange: the random numbers are " + rand0to7 + " " + rand0to3);
+
+                                                final String currentUserUid = userIdnames.get(rand0to7);
+                                                final String selecteduserUid = user.getUser_id();
+                                                final Challenge mChallenge = new Challenge(currentUserUid, selecteduserUid, photoIds.get(userIdnames.get(rand0to7)).get(rand0to3),"","");
+                                                mChallenge.setStatus("NOT_DECIDED");
+                                                final String challengedUserName = user.getUsername();
+                                                myRef.child(getString(R.string.dbname_users))
+                                                        .child(currentUserUid)
+                                                        .child("username")
+                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                if (dataSnapshot.exists()) {
+                                                                    String challengerUserName = dataSnapshot.getValue(String.class);
+                                                                    mChallenge.setChallengedName(challengedUserName);
+                                                                    mChallenge.setChallengerName(challengerUserName);
+                                                                    String challengeKey = myRef.child("Challenges").push().getKey();
+                                                                    mChallenge.setChallengeKey(challengeKey);
+                                                                    myRef.child("Challenges").child(challengeKey).setValue(mChallenge);
+
+                                                                    DatabaseReference challengeReference = myRef.child("User_Challenges");
+                                                                    challengeReference.child(currentUserUid).child(challengeKey).setValue(challengeKey);
+                                                                    challengeReference.child(selecteduserUid).child(challengeKey).setValue(challengeKey);
+                                                                }
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
     private void getFollowing(){
         Log.d(TAG, "getFollowing: searching for following");
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference
-                .child(getString(R.string.dbname_following))
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
-                    Log.d(TAG, "onDataChange: found user: " +
-                            singleSnapshot.child(getString(R.string.field_user_id)).getValue());
+        if (isAdded()) {
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+            Query query = reference
+                    .child(getString(R.string.dbname_following))
+                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot singleSnapshot : dataSnapshot.getChildren()) {
+                        Log.d(TAG, "onDataChange: found user: " +
+                                singleSnapshot.child(getString(R.string.field_user_id)).getValue());
 
-                    mFollowing.add(singleSnapshot.child(getString(R.string.field_user_id)).getValue().toString());
+                        mFollowing.add(singleSnapshot.child(getString(R.string.field_user_id)).getValue().toString());
+                    }
+                    mFollowing.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                    //get the photos
+                    getPhotosKeys();
                 }
-                mFollowing.add(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                //get the photos
-                getPhotosKeys();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     private void getPhotosKeys() {
@@ -443,19 +601,30 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
                 Intent i = new Intent(getActivity(),HomeActivity.class);
                 getActivity().startActivity(i);
                 getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                getActivity().finish();
+
                 break;
 
             case 1:
-                mAdapter.sharePost();
+                if (mAdapter != null) {
+                    mAdapter.sharePost();
+                }
+
                 break;
 
             case 2:
+             //   doYourStuff();
                 Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                 getActivity().startActivity(intent);
                 getActivity().overridePendingTransition(R.anim.pull,R.anim.push);
                 break;
 
             case 3:
+                mRVPosts.smoothScrollToPosition(0);
+
+                break;
+
+            case 4:
                 spotlight();
                 SharedPreferences.Editor editor = mPrefs.edit();
                 editor.putBoolean(showFloatingButton, false);
@@ -502,9 +671,10 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
 
                     @Override
                     public void onEnded() {
-                        Intent i = new Intent(getActivity(),HomeActivity.class);
-                        startActivity(i);
-                        getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+//                        Intent i = new Intent(getActivity(),HomeActivity.class);
+//                        startActivity(i);
+//                        getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+//                        getActivity().finish();
                     }
                 });
         spotlight.start();
@@ -541,12 +711,20 @@ public class HomeFragment extends Fragment implements RapidFloatingActionContent
                     .setWrapper(2)
             );
             items.add(new RFACLabelItem<Integer>()
+                    .setLabel("Scroll to top")
+                    .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_up_arrow))
+                    .setIconNormalColor(getActivity().getResources().getColor(R.color.pink_400))
+                    .setIconPressedColor(0xff1a237e)
+                    .setLabelColor(0xff283593)
+                    .setWrapper(3)
+            );
+            items.add(new RFACLabelItem<Integer>()
                     .setLabel("Disable this button")
                     .setDrawable(getActivity().getResources().getDrawable(R.drawable.ic_close))
                     .setIconNormalColor(getActivity().getResources().getColor(R.color.light_blue_400))
                     .setIconPressedColor(0xff1a237e)
                     .setLabelColor(0xff283593)
-                    .setWrapper(3)
+                    .setWrapper(4)
             );
 
             rfaContent

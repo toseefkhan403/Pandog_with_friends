@@ -1,6 +1,7 @@
 package com.android.toseefkhan.pandog.Utils;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.FrameLayout;
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieComposition;
 import com.airbnb.lottie.OnCompositionLoadedListener;
+import com.android.toseefkhan.pandog.Profile.PostsProfileRVAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +56,7 @@ public class LottieFontViewGroupL extends FrameLayout {
                         cursorView.playAnimation();
                         addView(cursorView);
                     }
-                };
+        };
 
         LottieComposition.Factory.fromAssetFileName(getContext(), "Mobilo/L.json", c);
     }
@@ -69,6 +71,5 @@ public class LottieFontViewGroupL extends FrameLayout {
             views.add(index, child);
         }
     }
-
 
 }

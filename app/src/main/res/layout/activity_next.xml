@@ -74,6 +74,20 @@
             android:layout_below="@id/FriendsSearch"
             tools:listitem="@layout/profile_item" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No Friends Found. You need to follow \n some users to share photos with them!"
+            android:textSize="20sp"
+            android:id="@+id/no_friends_found"
+            android:visibility="gone"
+            android:layout_below="@+id/FriendsSearch"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="80dp"
+            android:textColor="@color/teal_400"
+            android:textStyle="italic"/>
+
         <LinearLayout
             android:id="@+id/progress_root"
             android:layout_width="170dp"

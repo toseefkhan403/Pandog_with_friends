@@ -119,6 +119,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                     i.putExtra("title",getIntent().getStringExtra("title"));
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    finish();
 
                 }else if (getIntent().hasExtra("uid")){
 
@@ -126,6 +127,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                     i.putExtra("uid",getIntent().getExtras().getString("uid"));
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    finish();
 
                 }
 
@@ -207,6 +209,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                     i.putExtra("title",getIntent().getStringExtra("title"));
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    finish();
 
                 }else if (getIntent().hasExtra("uid")){
 
@@ -214,6 +217,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                     i.putExtra("uid",getIntent().getExtras().getString("uid"));
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    finish();
 
                 }
             }
@@ -250,13 +254,22 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                 .setWrapper(2)
         );
         items.add(new RFACLabelItem<Integer>()
+                .setLabel("Scroll to top")
+                .setDrawable(getResources().getDrawable(R.drawable.ic_up_arrow))
+                .setIconNormalColor(getResources().getColor(R.color.pink_400))
+                .setIconPressedColor(0xff1a237e)
+                .setLabelColor(0xff283593)
+                .setWrapper(3)
+        );
+        items.add(new RFACLabelItem<Integer>()
                 .setLabel("Disable this button")
                 .setDrawable(getResources().getDrawable(R.drawable.ic_close))
                 .setIconNormalColor(getResources().getColor(R.color.light_blue_400))
                 .setIconPressedColor(0xff1a237e)
                 .setLabelColor(0xff283593)
-                .setWrapper(3)
+                .setWrapper(4)
         );
+
 
         rfaContent
                 .setItems(items)
@@ -599,6 +612,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                     i.putExtra("title",getIntent().getStringExtra("title"));
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    finish();
 
                 }else if (getIntent().hasExtra("uid")){
 
@@ -606,6 +620,7 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                     i.putExtra("uid",getIntent().getExtras().getString("uid"));
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    finish();
                 }
 
                 break;
@@ -621,6 +636,10 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                 break;
 
             case 3:
+                mRVPosts.smoothScrollToPosition(0);
+                break;
+
+            case 4:
                 spotlight();
                 SharedPreferences.Editor editor = mPrefs.edit();
                 editor.putBoolean(showFloatingButton, false);

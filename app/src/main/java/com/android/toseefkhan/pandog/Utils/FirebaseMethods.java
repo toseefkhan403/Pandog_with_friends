@@ -144,13 +144,13 @@ public class FirebaseMethods {
                             Toasty.success(mContext, "Photo upload success", Toast.LENGTH_SHORT,true).show();
                             Log.d(TAG, "onSuccess: this is the filepath " + filePaths.FIREBASE_IMAGE_STORAGE);
 
-                            ((Activity)mContext).finish();
-
                             //navigate to the main feed so the user can see their photo
                             Intent intent = new Intent(mContext, HomeActivity.class);
                             intent.putExtra("ChallengerUser",2);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             mContext.startActivity(intent);
-                            System.gc();
+                            ((Activity)mContext).finish();
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -210,12 +210,10 @@ public class FirebaseMethods {
                             uploadBitmap(imageUri);
                             Toasty.success(mContext, "Photo upload success", Toast.LENGTH_SHORT,true).show();
 
-                            ((Activity)mContext).finish();
-
                             //navigate to the profileActivity so the user can see their photo
                             Intent intent = new Intent(mContext, ProfileActivity.class);
                             mContext.startActivity(intent);
-                            System.gc();
+                            ((Activity)mContext).finish();
 
                         }
                     }).addOnFailureListener(new OnFailureListener() {
@@ -302,13 +300,6 @@ public class FirebaseMethods {
                                 });
 
                                 Log.d(TAG, "onSuccess: this is the filepath " + filePaths.FIREBASE_IMAGE_STORAGE);
-
-                                ((Activity)mContext).finish();
-
-                                //navigate to the main feed so the user can see their photo
-                                Intent intent = new Intent(mContext, ShareActivity.class);
-                                mContext.startActivity(intent);
-                                System.gc();
 
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -503,6 +494,14 @@ public class FirebaseMethods {
                 c.setStatus("ACCEPTED");
                 //delete the challenge as it is accepted successfully
                 myRef.child("Challenges").child(c.getChallengeKey()).setValue(c);
+
+
+                //navigate to the main feed so the user can see their photo
+                Intent intent = new Intent(mContext, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                mContext.startActivity(intent);
+                ((Activity) mContext).finish();
             }
 
             @Override
@@ -524,23 +523,13 @@ public class FirebaseMethods {
         Toasty.success(mContext, "Your post is up for voting!", Toast.LENGTH_SHORT,true).show();
     }
 
-    public int getImageCount(DataSnapshot dataSnapshot) {
-        int count = 0;
-        for (DataSnapshot ds : dataSnapshot
-                .getChildren()) {
-            count++;
-        }
-
-        return count;
-    }
-
 
     /**
      * Update 'user_account_settings' node for the current user
      * @param displayName
      * @param description
      */
-    public void updateUserAccountSettings(String displayName, String description){
+    public void updateUserAccountSettings(String displayName, String description, String instagramUsername){
 
         Log.d(TAG, "updateUserAccountSettings: updating user account settings.");
 
@@ -557,6 +546,13 @@ public class FirebaseMethods {
                     .child(userID)
                     .child(mContext.getString(R.string.field_description))
                     .setValue(description);
+        }
+
+        if(instagramUsername != null) {
+            myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+                    .child(userID)
+                    .child(mContext.getString(R.string.field_insta_username))
+                    .setValue(instagramUsername);
         }
     }
 
@@ -641,7 +637,7 @@ public class FirebaseMethods {
      */
     public void addNewUser(String email, String username,String displayName, String description, String profile_photo){
 
-        User user = new User( null,userID,  email,  StringManipulation.condenseUsername(username),"GREY",0 );
+        User user = new User( profile_photo, userID,  email, StringManipulation.condenseUsername(username),"GREY",0 );
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userID)
@@ -652,6 +648,7 @@ public class FirebaseMethods {
                 displayName,
                 profile_photo,
                 StringManipulation.condenseUsername(username)
+                ,""
         );
 
         myRef.child(mContext.getString(R.string.dbname_user_account_settings))
@@ -698,6 +695,11 @@ public class FirebaseMethods {
                             ds.child(userID)
                                     .getValue(UserAccountSettings.class)
                                     .getProfile_photo()
+                    );
+                    settings.setInstagram_username(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getInstagram_username()
                     );
 
                     Log.d(TAG, "getUserAccountSettings: retrieved user_account_settings information: " + settings.toString());

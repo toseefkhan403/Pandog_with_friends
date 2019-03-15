@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -65,15 +66,15 @@ public class SearchActivity extends AppCompatActivity {
     private static final int ACTIVITY_NUM = 3;
     private Context mContext = SearchActivity.this;
     private RecyclerView profilesListView;
-    private RecyclerView vertical;
+    private RecyclerView vertical,mRecycler_1;
     private List<ImageView> mImgList = new ArrayList<>();
     private int mLastSelectPosition = 0;
     private TextView textView;
     private ImageView imageView;
     private InterceptRelativeLayout mRelaIntercept1;
-//    private RelativeLayout searchRelativeLayout;
     private TextView searchEmptyTextView;
     private SearchView profileSearchView;
+    private DataSnapshot mDataSnapshot;
 
     //for the welcome screen
     SharedPreferences mPrefs;
@@ -162,6 +163,21 @@ public class SearchActivity extends AppCompatActivity {
 
     private void initBannerRV() {
 
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+        ref.child("trending")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        mDataSnapshot = dataSnapshot;
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
         //setting the banner recycler view on the top
         mRelaIntercept1 = findViewById(R.id.rela_intercept_1);
         mRelaIntercept1.setIntercept(false);
@@ -174,7 +190,8 @@ public class SearchActivity extends AppCompatActivity {
         mImgList.add(mImg3);
         mImgList.add(mImg4);
 
-        RecyclerView mRecycler_1 = findViewById(R.id.recycler1);
+        mRecycler_1 = findViewById(R.id.recycler1);
+        mRecycler_1.setVisibility(View.GONE);
         BannerLayoutManager bannerLayoutManager = new BannerLayoutManager(this,mRecycler_1,4,OrientationHelper.HORIZONTAL);
         mRecycler_1.setLayoutManager(bannerLayoutManager);
         bannerLayoutManager.setOnSelectedViewListener(new BannerLayoutManager.OnSelectedViewListener() {
@@ -186,8 +203,9 @@ public class SearchActivity extends AppCompatActivity {
         changeUI(0);
 
         ArrayList<String> imgUrls = new ArrayList<>();
+        ArrayList<String> titles = new ArrayList<>();
         ArrayList<TrendingItem> trendingItems = new ArrayList<>();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
         ref.child("search_banner")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -198,26 +216,24 @@ public class SearchActivity extends AppCompatActivity {
                             HashMap<String,Object> objectMap = (HashMap<String,Object>) ss.getValue();
 
                             imgUrls.add(objectMap.get("imageUrl").toString());
-
-                            String trendingTitle = objectMap.get("trending_title").toString();
-
-                            ref.child("trending")
-                                    .child(trendingTitle)
-                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            TrendingItem item = dataSnapshot.getValue(TrendingItem.class);
-                                            trendingItems.add(item);
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                        }
-                                    });
+                            titles.add(objectMap.get("trending_title").toString());
                         }
 
-                        MyAdapter myAdapter = new MyAdapter(imgUrls,trendingItems);
+                        for (int i = 0 ; i < titles.size() ; i++){
+
+                            String trendingTitle = titles.get(i);
+
+                            for (DataSnapshot ds : mDataSnapshot.getChildren()){
+                                TrendingItem item = ds.getValue(TrendingItem.class);
+
+                                if (trendingTitle.equals(item.getTitle().replace("#",""))){
+                                    trendingItems.add(item);
+                                }
+                            }
+                        }
+
+                        MyAdapter myAdapter = new MyAdapter(imgUrls, trendingItems);
+                        mRecycler_1.setVisibility(View.VISIBLE);
                         mRecycler_1.setAdapter(myAdapter);
                     }
 
@@ -246,7 +262,6 @@ public class SearchActivity extends AppCompatActivity {
                         for (DataSnapshot ss : dataSnapshot.getChildren()){
 
                             TrendingItem item = ss.getValue(TrendingItem.class);
-
                             trendingItemsList.add(item);
                         }
 
@@ -527,6 +542,7 @@ public class SearchActivity extends AppCompatActivity {
 
                 case 0:
                     holder.img.setImageResource(R.drawable.referandearn);
+                    holder.pb.setVisibility(View.GONE);
                     holder.img.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -538,50 +554,56 @@ public class SearchActivity extends AppCompatActivity {
                     break;
 
                 case 1:
-                    UniversalImageLoader.setImage(mUrls.get(0),holder.img,null,"",null);
-                    holder.img.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            hideKeyboard();
-                            Intent i = new Intent(mContext, ViewPostsListActivity.class);
-                            i.putExtra("post_keys_list",mList.get(0).getPost_keys_list());
-                            i.putExtra("title",mList.get(0).getTitle());
-                            startActivity(i);
-                            overridePendingTransition(R.anim.pull,R.anim.push);
-                        }
-                    });
+                    UniversalImageLoader.setImage(mUrls.get(0),holder.img,holder.pb,"",null);
+                    if (mList.get(0).getPost_keys_list() != null) {
+                        holder.img.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                hideKeyboard();
+                                Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                                i.putExtra("post_keys_list", mList.get(0).getPost_keys_list());
+                                i.putExtra("title", mList.get(0).getTitle());
+                                startActivity(i);
+                                overridePendingTransition(R.anim.pull, R.anim.push);
+                            }
+                        });
+                    }
 
                     break;
 
                 case 2:
-                    UniversalImageLoader.setImage(mUrls.get(1),holder.img,null,"",null);
-                    holder.img.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            hideKeyboard();
-                            Intent i = new Intent(mContext, ViewPostsListActivity.class);
-                            i.putExtra("post_keys_list",mList.get(1).getPost_keys_list());
-                            i.putExtra("title",mList.get(1).getTitle());
-                            startActivity(i);
-                            overridePendingTransition(R.anim.pull,R.anim.push);
-                        }
-                    });
+                    UniversalImageLoader.setImage(mUrls.get(1),holder.img,holder.pb,"",null);
+                    if (mList.get(1).getPost_keys_list() != null) {
+                        holder.img.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                hideKeyboard();
+                                Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                                i.putExtra("post_keys_list", mList.get(1).getPost_keys_list());
+                                i.putExtra("title", mList.get(1).getTitle());
+                                startActivity(i);
+                                overridePendingTransition(R.anim.pull, R.anim.push);
+                            }
+                        });
+                    }
 
                     break;
 
                 case 3:
-                    UniversalImageLoader.setImage(mUrls.get(2),holder.img,null,"",null);
-                    holder.img.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            hideKeyboard();
-                            Intent i = new Intent(mContext, ViewPostsListActivity.class);
-                            i.putExtra("post_keys_list",mList.get(2).getPost_keys_list());
-                            i.putExtra("title",mList.get(2).getTitle());
-                            startActivity(i);
-                            overridePendingTransition(R.anim.pull,R.anim.push);
-                        }
-                    });
+                    UniversalImageLoader.setImage(mUrls.get(2),holder.img,holder.pb,"",null);
+                    if (mList.get(2).getPost_keys_list() != null) {
+                        holder.img.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                hideKeyboard();
+                                Intent i = new Intent(mContext, ViewPostsListActivity.class);
+                                i.putExtra("post_keys_list", mList.get(2).getPost_keys_list());
+                                i.putExtra("title", mList.get(2).getTitle());
+                                startActivity(i);
+                                overridePendingTransition(R.anim.pull, R.anim.push);
+                            }
+                        });
+                    }
 
                     break;
             }
@@ -595,9 +617,11 @@ public class SearchActivity extends AppCompatActivity {
 
         public class ViewHolder extends RecyclerView.ViewHolder {
             ImageView img;
+            ProgressBar pb;
             public ViewHolder(View itemView) {
                 super(itemView);
                 img = itemView.findViewById(R.id.img);
+                pb = itemView.findViewById(R.id.pb);
             }
         }
     }

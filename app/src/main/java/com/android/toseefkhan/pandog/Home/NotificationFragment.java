@@ -206,6 +206,7 @@ public class NotificationFragment extends Fragment {
                 i.putExtra("ChallengerUser",2);
                 startActivity(i);
                 getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                getActivity().finish();
             }
         }, 1000));
 
@@ -227,22 +228,22 @@ public class NotificationFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         Challenge challenge = dataSnapshot.getValue(Challenge.class);
-                        if (challenge.getStatus().equals("NOT_DECIDED")) {
+                       if (challenge.getStatus().equals("NOT_DECIDED")) {
 
-                            if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
-                                int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
-                                challengesList.set(challlengeIndex, challenge);
-                                notificationsAdapter.updateList(challengesList,challenge);
-                            } else {
-                                challengesList.add(challenge);
-                                notificationsAdapter.changeList(challengesList,challenge);
-                                if (progressBar != null) {
-                                    if (progressBar.getVisibility() != View.GONE) {
-                                        progressBar.setVisibility(View.GONE);
-                                    }
-                                }
-                            }
-                        }
+                           if (notificationsAdapter.doesChallengeExist(challenge.getChallengeKey())) {
+                               int challlengeIndex = notificationsAdapter.getIndexOfChallenge(challenge.getChallengeKey());
+                               challengesList.set(challlengeIndex, challenge);
+                               notificationsAdapter.updateList(challengesList, challenge);
+                           } else {
+                               challengesList.add(challenge);
+                               notificationsAdapter.changeList(challengesList, challenge);
+                               if (progressBar != null) {
+                                   if (progressBar.getVisibility() != View.GONE) {
+                                       progressBar.setVisibility(View.GONE);
+                                   }
+                               }
+                           }
+                       }
                     }
                     if (challengesList.isEmpty()) {
                         if (progressBar != null)

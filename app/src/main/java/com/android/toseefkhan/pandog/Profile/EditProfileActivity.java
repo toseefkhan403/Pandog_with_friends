@@ -1,7 +1,9 @@
 package com.android.toseefkhan.pandog.Profile;
 
 import android.animation.Animator;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -19,9 +21,12 @@ import com.fenchtose.nocropper.CropperCallback;
 import com.fenchtose.nocropper.CropperView;
 import com.github.tbouron.shakedetector.library.ShakeDetector;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -86,7 +91,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
     private String userID;
 
     //EditProfile Fragment widgets
-    private EditText mDisplayName, mUsername, mDescription;
+    private EditText mDisplayName, mUsername, mDescription, mInstagram;
     private TextView mChangeProfilePhoto;
     private Context mContext=EditProfileActivity.this;
     private CircleImageView mProfilePhoto;
@@ -123,6 +128,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
         mDisplayName = findViewById(R.id.display_name);
         mUsername = findViewById(R.id.username);
         mDescription = findViewById(R.id.description);
+        mInstagram = findViewById(R.id.instagram_username);
         mChangeProfilePhoto = findViewById(R.id.changeProfilePhoto);
         mChangeProfilePhoto.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/Comic Neue.ttf"));
         mLogOut = findViewById(R.id.log_out_button);
@@ -322,6 +328,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
             public void onClick(View view) {
 
                 Log.d(TAG, "onClick: changing the rotation");
+                imagePreview.fitToCenter();
                 Matrix matrix = new Matrix();
                 matrix.postRotate(90);
                 Bitmap bitmap1 = Bitmap.createBitmap(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), matrix, true);
@@ -356,13 +363,44 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
 
     private void loadImage() {
         try {
-            originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(getIntent().getStringExtra(getString(R.string.selected_image))));
+
+            if (getIntent().hasExtra(getString(R.string.selected_image))) {
+                originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(getIntent().getStringExtra(getString(R.string.selected_image))));
+            } else if (Intent.ACTION_SEND.equals(getIntent().getAction()) && getIntent().getType() != null) {
+                Log.d(TAG, "loadImage: image coming from gallery");
+                originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
+            }
+
+            int count = 0, num = originalImage.getByteCount();
+            while(num != 0)
+            {
+                num /= 10;
+                ++count;
+            }
+
+            if (count > 7){
+                //make it smaller man!
+                int maxHeight = 1280;
+                int maxWidth = 940;
+                float scale = Math.min(((float)maxHeight / originalImage.getWidth()), ((float)maxWidth / originalImage.getHeight()));
+
+                Matrix matrix = new Matrix();
+                matrix.postScale(scale, scale);
+
+                originalImage = Bitmap.createBitmap(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), matrix, true);
+            }
+
+            Log.d(TAG, "loadImage: bitmap scales " + originalImage.getWidth() + " " + originalImage.getHeight());
+
             filteredImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
             imagePreview.setImageBitmap(originalImage);
 
-        }catch (Exception e){}
+        } catch (Exception e) {
+            Log.d(TAG, "loadImage: Exception " + e.getMessage());
+        }
 
     }
+
 
     /**
      * Retrieves the data contained in the widgets and submits it to the database
@@ -372,6 +410,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
         final String displayName = mDisplayName.getText().toString();
         final String username = mUsername.getText().toString();
         final String description = mDescription.getText().toString();
+        final String instagramUsername = mInstagram.getText().toString();
 
 
         //case1: if the user made a change to their username
@@ -380,19 +419,44 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
         }
 
 
-        /**
+        /*
          * change the rest of the settings that do not require uniqueness
          */
         if(!mUserSettings.getSettings().getDisplay_name().equals(displayName)){
             //update displayname
             Toasty.success(mContext, "Name updated.", Toast.LENGTH_SHORT,true).show();
-            mFirebaseMethods.updateUserAccountSettings(displayName, null);
+            mFirebaseMethods.updateUserAccountSettings(displayName, null, null);
         }
 
         if(!mUserSettings.getSettings().getDescription().equals(description)){
             //update description
             Toasty.success(mContext, "Your description is updated.", Toast.LENGTH_SHORT,true).show();
-            mFirebaseMethods.updateUserAccountSettings(null, description);
+            mFirebaseMethods.updateUserAccountSettings(null, description, null);
+        }
+
+        if(!mUserSettings.getSettings().getInstagram_username().equals(instagramUsername)){
+            //update instagram username
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            builder.setMessage("Make sure you enter your correct Instagram username to " +
+                    "link your Instagram Account properly to Celfie");
+
+            builder.setPositiveButton("CONTINUE", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Toasty.success(mContext, "Your Instagram username is updated.", Toast.LENGTH_SHORT,true).show();
+                    mFirebaseMethods.updateUserAccountSettings(null, null, instagramUsername);
+                }
+            });
+
+            builder.setNegativeButton("DISMISS", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder.show();
+
         }
 
     }
@@ -447,6 +511,7 @@ public class EditProfileActivity extends AppCompatActivity implements ThumbnailA
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
         mDescription.setText(settings.getDescription());
+        mInstagram.setText(settings.getInstagram_username());
 
 
         mChangeProfilePhoto.setOnClickListener(new View.OnClickListener() {

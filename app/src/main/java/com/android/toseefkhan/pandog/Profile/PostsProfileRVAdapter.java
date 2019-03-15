@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
@@ -30,11 +31,14 @@ import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Utils.Heart;
 import com.android.toseefkhan.pandog.Utils.InitialSetup;
 import com.android.toseefkhan.pandog.Utils.Like;
+import com.android.toseefkhan.pandog.Utils.LottieFontViewGroupI;
+import com.android.toseefkhan.pandog.Utils.LottieFontViewGroupN;
+import com.android.toseefkhan.pandog.Utils.LottieFontViewGroupN2;
+import com.android.toseefkhan.pandog.Utils.LottieFontViewGroupW;
 import com.android.toseefkhan.pandog.Utils.UniversalImageLoader;
 import com.android.toseefkhan.pandog.Utils.ViewLikesActivity;
 import com.android.toseefkhan.pandog.models.Post;
 import com.android.toseefkhan.pandog.models.User;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -142,6 +146,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                 animator.start();
             }
         });
+
         holder.image2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,7 +216,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         setTimeAndCalculateResults(holder, time, post);
 
         if(reachedEndOfList(position)){
-            loadMoreData(holder);
+            loadMoreData();
         }
     }
 
@@ -230,16 +235,17 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                 holder.image1.setAlpha(1f);
                 holder.image2.setAlpha(1f);
 
-                holder.tvWinner.setVisibility(View.GONE);
-                holder.tvWinner2.setVisibility(View.GONE);
-                holder.tvLoser.setVisibility(View.GONE);
-                holder.tvLoser2.setVisibility(View.GONE);
+                holder.tvWinner.setVisibility(View.INVISIBLE);
+                holder.tvWinner2.setVisibility(View.INVISIBLE);
+                holder.tvLoser.setVisibility(View.INVISIBLE);
+                holder.tvLoser2.setVisibility(View.INVISIBLE);
 
                 if (time <= 0) {
 
                     holder.heartHolder.setVisibility(View.GONE);
                     holder.heartHolder2.setVisibility(View.GONE);
                     holder.timeRemaining.setText("Awaiting result");
+                    holder.timeRemaining.setVisibility(View.VISIBLE);
 
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                     ref.child("Posts")
@@ -268,6 +274,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                                 }
                             });
                 } else {
+                    holder.timeRemaining.setVisibility(View.VISIBLE);
                     setLikesIcons(holder,post);
                 }
             }
@@ -276,16 +283,17 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             holder.heartHolder.setVisibility(View.GONE);
             holder.heartHolder2.setVisibility(View.GONE);
 
-            holder.tvWinner.setVisibility(View.GONE);
-            holder.tvWinner2.setVisibility(View.GONE);
-            holder.tvLoser.setVisibility(View.GONE);
-            holder.tvLoser2.setVisibility(View.GONE);
+            holder.tvWinner.setVisibility(View.INVISIBLE);
+            holder.tvWinner2.setVisibility(View.INVISIBLE);
+            holder.tvLoser.setVisibility(View.INVISIBLE);
+            holder.tvLoser2.setVisibility(View.INVISIBLE);
 
             holder.image1.setAlpha(0.5f);
             holder.image2.setAlpha(0.5f);
 
             if (post.getWinner().equals("tie")) {
                 holder.timeRemaining.setText("It's a draw!!");
+                holder.timeRemaining.setVisibility(View.VISIBLE);
 
             } else if (post.getWinner().equals(post.getUser_id())) {
 
@@ -301,6 +309,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 String username = dataSnapshot.getValue(String.class);
                                 holder.timeRemaining.setText(username + " won the challenge");
+                                holder.timeRemaining.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -323,6 +332,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 String username = dataSnapshot.getValue(String.class);
                                 holder.timeRemaining.setText(username + " won the challenge");
+                                holder.timeRemaining.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -333,22 +343,14 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             }
         }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                holder.timeRemaining.setVisibility(View.VISIBLE);
-            }
-        },500);
-
     }
 
     private boolean reachedEndOfList(int position){
         return position == getItemCount() - 1;
     }
 
-    private void loadMoreData(ViewHolder holder){
+    private void loadMoreData(){
 
-        // loadSuggestions(holder);
         try{
             mOnLoadMoreItemsListener = (OnLoadMoreItemsListener) mContext;
         }catch (ClassCastException e){
@@ -360,60 +362,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         }catch (Exception e){
             Log.e(TAG, "loadMoreData: ClassCastException: " +e.getMessage() );
         }
-    }
-
-    private void loadSuggestions(ViewHolder holder) {
-
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
-
-        ref.child(mContext.getString(R.string.dbname_users))
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                        User user = dataSnapshot.getValue(User.class);
-                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.image1,null,"",null);
-                        UniversalImageLoader.setImage(user.getProfile_photo(),holder.image2,null,"",null);
-                        holder.caption1.setText(user.getUsername());
-                        holder.caption2.setText(user.getUsername());
-                        holder.caption1.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                                Intent i = new Intent(mContext,ViewProfileActivity.class);
-                                i.putExtra(mContext.getString(R.string.intent_user),user);
-                                mContext.startActivity(i);
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-
-
-        holder.bottomView.setVisibility(View.GONE);
-        holder.bottomView2.setVisibility(View.GONE);
-
-        /*
-        holder.dp1,holder.dp2;
-        holder.username1,holder.username2;
-        holder.image1,image2;
-         likesString1,likesString2;
-         comments_list,comments_list2;
-         caption1,caption2,timeRemaining;
-         heartWhite,heartWhite2,heartRed,heartRed2;
-         horizontalScrollView;
-         theWholeView;
-         cardView1;
-         cardView2;
-         child,child2;
-         heartHolder, heartHolder2,tvWinner,tvWinner2,tvLoser,tvLoser2;
-         */
-
     }
 
     private void initLikesString(final ViewHolder holder, Post post) {
@@ -769,7 +717,6 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             bottomView = itemView.findViewById(R.id.bottomView);
             bottomView2 = itemView.findViewById(R.id.bottomView2);
 
-
             heartRed.setVisibility(View.GONE);
             heartRed2.setVisibility(View.GONE);
             heartWhite.setVisibility(View.VISIBLE);
@@ -784,34 +731,120 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
         }
     }
 
+    @Override
+    public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
 
-    private File saveBitMap(Context context, View drawView){
-        File pictureFileDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"Handcare");
-        if (!pictureFileDir.exists()) {
-            boolean isDirectoryCreated = pictureFileDir.mkdirs();
-            if(!isDirectoryCreated)
-                Log.i("ATG", "Can't create directory to save the image");
-            return null;
+        mViewHolder = holder;
+    }
+
+    public void sharePost() {
+        Log.d(TAG, "onLongClick: attempting to share the post ");
+
+        if (mViewHolder != null) {
+            Dialog shareImageDialog = new Dialog(mContext);
+            shareImageDialog.setContentView(R.layout.layout_share_post_dialog);
+            TextView saveGallery = shareImageDialog.findViewById(R.id.save_to_gallery);
+            TextView otherApps = shareImageDialog.findViewById(R.id.other_apps);
+            TextView cancel = shareImageDialog.findViewById(R.id.cancel);
+
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    shareImageDialog.dismiss();
+                }
+            });
+
+            saveGallery.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    try {
+                        File file = saveBitMap(mContext, mViewHolder.theWholeView);    //which view you want to pass that view as parameter
+                        if (file != null) {
+                            scanGallery(mContext, file.getAbsolutePath());
+                            Toasty.success(mContext, "Post saved to gallery", Toast.LENGTH_SHORT, true).show();
+                        } else {
+                            Toasty.error(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT, true).show();
+                        }
+                    } catch (IllegalStateException e) {
+                        Log.d(TAG, "onClick: IllegalStateException" + e.getMessage());
+                        Toasty.error(mContext, "Something went wrong. Please try again", Toasty.LENGTH_SHORT, true).show();
+                    }
+
+                }
+            });
+
+            otherApps.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toasty.warning(mContext, "Attempting to share the post...", Toasty.LENGTH_LONG, true).show();
+
+                    try {
+                        File file = saveBitMap(mContext, mViewHolder.theWholeView);
+                        MediaScannerConnection.scanFile(mContext,
+                                new String[]{file.getAbsolutePath()}, null,
+                                new MediaScannerConnection.OnScanCompletedListener() {
+                                    public void onScanCompleted(String path, Uri uri) {
+                                        Log.d("onScanCompleted", uri.getPath());
+
+                                        Intent shareIntent = new Intent();
+                                        shareIntent.setAction(Intent.ACTION_SEND);
+                                        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                                        shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : https://play.google.com/store/apps/details?id=com.android.toseefkhan.pandog \n");
+                                        shareIntent.setType("image/jpg");
+                                        mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
+                                    }
+                                });
+                    } catch (NullPointerException e) {
+                        Log.d(TAG, "onClick: NullPointerException " + e.getMessage());
+                        Toasty.error(mContext, "Something went wrong. Please try again", Toasty.LENGTH_SHORT, true).show();
+                    } catch (IllegalStateException e) {
+                        Log.d(TAG, "onClick: IllegalStateException " + e.getMessage());
+                        Toasty.error(mContext, "Something went wrong. Please try again", Toasty.LENGTH_SHORT, true).show();
+                    }
+                }
+            });
+
+            shareImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            shareImageDialog.show();
         }
-        String filename = pictureFileDir.getPath() +File.separator+ System.currentTimeMillis()+".jpg";
-        File pictureFile = new File(filename);
-        Bitmap bitmap =getBitmapFromView(drawView);
+    }
+
+    private File saveBitMap(Context context, View drawView) throws IllegalStateException{
+
         try {
-            pictureFile.createNewFile();
-            FileOutputStream oStream = new FileOutputStream(pictureFile);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, oStream);
-            oStream.flush();
-            oStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.i("TAG", "There was an issue saving the image.");
+            File pictureFileDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Handcare");
+            if (!pictureFileDir.exists()) {
+                boolean isDirectoryCreated = pictureFileDir.mkdirs();
+                if (!isDirectoryCreated)
+                    Log.d("TAG", "Can't create directory to save the image");
+                return null;
+            }
+            String filename = pictureFileDir.getPath() + File.separator + System.currentTimeMillis() + ".jpg";
+            File pictureFile = new File(filename);
+            Bitmap bitmap = getBitmapFromView(drawView);
+            try {
+                pictureFile.createNewFile();
+                FileOutputStream oStream = new FileOutputStream(pictureFile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, oStream);
+                oStream.flush();
+                oStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.i("TAG", "There was an issue saving the image.");
+            }
+
+            return pictureFile;
+        }catch (IllegalStateException e){
+            Log.d(TAG, "saveBitMap: " + e.getMessage());
         }
 
-        return pictureFile;
+        return null;
     }
 
     //create bitmap from view and returns it
-    private Bitmap getBitmapFromView(View view) {
+    private Bitmap getBitmapFromView(View view) throws IllegalStateException{
         //Define a bitmap with the same size as the view
         Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(),Bitmap.Config.ARGB_8888);
         //Bind a canvas to it
@@ -832,7 +865,7 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
     }
 
     // used for scanning gallery
-    private void scanGallery(Context cntx, String path) {
+    private void scanGallery(Context cntx, String path) throws IllegalStateException{
         try {
             MediaScannerConnection.scanFile(cntx, new String[] { path },null, new MediaScannerConnection.OnScanCompletedListener() {
                 public void onScanCompleted(String path, Uri uri) {
@@ -842,77 +875,5 @@ public class PostsProfileRVAdapter extends RecyclerView.Adapter<PostsProfileRVAd
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void onViewAttachedToWindow(@NonNull ViewHolder holder) {
-        super.onViewAttachedToWindow(holder);
-
-        mViewHolder = holder;
-    }
-
-    public void sharePost() {
-        Log.d(TAG, "onLongClick: attempting to share the post ");
-
-        Dialog shareImageDialog = new Dialog(mContext);
-        shareImageDialog.setContentView(R.layout.layout_share_post_dialog);
-        TextView saveGallery = shareImageDialog.findViewById(R.id.save_to_gallery);
-        TextView otherApps = shareImageDialog.findViewById(R.id.other_apps);
-        TextView cancel = shareImageDialog.findViewById(R.id.cancel);
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                shareImageDialog.dismiss();
-            }
-        });
-
-        saveGallery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                File file = saveBitMap(mContext, mViewHolder.theWholeView);    //which view you want to pass that view as parameter
-                if (file != null) {
-                    scanGallery(mContext,file.getAbsolutePath());
-                    Toasty.success(mContext, "Post saved to gallery", Toast.LENGTH_SHORT,true).show();
-                } else {
-                    Toasty.error(mContext, "Something went wrong, please try again!", Toast.LENGTH_SHORT,true).show();
-                }
-
-            }
-        });
-
-        otherApps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(mViewHolder.theWholeView,"Attempting to share the post...",Snackbar.LENGTH_LONG).show();
-
-                try{
-                    File file = saveBitMap(mContext, mViewHolder.theWholeView);
-                    MediaScannerConnection.scanFile(mContext,
-                            new String[] { file.getAbsolutePath() }, null,
-                            new MediaScannerConnection.OnScanCompletedListener() {
-                                public void onScanCompleted(String path, Uri uri) {
-                                    Log.d("onScanCompleted", uri.getPath());
-
-                                    Intent shareIntent = new Intent();
-                                    shareIntent.setAction(Intent.ACTION_SEND);
-                                    shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : app link goes here");
-                                    shareIntent.setType("image/jpg");
-                                    mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
-                                }
-                            });
-                }catch (NullPointerException e){
-                    Log.d(TAG, "onClick: Exception " + e.getMessage());
-                }catch (IllegalStateException e){
-                    Log.d(TAG, "onClick: Exception " + e.getMessage());
-                }
-            }
-        });
-
-        shareImageDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        shareImageDialog.show();
-    }
-
 
 }

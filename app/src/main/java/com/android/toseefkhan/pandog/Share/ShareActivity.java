@@ -81,8 +81,8 @@ public class ShareActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private Uri capturedImageUri;
     // private Spinner directorySpinner;
-    private View mOpenGalleryImage;
-    private View mOpenCameraImage;
+    private TextView mOpenGalleryImage;
+    private TextView mOpenCameraImage;
 
     //vars
     private ArrayList<String> directories;

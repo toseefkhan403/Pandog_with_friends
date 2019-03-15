@@ -6,15 +6,25 @@ public class UserAccountSettings {
     private String display_name;
     private String profile_photo;
     private String username;
+    private String instagram_username;
 
     public UserAccountSettings() {
     }
 
-    public UserAccountSettings(String description, String display_name, String profile_photo, String username) {
+    public UserAccountSettings(String description, String display_name, String profile_photo, String username,String instagram_username) {
         this.description = description;
         this.display_name = display_name;
         this.profile_photo = profile_photo;
         this.username = username;
+        this.instagram_username = instagram_username;
+    }
+
+    public String getInstagram_username() {
+        return instagram_username;
+    }
+
+    public void setInstagram_username(String instagram_username) {
+        this.instagram_username = instagram_username;
     }
 
     public String getDescription() {

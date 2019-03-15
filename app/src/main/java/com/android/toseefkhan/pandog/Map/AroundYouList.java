@@ -64,6 +64,7 @@ public class AroundYouList extends Fragment {
                 Intent i = new Intent(getActivity(), MapActivity2.class);
                 startActivity(i);
                 getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                getActivity().finish();
             }
         }, 1000));
 
@@ -133,53 +134,54 @@ public class AroundYouList extends Fragment {
 
     private void getDistancesForUsers() {
 
-        ref.child(getString(R.string.dbname_users))
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+        if (isAdded()) {
+            ref.child(getString(R.string.dbname_users))
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                        for (DataSnapshot ss : dataSnapshot.getChildren()){
+                            for (DataSnapshot ss : dataSnapshot.getChildren()) {
 
-                            User user = ss.getValue(User.class);
-                            Log.d(TAG, "onDataChange: user object " + user);
+                                User user = ss.getValue(User.class);
+                                Log.d(TAG, "onDataChange: user object " + user);
 
-                            try {
-                                if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                    try {
-                                        double distance = distance(latitude, longitude, user.getLat_lng().getLatitude(), user.getLat_lng().getLongitude());
-                                        distance = Math.round(distance);
-                                        if (distance == 0)
-                                            distance = 1;
-                                        userList.add(new UserDistance(user, (int) distance));
-                                    } catch (NullPointerException e) {
-                                        Log.d(TAG, "onDataChange: User doesn't have latlng");
+                                try {
+                                    if (!user.getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                        try {
+                                            double distance = distance(latitude, longitude, user.getLat_lng().getLatitude(), user.getLat_lng().getLongitude());
+                                            distance = Math.round(distance);
+                                            if (distance == 0)
+                                                distance = 1;
+                                            userList.add(new UserDistance(user, (int) distance));
+                                        } catch (NullPointerException e) {
+                                            Log.d(TAG, "onDataChange: User doesn't have latlng");
+                                        }
                                     }
+                                } catch (NullPointerException e) {
+                                    Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
                                 }
-                            }catch (NullPointerException e){
-                                Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+                            }
+
+                            ArrayList<UserDistance> finalList = sortList(userList);
+
+                            if (finalList.size() <= 30) {
+                                initUserListRecyclerView(finalList);
+                            } else {
+                                ArrayList<UserDistance> shortenedList = new ArrayList<>();
+
+                                for (int i = 0; i < 30; i++)
+                                    shortenedList.add(finalList.get(i));
+
+                                initUserListRecyclerView(shortenedList);
                             }
                         }
 
-                        ArrayList<UserDistance> finalList = sortList(userList);
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        if (finalList.size() <= 30){
-                            initUserListRecyclerView(finalList);
                         }
-                        else{
-                            ArrayList<UserDistance> shortenedList = new ArrayList<>() ;
-
-                            for (int i = 0 ; i<30 ; i++)
-                                shortenedList.add(finalList.get(i));
-
-                            initUserListRecyclerView(shortenedList);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                    });
+        }
     }
 
 

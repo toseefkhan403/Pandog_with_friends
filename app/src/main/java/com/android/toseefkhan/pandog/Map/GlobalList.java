@@ -69,6 +69,7 @@ public class GlobalList extends Fragment{
                 i.putExtra("move_to_two",2);
                 startActivity(i);
                 getActivity().overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                getActivity().finish();
             }
         }, 1000));
 
@@ -110,8 +111,15 @@ public class GlobalList extends Fragment{
 
                         for (DataSnapshot ss : dataSnapshot.getChildren()){
 
-                            User user = ss.getValue(User.class);
-                            arrayList.add(user);
+                            if (ss.exists()) {
+                                User user = ss.getValue(User.class);
+
+                                if (user != null) {
+                                    Log.d(TAG, "onDataChange: user " + user.getUsername() + " " + user.getUser_id());
+                                    if (user.getUser_id() != null)
+                                        arrayList.add(user);
+                                }
+                            }
                         }
                         initUserListRecyclerView(sortList(arrayList));
                     }
@@ -176,9 +184,14 @@ public class GlobalList extends Fragment{
 
         for (int i =0;i<users.size();i++){
 
-            if (users.get(i).getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                currentPosition = i;
-                break;
+            try {
+                Log.d(TAG, "getPositionForCurrentUser: yeah " + users.get(i).getUser_id());
+                if (users.get(i).getUser_id().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                    currentPosition = i;
+                    break;
+                }
+            }catch (NullPointerException e){
+                Log.d(TAG, "getPositionForCurrentUser: NullPointerException " + e.getMessage());
             }
         }
     }

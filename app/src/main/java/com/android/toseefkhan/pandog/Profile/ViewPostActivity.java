@@ -147,9 +147,6 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
         setupWidgets();
         initImageLoader();
 
-        if (getIntent().hasExtra("intent_post_winner") || getIntent().hasExtra("intent_post_loser"))
-            showCongratsDialog();
-
         ImageView back = findViewById(R.id.back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -209,6 +206,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                     i.putExtra("intent_post_key",getIntent().getExtras().getString("intent_post_key"));
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    finish();
                 }else if (getIntent().hasExtra(getString(R.string.intent_post))){
                     Intent i = new Intent(mContext,ViewPostActivity.class);
                     i.putExtra(getString(R.string.intent_post),getPostFromIntent());
@@ -216,6 +214,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                     if (getPostFromIntent() != null) {
                         startActivity(i);
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                        finish();
                     }else{
                         Toasty.error(mContext,"Argh.. Something went wrong",Toasty.LENGTH_LONG,false).show();
                     }
@@ -223,21 +222,6 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
             }
         });
         ShakeDetector.updateConfiguration(2.0f,3);
-    }
-
-    private void showCongratsDialog() {
-
-        Log.d(TAG, "showCongratsDialog: showing dialog.");
-
-        Dialog dialog = new Dialog(mContext);
-
-        if (getIntent().hasExtra("intent_post_winner"))
-            dialog.setContentView(R.layout.layout_winner_dialog);
-        else if (getIntent().hasExtra("intent_post_loser"))
-            dialog.setContentView(R.layout.layout_loser_dialog);
-
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.show();
     }
 
     @Override
@@ -424,7 +408,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
         otherApps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(theWholeView,"Attempting to share the post...",Snackbar.LENGTH_LONG).show();
+                Toasty.warning(mContext,"Attempting to share the post...",Toasty.LENGTH_LONG,true).show();
 
                 try{
                     File file = saveBitMap(mContext, theWholeView);
@@ -437,7 +421,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                                     Intent shareIntent = new Intent();
                                     shareIntent.setAction(Intent.ACTION_SEND);
                                     shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : app link goes here");
+                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Compete with your selfies using the Celfie app! \nRegister now : https://play.google.com/store/apps/details?id=com.android.toseefkhan.pandog \n");
                                     shareIntent.setType("image/jpg");
                                     mContext.startActivity(Intent.createChooser(shareIntent, "Share Celfie to..."));
                                 }
@@ -579,6 +563,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
             }
         });
 
+        timeRemaining.setVisibility(View.INVISIBLE);
         timeRemaining.setText(String.valueOf(time) + " hr remaining");
 
         if (!post.getStatus().equals("INACTIVE")) {
@@ -586,6 +571,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
             if (post.getStatus().equals("ACTIVE") || post.getStatus().equals("AWAITING_RESULT")) {
                 if (time <= 0) {
                     timeRemaining.setText("Awaiting result");
+                    timeRemaining.setVisibility(View.VISIBLE);
                     DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
                     ref.child("Posts")
                             .child(post.getPostKey())
@@ -595,6 +581,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                     heartHolder.setVisibility(View.GONE);
                     heartHolder2.setVisibility(View.GONE);
                 } else {
+                    timeRemaining.setVisibility(View.VISIBLE);
                     setLikesIcons(post);
                 }
             }
@@ -616,6 +603,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
 
             if (post.getWinner().equals("tie")){
                 timeRemaining.setText("It's a draw!!");
+                timeRemaining.setVisibility(View.VISIBLE);
 
             }else if (post.getWinner().equals(post.getUser_id())){
 
@@ -631,6 +619,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 String username = dataSnapshot.getValue(String.class);
                                 timeRemaining.setText(username + " won the challenge");
+                                timeRemaining.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -653,6 +642,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 String username = dataSnapshot.getValue(String.class);
                                 timeRemaining.setText(username + " won the challenge");
+                                timeRemaining.setVisibility(View.VISIBLE);
                             }
 
                             @Override
@@ -662,6 +652,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                         });
             }
         }
+
     }
 
     private void initLikesString(Post post) {
@@ -1057,6 +1048,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                     i.putExtra("intent_post_key",getIntent().getExtras().getString("intent_post_key"));
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                    finish();
                 }else if (getIntent().hasExtra(getString(R.string.intent_post))){
                     Intent i = new Intent(mContext,ViewPostActivity.class);
                     i.putExtra(getString(R.string.intent_post),getPostFromIntent());
@@ -1064,6 +1056,7 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                     if (getPostFromIntent() != null) {
                         startActivity(i);
                         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                        finish();
                     }else{
                         Toasty.error(mContext,"Argh.. Something went wrong",Toasty.LENGTH_LONG,false).show();
                     }
@@ -1132,7 +1125,10 @@ public class ViewPostActivity extends AppCompatActivity implements RapidFloating
                     }
                 });
         spotlight.start();
+    }
 
+    private String getEmojiByUnicode(int unicode){
+        return new String(Character.toChars(unicode));
     }
 
 }

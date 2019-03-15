@@ -36,14 +36,16 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
     private Context mContext;
     private DatabaseReference mDatabaseReference;
     private int mSelectedUserPosition = -1;
+    private TextView noFriendsFound;
 
 
-    public FriendsAdapter(String mUserUid, Context context) {
+    public FriendsAdapter(String mUserUid, Context context, TextView t) {
         this.mUserUid = mUserUid;
         friendUserList = new ArrayList<>();
         usingList = new ArrayList<>();
         this.mContext = context;
         mDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        noFriendsFound = t;
 
         getFriendsFromUid();
         initImageLoader();
@@ -96,11 +98,17 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         });
     }
 
+    private int count=0;
     private void getUsers(DataSnapshot dataSnapshot) {
         if (dataSnapshot.exists()) {
             for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                 String UserUid = userSnapshot.getKey();
                 adduserFromUid(UserUid);
+            }
+        }else{
+            count++;
+            if (count == 2) {
+                noFriendsFound.setVisibility(View.VISIBLE);
             }
         }
     }

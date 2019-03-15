@@ -108,7 +108,6 @@
             android:id="@+id/ref_code"
             android:padding="12dp"
             android:background="@drawable/pink_border"
-            android:text="Your Username"
             android:layout_marginTop="40dp"
             />
 

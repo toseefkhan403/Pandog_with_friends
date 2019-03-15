@@ -71,7 +71,6 @@
 
             </RelativeLayout>
 
-
             <!-- display_name section -->
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -100,15 +99,13 @@
             </RelativeLayout>
 
 
-
-
             <!-- description section -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_below="@id/relLayout2"
                 android:background="@drawable/white_pink_border_bottom"
-                android:id="@+id/relLayout4"
+                android:id="@+id/relLayout3"
                 android:layout_marginTop="15dp">
 
                 <ImageView
@@ -129,6 +126,33 @@
 
             </RelativeLayout>
 
+            <!-- instagram_username section -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/relLayout3"
+                android:background="@drawable/white_pink_border_bottom"
+                android:id="@+id/relLayout4"
+                android:layout_marginTop="15dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="2.5dp"
+                    android:src="@drawable/icon_instagram"
+                    android:layout_centerVertical="true"/>
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/instagram_username"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="40dp"
+                    android:background="@null"
+                    android:inputType="textNoSuggestions"
+                    android:hint="Write your Instagram username here..."/>
+
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"

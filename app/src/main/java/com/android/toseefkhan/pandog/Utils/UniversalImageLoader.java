@@ -4,11 +4,19 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.android.toseefkhan.pandog.R;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.nostra13.universalimageloader.cache.memory.impl.WeakMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -17,6 +25,9 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
+import androidx.annotation.Nullable;
+import es.dmoral.toasty.Toasty;
 
 
 public class UniversalImageLoader {
@@ -36,7 +47,7 @@ public class UniversalImageLoader {
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(defaultImage)
                 .showImageOnFail(defaultImage)
-                .showImageOnLoading(defaultLoadingImage)
+              //  .showImageOnLoading(defaultImage)
                 .considerExifParams(true)
                 .cacheOnDisk(true).cacheInMemory(true)
                 .cacheOnDisk(true).resetViewBeforeLoading(true)
@@ -62,7 +73,6 @@ public class UniversalImageLoader {
      * @param append
      */
     public static void setImage(String imgURL, ImageView image, final ProgressBar mProgressBar, String append,View child) {
-
         ImageLoader imageLoader = ImageLoader.getInstance();
         imageLoader.handleSlowNetwork(true);
 
@@ -117,5 +127,7 @@ public class UniversalImageLoader {
                 }
             }
         });
+
     }
+
 }

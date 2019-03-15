@@ -46,12 +46,15 @@ public class BottomNavViewHelper {
 
                     case R.id.ic_house:
                         Intent intent1 = new Intent(context, HomeActivity.class);//ACTIVITY_NUM = 0
+                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         context.startActivity(intent1);
                         activity.overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+                        ((Activity)context).finish();
                         break;
 
                     case R.id.ic_cloud:
                         Intent intent2  = new Intent(context, MapActivity2.class);//ACTIVITY_NUM = 1
+                        intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         context.startActivity(intent2);
                         activity.overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
                         break;
@@ -64,12 +67,14 @@ public class BottomNavViewHelper {
 
                     case R.id.ic_search:
                         Intent intent4 = new Intent(context, SearchActivity.class);//ACTIVITY_NUM = 3
+                        intent4.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         context.startActivity(intent4);
                         activity.overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
                         break;
 
                     case R.id.ic_android:
                         Intent intent5 = new Intent(context, ProfileActivity.class);//ACTIVITY_NUM = 4
+                        intent5.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         context.startActivity(intent5);
                         activity.overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
                         break;

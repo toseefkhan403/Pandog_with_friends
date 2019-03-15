@@ -1,11 +1,18 @@
 package com.android.toseefkhan.pandog.Home;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.toseefkhan.pandog.Profile.ProfileActivity;
+import com.android.toseefkhan.pandog.Profile.ViewPostActivity;
 import com.android.toseefkhan.pandog.Profile.ViewProfileActivity;
 import com.android.toseefkhan.pandog.R;
 import com.android.toseefkhan.pandog.Share.ShareActivity;
@@ -100,34 +108,26 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         //setting the constant widgets
         UniversalImageLoader.setImage(challenge.getPhotoUrl(), holder.notif_image_preview,null, "", holder.child);
 
-        //todo note: this list is meant for pending posts only. as soon as the user accepts or rejects the challenge, that challenge should go away from the list
         if (challenge.getStatus().equals("NOT_DECIDED")) {
             if (challenge.getChallengerUserUid().equals(uid)) {
                 setPpChallenger(holder,challenge.getChallengedUserUid());
                 holder.challenged_who.setText("You challenged this user");
                 holder.button_holder.setVisibility(View.GONE);
-
-                switch (challenge.getStatus()) {
-                    case "NOT_DECIDED":
-                        holder.status.setText("Awaiting response");
-                        break;
-                    case "ACCEPTED":
-                        holder.status.setText("Your post is up for voting!");
-                        //todo this case should not be in the list.
-                        break;
-                    case "REJECTED":
-                        holder.status.setText("Your challenge was rejected");
-                        //todo this case should be deleted as well - it should be not in the list.
-                        break;
-                }
+                holder.status.setText("Awaiting response");
+                holder.backOut.setVisibility(View.VISIBLE);
+                holder.backOut.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        backOutFromTheChallenge(challenge);
+                    }
+                });
 
             } else if (!challenge.getChallengerUserUid().equals(uid)) {
                 setPpChallenger(holder,challenge.getChallengerUserUid());
                 holder.challenged_who.setText("Challenged you");
                 holder.button_holder.setVisibility(View.VISIBLE);
                 holder.status.setVisibility(View.GONE);
-                //todo as soon as the user accepts or rejects the challenge, it should go away. Immediately in the case of rejection,
-                //todo and only when the user fully accepts the challenge by uploading the second photo.
+                holder.backOut.setVisibility(View.GONE);
                 holder.respondedYes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -142,10 +142,88 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                         i.putExtra("ChallengerUser",2);
                         mContext.startActivity(i);
                         ((Activity)mContext).overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out);
+                        ((Activity)mContext).finish();
                     }
                 });
             }
         }
+
+    }
+
+    private void backOutFromTheChallenge(Challenge challenge) {
+
+        Log.d(TAG, "backOutFromTheChallenge: called.");
+        Dialog backOutDialog = new Dialog(mContext);
+        backOutDialog.setContentView(R.layout.layout_back_out_dialog);
+
+        TextView tvYes = backOutDialog.findViewById(R.id.tvYes);
+        TextView tvNo = backOutDialog.findViewById(R.id.tvNo);
+        ImageView cancel = backOutDialog.findViewById(R.id.cancel_dialog);
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                backOutDialog.dismiss();
+            }
+        });
+
+        tvYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+                ref.child("Challenges")
+                        .child(challenge.getChallengeKey())
+                        .child("status")
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                if (dataSnapshot.exists()) {
+                                    String status = dataSnapshot.getValue(String.class);
+
+                                    if (status != null) {
+                                        if (status.equals("NOT_DECIDED")) {
+                                            Toasty.info(mContext,"Deleting your challenge...",Toasty.LENGTH_LONG,true).show();
+
+                                            ref.child("Challenges").child(challenge.getChallengeKey()).removeValue();
+                                            ref.child("User_Challenges").child(challenge.getChallengedUserUid()).child(challenge.getChallengeKey()).removeValue();
+                                            ref.child("User_Challenges").child(challenge.getChallengerUserUid()).child(challenge.getChallengeKey()).removeValue();
+
+                                            Intent i = new Intent(mContext,HomeActivity.class);
+                                            i.putExtra("ChallengerUser",2);
+                                            mContext.startActivity(i);
+                                            ((Activity)mContext).overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                                            ((Activity)mContext).finish();
+
+                                        } else if (status.equals("ACCEPTED")) {
+                                            Toasty.error(mContext,"The user has already accepted the challenge.\n You can't take it back now.",Toasty.LENGTH_LONG,true).show();
+                                        } else if (status.equals("REJECTED")){
+                                            Toasty.error(mContext,"Something went wrong. Please refresh the page.",Toasty.LENGTH_LONG,true).show();
+                                        }
+                                    }
+                                }else{
+                                    Toasty.error(mContext,"Something went wrong. Please refresh the page.",Toasty.LENGTH_LONG,true).show();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+            }
+        });
+
+        tvNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                backOutDialog.dismiss();
+            }
+        });
+
+        backOutDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        backOutDialog.show();
     }
 
     private void setPpChallenger(final NotificationViewHolder holder, String challengerUserUid) {
@@ -256,17 +334,13 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         notifyItemInserted(this.challengesList.indexOf(challenge));
     }
 
-    public void setEmptyView() {
-
-    }
-
     public class NotificationViewHolder extends RecyclerView.ViewHolder {
 
         CircleImageView pp;
         TextView username, challenged_who;
         LinearLayout button_holder;
         Button respondedYes, respondedNo;
-        TextView status;
+        TextView status,backOut;
         ImageView notif_image_preview;
         View child;
 
@@ -280,6 +354,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             respondedYes = itemView.findViewById(R.id.respondedYes);
             respondedNo = itemView.findViewById(R.id.respondedNo);
             status = itemView.findViewById(R.id.status);
+            backOut = itemView.findViewById(R.id.backOut);
             notif_image_preview = itemView.findViewById(R.id.NotifImagePreView);
             child = itemView.findViewById(R.id.progress_child);
         }

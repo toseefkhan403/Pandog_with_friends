@@ -53,9 +53,9 @@ public class UserListRVAdapter extends RecyclerView.Adapter<UserListRVAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        holder.whole.setVisibility(View.INVISIBLE);
         holder.setIsRecyclable(false);
 
-        holder.whole.setVisibility(View.INVISIBLE);
         String userId = mUserIdList.get(position);
         Log.d(TAG, "onBindViewHolder: the user Ids who liked the photo " + userId);
 
@@ -108,73 +108,67 @@ public class UserListRVAdapter extends RecyclerView.Adapter<UserListRVAdapter.Vi
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
         ref.child(mContext.getString(R.string.dbname_users))
+                .child(uid)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Log.d(TAG, "onDataChange: datasnapshot.getValue" + dataSnapshot.getValue());
 
-                        for (DataSnapshot singleSnapshot: dataSnapshot.getChildren()){
+                        if (dataSnapshot.exists()) {
+                            final User user = dataSnapshot.getValue(User.class);
+                            Log.d(TAG, "onDataChange: found the user " + user);
 
-                            final User user = singleSnapshot.getValue(User.class);
+                            viewHolder.username.setText(user.getUsername());
+                            viewHolder.email.setText(user.getEmail());
+                            UniversalImageLoader.setImage(user.getProfile_photo(), viewHolder.profile_image, null, "", null);
 
-                            if (user.getUser_id().equals(uid)){
+                            if (!uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                viewHolder.username.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
 
-                                Log.d(TAG, "onDataChange: found the user " + user);
+                                        Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                        i.putExtra(mContext.getString(R.string.intent_user), user);
+                                        mContext.startActivity(i);
+                                        ((Activity) mContext).finish();
+                                    }
+                                });
 
-                                viewHolder.username.setText(user.getUsername());
-                                viewHolder.email.setText(user.getEmail());
-                                UniversalImageLoader.setImage(user.getProfile_photo(), viewHolder.profile_image,null,"",null);
+                                viewHolder.profile_image.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
 
-                                if (!uid.equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
-                                    viewHolder.username.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
+                                        Intent i = new Intent(mContext, ViewProfileActivity.class);
+                                        i.putExtra(mContext.getString(R.string.intent_user), user);
+                                        mContext.startActivity(i);
+                                        ((Activity) mContext).finish();
+                                    }
+                                });
 
-                                            Intent i = new Intent(mContext, ViewProfileActivity.class);
-                                            i.putExtra(mContext.getString(R.string.intent_user),user);
-                                            mContext.startActivity(i);
-                                            ((Activity)mContext).finish();
-                                        }
-                                    });
+                                isFollowing(viewHolder, user);
+                            } else {
+                                viewHolder.username.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
 
-                                    viewHolder.profile_image.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
+                                        Intent i = new Intent(mContext, ProfileActivity.class);
+                                        mContext.startActivity(i);
+                                    }
+                                });
 
-                                            Intent i = new Intent(mContext, ViewProfileActivity.class);
-                                            i.putExtra(mContext.getString(R.string.intent_user),user);
-                                            mContext.startActivity(i);
-                                            ((Activity)mContext).finish();
-                                        }
-                                    });
+                                viewHolder.profile_image.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
 
-                                    isFollowing(viewHolder,user);
-                                }
-                                else{
-                                    viewHolder.username.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
+                                        Intent i = new Intent(mContext, ProfileActivity.class);
+                                        mContext.startActivity(i);
+                                    }
+                                });
 
-                                            Intent i = new Intent(mContext, ProfileActivity.class);
-                                            mContext.startActivity(i);
-                                        }
-                                    });
-
-                                    viewHolder.profile_image.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-
-                                            Intent i = new Intent(mContext, ProfileActivity.class);
-                                            mContext.startActivity(i);
-                                        }
-                                    });
-
-                                    viewHolder.follow.setVisibility(View.GONE);
-                                    viewHolder.unfollow.setVisibility(View.GONE);
-                                    viewHolder.whole.setVisibility(View.VISIBLE);
-                                    mProgressBar.setVisibility(View.GONE);
-                                }
-
+                                viewHolder.follow.setVisibility(View.GONE);
+                                viewHolder.unfollow.setVisibility(View.GONE);
+                                viewHolder.whole.setVisibility(View.VISIBLE);
+                                mProgressBar.setVisibility(View.GONE);
                             }
                         }
                     }

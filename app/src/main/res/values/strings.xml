@@ -26,6 +26,7 @@
     <string name="field_email">email</string>
     <string name="field_display_name">display_name</string>
     <string name="field_description">description</string>
+    <string name="field_insta_username">instagram_username</string>
     <string name="field_user_id">user_id</string>
 
     <string name="roboto_medium">sans-serif-medium</string>
@@ -67,6 +68,7 @@
         <item>If i manage to get the Black badge, will it always stay a black one?</item>
         <item>How many people own the BLACK badge at a time?</item>
         <item>How to log out from the app?</item>
+        <item>Want to contact us?</item>
     </string-array>
 
 
@@ -94,6 +96,7 @@
 </item>
         <item>The BLACK badge is owned by the top 20% users of the Celfie app.</item>
         <item>Click the "EDIT YOUR PROFILE" button, go to the bottom and log out of the app.</item>
+        <item>Email us at toseefkhan403@gmail.com. We would love to hear from you!</item>
     </string-array>
 
 

@@ -11,6 +11,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Animatable;
 
 import androidx.annotation.NonNull;
@@ -22,10 +23,12 @@ import com.android.toseefkhan.pandog.Utils.ExitActivity;
 import com.android.toseefkhan.pandog.models.LatLong;
 import com.android.toseefkhan.pandog.models.TrendingItem;
 import com.android.toseefkhan.pandog.models.User;
+import com.android.toseefkhan.pandog.models.UserAccountSettings;
 import com.github.tbouron.shakedetector.library.ShakeDetector;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
+import androidx.core.content.IntentCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import es.dmoral.toasty.Toasty;
@@ -120,10 +123,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
     //todo a thorough testing of the app and bug fixes, memory management!
     //todo dynamic trending notifications
-    //todo mischief
-    //todo notif mention post
-    // results being executed thrice
-    //SEARCH IS BLINKING
+    //todo when you will delete the data, make sure to have a copy of the banner images of searchActivity
     /*
         anonymous chats with selfies and gifs
         some game time
@@ -142,10 +142,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
             mAuth.removeAuthStateListener(mAuthListener);
         }
 
-//        mHomeFragment = null;
-//        mNotificationFragment = null;
         mUniversalImageLoader = null;
-
     }
 
     @Override
@@ -161,6 +158,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                         public void onClick(View view) {
                             Intent i = new Intent(mContext,HomeActivity.class);
                             startActivity(i);
+                            finish();
                         }
                     })
                     .show();
@@ -168,6 +166,15 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
         mAuth.addAuthStateListener(mAuthListener);
         checkCurrentUser(mAuth.getCurrentUser());
+
+        final Runtime runtime = Runtime.getRuntime();
+        long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory())/1048576L;
+        long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+        long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
+
+        //this should not be equal to 0
+        Log.d(TAG, "onStart: available heap in mb" + availHeapSizeInMB);
+        Log.d(TAG, "onStart: memory usage of current app " + String.valueOf((runtime.totalMemory() - runtime.freeMemory())/1048576L));
 
         //key hash for facebook auth login
 //        try {
@@ -190,8 +197,6 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     protected void onPause() {
         super.onPause();
         mContext = null;
-//        mHomeFragment = null;
-//        mNotificationFragment = null;
         mUniversalImageLoader = null;
     }
 
@@ -200,8 +205,6 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
         super.onDestroy();
         ShakeDetector.destroy();
         mContext = null;
-//        mHomeFragment = null;
-//        mNotificationFragment = null;
         mUniversalImageLoader = null;
     }
 
@@ -314,6 +317,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                     Intent i = new Intent(HomeActivity.this, HomeActivity.class);
                     startActivity(i);
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                    finish();
                 }
             }
         });
@@ -628,6 +632,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                 Log.d(TAG, "onClick: giving the points to both the users");
 
                 String referralCode = inputReferral.getText().toString();
+                referralCode = referralCode.replaceAll(" ","");
                 setReferralPoints(referralCode);
             }
         });
@@ -674,6 +679,13 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
                                                             .child(user.getUser_id())
                                                             .child("panda_points")
                                                             .setValue(user.getPanda_points() + 50);
+
+                                                    //setting the record
+                                                    ref.child("referral_record")
+                                                            .child(user.getUser_id())
+                                                            .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                            .child(getString(R.string.field_user_id))
+                                                            .setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
                                                     ref.child(getString(R.string.dbname_users))
                                                             .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
@@ -804,7 +816,7 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
 
         TrendingItem item = new TrendingItem();
 
-        String title = "deadpool";                       //the only field that needs to be set manually
+        String title = "Explore";                       //the only field that needs to be set manually
         item.setTitle("#" + title);
 
         ArrayList<String> postKeysList = new ArrayList<>();

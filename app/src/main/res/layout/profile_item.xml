@@ -70,7 +70,7 @@
                 android:layout_marginLeft="10dp"
                 android:textSize="13sp"
                 android:layout_centerVertical="true"
-                android:textColor="@color/grey"
+                android:textColor="@color/mediumgrey"
                 android:id="@+id/UserEmailView"
                 />
 
@@ -83,7 +83,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginTop="6dp"
                     android:visibility="gone"
-                    android:textColor="@color/grey"
+                    android:textColor="@color/mediumgrey"
                     android:id="@+id/UserDistanceView"
                     />
 

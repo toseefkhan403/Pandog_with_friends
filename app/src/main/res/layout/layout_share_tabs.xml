@@ -7,61 +7,28 @@
         android:background="@android:color/transparent"
         android:layout_alignParentTop="true">
 
-        <com.github.florent37.shapeofview.shapes.RoundRectView
-            android:layout_width="match_parent"
-            app:shape_roundRect_borderWidth="2dp"
-            app:shape_roundRect_borderColor="@color/teal_400"
-            app:shape_roundRect_bottomLeftRadius="14dp"
-            app:shape_roundRect_bottomRightRadius="14dp"
-            app:shape_roundRect_topLeftRadius="14dp"
-            app:shape_roundRect_topRightRadius="14dp"
-            android:layout_height="wrap_content">
-
-        <com.google.android.material.appbar.AppBarLayout
-
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.tabs.TabLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:id="@+id/tabs"
-                app:tabIndicatorHeight="0dp"
-                app:tabTextColor="@color/black"
-                android:background="@color/white">
-                
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="gallery"/>
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="camera"/>
-                
-            </com.google.android.material.tabs.TabLayout>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        </com.github.florent37.shapeofview.shapes.RoundRectView>
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="70dp"
-            android:layout_marginEnd="70dp"
+            android:layout_height="50dp"
             android:weightSum="10">
 
-            <View
+            <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:id="@+id/gallery_button"
+                android:text="GALLERY"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:background="@drawable/white_rounded_small_button"
                 android:layout_weight="5"
                 />
-            <View
+            <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:text="CAMERA"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:background="@drawable/white_rounded_small_button"
                 android:id="@+id/camera_button"
                 android:layout_weight="5"
                 />

@@ -5,10 +5,15 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 
 import com.android.toseefkhan.pandog.Home.HomeActivity;
+import com.android.toseefkhan.pandog.Share.NextActivity;
 import com.android.toseefkhan.pandog.Utils.ViewFollowersActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -20,6 +25,11 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 import android.preference.PreferenceManager;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -56,6 +66,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -72,22 +83,20 @@ public class ProfileActivity extends AppCompatActivity {
     private ValueEventListener v1;
 
     //widgets
-    private TextView  mFollowers, mFollowing, mDisplayName, mUsername, mDescription;
+    private TextView  mFollowers, mFollowing, mDisplayName, mUsername, mDescription, mInstagramUsername;
+    private TextView thought;
     private ProgressBar mProgressBar;
 //    private Toolbar toolbar;
     private BottomNavigationViewEx bottomNavigationView;
     private ImageView mProfilePhoto;
     private TextView mEditProfile,PandaPoints;
-    private int mFollowersCount=0,mFollowingCount=0,mPostsCount=0;
+    private int mFollowersCount=0,mFollowingCount=0;
     private RelativeLayout relativeLayout;
     private LinearLayout fonts;
     private TextView mMenu;
     private ProgressBar pb;
     private Toolbar profile;
     private FloatingActionButton fab;
-
-    private ArrayList<Post> mPostList = new ArrayList<>();
-
 
     //for the welcome screen
     SharedPreferences mPrefs;
@@ -103,11 +112,11 @@ public class ProfileActivity extends AppCompatActivity {
 
         setupActivityWidgets();
 
-
         hideWidgets();
         setBackGroundTint();
         setupFirebaseAuth();
         initImageLoader();
+        setTheThought();
 
         getFollowersCount();
         getFollowingCount();
@@ -215,7 +224,6 @@ public class ProfileActivity extends AppCompatActivity {
      */
     private void setProfileWidgets(UserSettings userSettings){
         Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.toString());
-        Log.d(TAG, "setProfileWidgets: setting widgets with data retrieving from firebase database: " + userSettings.getSettings().getUsername());
 
         View child = findViewById(R.id.progress_child);
 
@@ -227,6 +235,41 @@ public class ProfileActivity extends AppCompatActivity {
         mDisplayName.setText(settings.getDisplay_name());
         mUsername.setText(settings.getUsername());
         mDescription.setText(settings.getDescription());
+
+        if (settings.getInstagram_username().equals("")){
+            mInstagramUsername.setVisibility(View.GONE);
+        }else {
+            mInstagramUsername.setVisibility(View.VISIBLE);
+            SpannableString ss = new SpannableString("Follow me on Instagram : " + settings.getInstagram_username());
+            ClickableSpan clickableSpan = new ClickableSpan() {
+                @Override
+                public void onClick(View textView) {
+                    //set link
+                    Log.d(TAG, "onClick: navigating to Instagram");
+                    String profileLink = settings.getInstagram_username();
+                    Uri uri = Uri.parse("http://instagram.com/_u/" + profileLink);
+                    Intent insta = new Intent(Intent.ACTION_VIEW, uri);
+                    insta.setPackage("com.instagram.android");
+
+                    if (isIntentAvailable(mContext, insta)) {
+                        startActivity(insta);
+                    } else {
+                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://instagram.com/" + profileLink)));
+                    }
+                }
+                @Override
+                public void updateDrawState(TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                }
+            };
+            ss.setSpan(clickableSpan, 25, 25+settings.getInstagram_username().length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            mInstagramUsername.setText(ss);
+            mInstagramUsername.setMovementMethod(LinkMovementMethod.getInstance());
+            mInstagramUsername.setHighlightColor(Color.BLUE);
+        }
+
         mProgressBar.setVisibility(View.GONE);
     }
 
@@ -248,14 +291,15 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
         profile = findViewById(R.id.profileToolBar);
-        mProgressBar = (ProgressBar) findViewById(R.id.profileProgressBar);
+        mProgressBar = findViewById(R.id.profileProgressBar);
         mProfilePhoto = findViewById(R.id.profile_photo);
         relativeLayout= findViewById(R.id.main_profile);
-        mDisplayName = (TextView) findViewById(R.id.display_name);
-        mUsername = (TextView) findViewById(R.id.username);
-        mDescription = (TextView) findViewById(R.id.description);
-      //  mPosts = (TextView) findViewById(R.id.tvPosts);
-        mFollowers = (TextView) findViewById(R.id.tvFollowers);
+        thought = findViewById(R.id.thought);
+        mDisplayName = findViewById(R.id.display_name);
+        mUsername = findViewById(R.id.username);
+        mDescription = findViewById(R.id.description);
+        mInstagramUsername = findViewById(R.id.instagram_username);
+        mFollowers = findViewById(R.id.tvFollowers);
         mFollowers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -277,8 +321,6 @@ public class ProfileActivity extends AppCompatActivity {
         });
 
         PandaPoints= findViewById(R.id.pandaPoints);
-//        toolbar = (Toolbar) view.findViewById(R.id.profileToolBar);
-//        profileMenu = (ImageView) view.findViewById(R.id.profileMenu);
        bottomNavigationView = (BottomNavigationViewEx) findViewById(R.id.bottomNavViewBar);
         mFirebaseMethods = new FirebaseMethods(mContext);
         pb = findViewById(R.id.pb);
@@ -316,6 +358,38 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setTheThought() {
+
+        myRef.child("thoughts")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        try {
+                            ArrayList<String> myThoughts = (ArrayList<String>) dataSnapshot.getValue();
+                            int randomNumber = new Random().nextInt(myThoughts.size());
+                            thought.setText(myThoughts.get(randomNumber));
+
+                        }catch (NullPointerException e){
+                            Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+                        }catch (IndexOutOfBoundsException e){
+                            Log.d(TAG, "onDataChange: IndexOutOfBoundsException " + e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+    private boolean isIntentAvailable(Context ctx, Intent intent) {
+        final PackageManager packageManager = ctx.getPackageManager();
+        List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
     }
 
     private void getFollowersCount(){
@@ -422,7 +496,7 @@ public class ProfileActivity extends AppCompatActivity {
                 mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
                 // second argument is the default to use if the preference can't be found
-                Boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefProfile, false);
+                boolean welcomeScreenShown = mPrefs.getBoolean(tutorialScreenShownPrefProfile, false);
 
                 if (!welcomeScreenShown) {
 
@@ -484,6 +558,17 @@ public class ProfileActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
+
+        if (myRef != null && v1 != null)
+        myRef.addValueEventListener(v1);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (myRef != null && v1 != null)
+        myRef.addValueEventListener(v1);
     }
 
     @Override

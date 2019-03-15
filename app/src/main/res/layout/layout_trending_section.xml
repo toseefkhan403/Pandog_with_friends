@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="255dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white">
+    android:background="@drawable/white_grey_border">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -44,6 +44,17 @@
             android:visibility="visible">
 
         </androidx.recyclerview.widget.RecyclerView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:background="@null"
+        android:id="@+id/noTrendingFound"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:text="Upload a post with this hashtag to make your post trending!" />
 
 
 </RelativeLayout>

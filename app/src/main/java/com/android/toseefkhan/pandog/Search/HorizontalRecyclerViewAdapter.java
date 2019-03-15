@@ -88,7 +88,6 @@ public class HorizontalRecyclerViewAdapter extends RecyclerView.Adapter<Horizont
 
                     }
                 });
-
     }
 
     @Override

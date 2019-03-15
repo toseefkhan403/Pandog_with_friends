@@ -9,7 +9,6 @@
     <com.github.florent37.shapeofview.shapes.RoundRectView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="20dp"
         app:shape_roundRect_borderColor="@color/teal_400"
         app:shape_roundRect_borderWidth="10dp"
         app:shape_roundRect_bottomLeftRadius="60dp"
@@ -21,18 +20,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="85sp"
-            android:paddingRight="40dp"
-            android:paddingLeft="40dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:text="LOSER"
-            android:visibility="gone"
-            android:textColor="@color/teal_400"/>
+            android:padding="25dp"
+            android:text="Loser"
+            android:fontFamily="@font/cursive"
+            android:id="@+id/loser"
+            android:visibility="visible"
+            android:textColor="@color/black"/>
 
         <RelativeLayout
             android:layout_width="250dp"
             android:layout_centerHorizontal="true"
             android:layout_height="70dp"
+            android:visibility="gone"
             android:id="@+id/fonts">
 
             <com.android.toseefkhan.pandog.Utils.LottieFontViewGroupL

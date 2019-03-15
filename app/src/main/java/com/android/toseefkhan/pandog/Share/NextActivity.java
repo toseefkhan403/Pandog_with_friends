@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.TypedValue;
@@ -48,6 +50,7 @@ import com.zomato.photofilters.imageprocessors.Filter;
 import com.zomato.photofilters.utils.ThumbnailItem;
 import com.zomato.photofilters.utils.ThumbnailsManager;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -320,10 +323,14 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                         for (DataSnapshot ss : dataSnapshot.getChildren()) {
 
                             if (ss.exists()) {
-                                Log.d(TAG, "onDataChange: trends " + ss.getValue(TrendingItem.class));
-                                String title = ss.getValue(TrendingItem.class).getTitle();
-                                hashtagAdapter.add(new Hashtag(title.replace("#", "")
-                                        , ss.getValue(TrendingItem.class).getPost_keys_list().size()));
+                                try{
+                                    Log.d(TAG, "onDataChange: trends " + ss.getValue(TrendingItem.class));
+                                    String title = ss.getValue(TrendingItem.class).getTitle();
+                                    hashtagAdapter.add(new Hashtag(title.replace("#", "")
+                                            , ss.getValue(TrendingItem.class).getPost_keys_list().size()));
+                                }catch (NullPointerException e){
+                                    Log.d(TAG, "onDataChange: NullPointerException " + e.getMessage());
+                                }
                             }
                         }
                         Log.d(TAG, "onDataChange: hashtagadapternow " + hashtagAdapter.getItem(0));
@@ -420,10 +427,33 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                 Log.d(TAG, "loadImage: image coming from gallery");
                 originalImage = MediaStore.Images.Media.getBitmap(this.getContentResolver(), getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
             }
+
+            int count = 0, num = originalImage.getByteCount();
+            while(num != 0)
+            {
+                num /= 10;
+                ++count;
+            }
+
+            if (count > 7){
+                //make it smaller man!
+                int maxHeight = 1280;
+                int maxWidth = 940;
+                float scale = Math.min(((float)maxHeight / originalImage.getWidth()), ((float)maxWidth / originalImage.getHeight()));
+
+                Matrix matrix = new Matrix();
+                matrix.postScale(scale, scale);
+
+                originalImage = Bitmap.createBitmap(originalImage, 0, 0, originalImage.getWidth(), originalImage.getHeight(), matrix, true);
+            }
+
+            Log.d(TAG, "loadImage: bitmap scales " + originalImage.getWidth() + " " + originalImage.getHeight());
+
             filteredImage = originalImage.copy(Bitmap.Config.ARGB_8888, true);
             imagePreview.setImageBitmap(originalImage);
 
         } catch (Exception e) {
+            Log.d(TAG, "loadImage: Exception " + e.getMessage());
         }
 
     }
@@ -497,7 +527,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
     }
 
     private void setupFriendsList() {
-        mFriendsAdapter = new FriendsAdapter(FirebaseAuth.getInstance().getCurrentUser().getUid(), mContext);
+        mFriendsAdapter = new FriendsAdapter(FirebaseAuth.getInstance().getCurrentUser().getUid(), mContext, (TextView) findViewById(R.id.no_friends_found));
         friendsListView.setAdapter(mFriendsAdapter);
 
         friendSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -512,6 +542,7 @@ public class NextActivity extends AppCompatActivity implements ThumbnailAdapter.
                 return true;
             }
         });
+
     }
 
     @Override
