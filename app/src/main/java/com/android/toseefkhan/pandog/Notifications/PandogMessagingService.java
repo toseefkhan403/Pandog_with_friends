@@ -34,6 +34,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
     private static final String NOTIFICATION_CHANNEL_ID = "1001010101";
 
     private static int NOTIFICATION_ID = 0;
+
     @Override
     public void onNewToken(String token) {
         Log.d("TokenRegistration", token);
@@ -270,7 +271,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
                         });
                 break;
             }
-            case "comment":
+            case "comment": {
                 String NotificationTitle = "Comment";
                 String NotificationBody = "@ commented on your post";
                 String uid = remoteMessage.getData().get("userUid");
@@ -294,8 +295,15 @@ public class PandogMessagingService extends FirebaseMessagingService {
                             }
                         });
                 break;
-        }
+            }
+            case "topPost": {
+                String NotificationTitle = "Celfie of the day";
+                String NotificationBody = "Click here to see Today's best Celfie";
 
+                buildNotification(remoteMessage, NotificationTitle, NotificationBody, null);
+                break;
+            }
+        }
     }
 
     private void buildNotification
@@ -355,6 +363,12 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 notifIntent.putExtra("post_comments", postKey);
                 break;
             }
+            case "topPost": {
+                NOTIFICATION_ID = 6;
+                notifIntent = new Intent(this, ViewPostActivity.class);
+                String postKey = remoteMessage.getData().get("postKey");
+                notifIntent.putExtra("intent_post_key", postKey);
+            }
         }
         notifIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
@@ -396,7 +410,7 @@ public class PandogMessagingService extends FirebaseMessagingService {
             mNotificationChannel.canShowBadge();
 
             mNotificationChannel.enableVibration(true);
-         //   mNotificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            //   mNotificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
 
             Log.d(TAG, "buildNotification: create notif " + mNotificationChannel);
             notificationManager.createNotificationChannel(mNotificationChannel);

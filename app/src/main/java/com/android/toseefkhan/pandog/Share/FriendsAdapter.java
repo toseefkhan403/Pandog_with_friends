@@ -180,14 +180,11 @@ public class FriendsAdapter extends RecyclerView.Adapter<FriendsAdapter.FriendVi
         holder.userEmailView.setText(user.getEmail());
         String Photourl = user.getProfile_photo();
         UniversalImageLoader.setImage(Photourl, holder.photoView, null, "", holder.child);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int p = mSelectedUserPosition;
-                mSelectedUserPosition = position;
-                FriendsAdapter.this.notifyItemChanged(p);
-                FriendsAdapter.this.notifyItemChanged(mSelectedUserPosition);
-            }
+        holder.itemView.setOnClickListener(v -> {
+            int p = mSelectedUserPosition;
+            mSelectedUserPosition = position;
+            this.notifyItemChanged(p);
+            this.notifyItemChanged(mSelectedUserPosition);
         });
     }
 
