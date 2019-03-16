@@ -121,7 +121,6 @@ public class HomeActivity extends AppCompatActivity implements PostsProfileRVAda
     final String referralScreenShownPref = "referralScreenShown";
     final String showFloatingButton = "showFloatingButton";
 
-    //todo a thorough testing of the app and bug fixes, memory management!
     //todo dynamic trending notifications
     //todo when you will delete the data, make sure to have a copy of the banner images of searchActivity
     /*

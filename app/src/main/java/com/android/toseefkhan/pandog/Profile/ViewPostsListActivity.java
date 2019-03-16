@@ -626,7 +626,10 @@ public class ViewPostsListActivity extends AppCompatActivity implements PostsPro
                 break;
 
             case 1:
-                mAdapter.sharePost();
+                if (mAdapter != null) {
+                    mAdapter.sharePost();
+                }
+
                 break;
 
             case 2:
