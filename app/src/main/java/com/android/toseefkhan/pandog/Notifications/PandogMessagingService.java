@@ -303,6 +303,40 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 buildNotification(remoteMessage, NotificationTitle, NotificationBody, null);
                 break;
             }
+            case "general":{
+                String notificationTitle = remoteMesasge.getData().get("title");
+                String notificationBody = remoteMessage.getData().get("body");
+                
+                buildNotification(remoteMessage,notificationTitle,notificationBody,null);
+                break;
+            }
+            case "group":{
+                
+                String NotificationTitle = "@ added you in the group #";
+                String NotificationBody = "Click here to know more";
+                String groupName = remoteMessage.getData().get("group_name");
+                String creatorUid = remoteMessage.getData().get("creator_uid");
+                    FirebaseDatabase.getInstance().getReference()
+                    .child(getApplicationContext().getString(R.string.dbname_users))
+                    .child(creatorUid)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    User user = dataSnapshot.getValue(User.class);
+                                    String userName = user.getUsername();
+                                    buildNotification(remoteMessage, NotificationTitle,
+                                            NotificationBody.replace("@", userName).replace("#",groupName), user);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+              break;
+            }
         }
     }
 
@@ -368,6 +402,19 @@ public class PandogMessagingService extends FirebaseMessagingService {
                 notifIntent = new Intent(this, ViewPostActivity.class);
                 String postKey = remoteMessage.getData().get("postKey");
                 notifIntent.putExtra("intent_post_key", postKey);
+                break;
+            }
+            
+            case "group":{
+                NOTIFICATION_ID  = 7;
+                notifIntent = new Intent(this,MapActivity2.class);
+                    break;
+             }
+                
+            case "general":{
+                NOTIFICATION_ID = 8;
+                notifIntent = new Intent(this, HomeActivity.class);
+                break;
             }
         }
         notifIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
